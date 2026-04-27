@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitZone-24x | All-In-One Fitness</title>
+    <title>FitZone-24x | Professional App</title>
     <style>
         :root { --primary: #ff4757; --dark: #0f0f0f; --card-bg: #1e1e1e; --accent: #2ecc71; --blue: #0984e3; }
         body { font-family: 'Poppins', sans-serif; background: var(--dark); color: #fff; margin: 0; padding-bottom: 50px; }
@@ -12,28 +12,25 @@
         .logo-text span { color: var(--primary); }
         .container { padding: 15px; max-width: 600px; margin: auto; }
         
-        .card { background: var(--card-bg); border-radius: 12px; padding: 18px; margin-bottom: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.4); border-top: 1px solid #333; }
-        h3 { color: var(--primary); margin-top: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 18px; margin-bottom: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
+        h3 { color: var(--primary); margin-top: 0; font-size: 1.1rem; }
         
         input, select { width: 100%; padding: 12px; border-radius: 8px; background: #252525; color: white; border: 1px solid #444; margin: 8px 0; box-sizing: border-box; }
         .btn-main { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-        /* Workout & Diet display */
+        /* Day Menu Style */
         .day-wrapper { margin-bottom: 8px; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
-        .day-header { background: #2d3436; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.95rem; }
+        .day-header { background: #2d3436; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; font-weight: bold; }
         .day-content { display: none; background: #1a1a1a; padding: 10px; }
         
-        .exercise-item { display: flex; align-items: center; background: #252525; margin-bottom: 8px; padding: 8px; border-radius: 6px; }
-        .ex-img { width: 65px; height: 65px; border-radius: 5px; object-fit: cover; background: #333; margin-right: 12px; }
+        .muscle-label { color: var(--primary); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin: 10px 0 5px; display: block; border-left: 3px solid var(--primary); padding-left: 8px; }
+        .exercise-item { display: flex; align-items: center; background: #252525; margin-bottom: 8px; padding: 10px; border-radius: 6px; }
+        .ex-img { width: 70px; height: 70px; border-radius: 5px; object-fit: cover; background: #333; margin-right: 12px; border: 1px solid #444; }
         
-        .diet-box { background: rgba(46, 204, 113, 0.1); border-left: 4px solid var(--accent); padding: 12px; border-radius: 5px; line-height: 1.6; }
-        .diet-item { margin-bottom: 10px; border-bottom: 1px dashed #444; padding-bottom: 5px; }
-        .diet-item b { color: var(--accent); }
-
-        /* Yoga Grid */
-        .yoga-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .yoga-card { background: #2d3436; padding: 8px; border-radius: 8px; text-align: center; font-size: 0.8rem; }
-        .yoga-card img { width: 100%; border-radius: 5px; margin-bottom: 5px; height: 80px; object-fit: cover; }
+        .diet-box { background: rgba(46, 204, 113, 0.1); border-left: 4px solid var(--accent); padding: 15px; border-radius: 8px; }
+        .yoga-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .yoga-card { background: #2d3436; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.8rem; }
+        .yoga-card img { width: 100%; border-radius: 5px; height: 80px; object-fit: cover; }
     </style>
 </head>
 <body>
@@ -45,116 +42,110 @@
 <div class="container">
 
     <div class="card">
-        <h3>📊 Health Stats (BMI)</h3>
-        <div style="display: flex; gap: 10px;">
-            <input type="number" id="weight" placeholder="Weight(kg)">
-            <input type="number" id="height" placeholder="Height(cm)">
+        <h3>📊 BMI Calculator</h3>
+        <div style="display:flex; gap:10px;">
+            <input type="number" id="w" placeholder="Weight(kg)">
+            <input type="number" id="h" placeholder="Height(cm)">
         </div>
-        <button class="btn-main" onclick="calcBMI()">Calculate</button>
-        <div id="bmiRes" style="margin-top:10px; color:var(--accent); font-weight:bold; text-align:center;"></div>
+        <button class="btn-main" onclick="calc()">Calculate BMI</button>
+        <div id="res" style="text-align:center; margin-top:10px; color:var(--accent);"></div>
     </div>
 
     <div class="card">
-        <h3>🎯 Choose Your Goal</h3>
-        <select id="goalSelect" onchange="updateFullPlan()">
-            <option value="bulking">Bulking (Muscle Gain)</option>
-            <option value="weightloss">Weight Loss (Fat Burn)</option>
-            <option value="cutting">Cutting (Max Cardio)</option>
+        <h3>🎯 Choose Goal</h3>
+        <select id="goal" onchange="update()">
+            <option value="bulking">Bulking (Double Muscle)</option>
+            <option value="weightloss">Weight Loss (Single Muscle)</option>
+            <option value="cutting">Cutting (Focus Cardio)</option>
         </select>
     </div>
 
     <div class="card">
-        <h3>🏋️ Weekly Workout Schedule</h3>
-        <div id="workoutMenu"></div>
+        <h3>📅 Weekly Workout Schedule</h3>
+        <div id="workoutArea"></div>
     </div>
 
     <div class="card">
-        <h3>🍱 Daily Diet Plan</h3>
-        <div id="dietDisplay"></div>
+        <h3>🍱 Detailed Diet Plan</h3>
+        <div id="dietArea"></div>
     </div>
 
     <div class="card">
-        <h3>💧 Water Intake Tracker</h3>
-        <div id="waterVal" style="text-align:center; font-size:1.8rem; color:var(--blue); margin: 10px 0;">0 / 14 Glasses</div>
-        <button class="btn-main" style="background: var(--blue);" onclick="addWater()">Drink 1 Glass 🥤</button>
+        <h3>💧 Water Intake</h3>
+        <div id="waterVal" style="text-align:center; font-size:1.8rem; color:var(--blue); margin:10px;">0 / 14 Glasses</div>
+        <button class="btn-main" style="background:var(--blue);" onclick="drink()">Drink 1 Glass 🥤</button>
     </div>
 
     <div class="card">
-        <h3>🌿 Ayurvedic & Yoga Corner</h3>
+        <h3>🌿 Ayurveda & Yoga</h3>
         <div class="yoga-grid">
             <div class="yoga-card"><img src="https://via.placeholder.com/100?text=Yoga1">Surya Namaskar</div>
             <div class="yoga-card"><img src="https://via.placeholder.com/100?text=Yoga2">Bhujangasana</div>
         </div>
-        <div style="margin-top:15px; font-size:0.85rem; color:#ccc; border-top:1px solid #444; padding-top:10px;">
-            • <b>Ashwagandha:</b> Raat ko doodh ke saath (Strength).<br>
-            • <b>Water:</b> Khane ke 30 min pehle/baad piyein.<br>
-            • <b>Morning:</b> Khali pet garm paani aur neem.
-        </div>
+        <p style="font-size:0.8rem; color:#888; margin-top:15px;">• Ashwagandha for strength.<br>• Copper vessel water in morning.<br>• Neem water for skin.</p>
     </div>
 
 </div>
 
 <script>
-    const exercises = {
-        chest: [{n:"Incline Press",p:"https://via.placeholder.com/65"},{n:"Decline Press",p:"https://via.placeholder.com/65"},{n:"Flat Press",p:"https://via.placeholder.com/65"},{n:"Chest Fly",p:"https://via.placeholder.com/65"},{n:"Dips",p:"https://via.placeholder.com/65"},{n:"Heavy Lifting",p:"https://via.placeholder.com/65"}],
-        tricep: [{n:"Pulley Pushdown",p:"https://via.placeholder.com/65"},{n:"Close Grip Bench",p:"https://via.placeholder.com/65"},{n:"Rope Pushdown",p:"https://via.placeholder.com/65"},{n:"Reverse Pushdown",p:"https://via.placeholder.com/65"}],
-        back: [{n:"Pull Ups",p:"https://via.placeholder.com/65"},{n:"Wide Grip Pull",p:"https://via.placeholder.com/65"},{n:"T-Bar Row",p:"https://via.placeholder.com/65"},{n:"Barbell Rows",p:"https://via.placeholder.com/65"},{n:"Cable Row",p:"https://via.placeholder.com/65"},{n:"Deadlifts",p:"https://via.placeholder.com/65"}],
-        bicep: [{n:"Barbell Curl",p:"https://via.placeholder.com/65"},{n:"Dumbbell Curl",p:"https://via.placeholder.com/65"},{n:"Preacher Curl",p:"https://via.placeholder.com/65"},{n:"Concentration",p:"https://via.placeholder.com/65"},{n:"Hammer Curl",p:"https://via.placeholder.com/65"}],
-        legs: [{n:"Barbell Squats",p:"https://via.placeholder.com/65"},{n:"Leg Extension",p:"https://via.placeholder.com/65"},{n:"Hamstring Curls",p:"https://via.placeholder.com/65"},{n:"Calf Extension",p:"https://via.placeholder.com/65"}],
-        shoulder: [{n:"Shoulder Press",p:"https://via.placeholder.com/65"},{n:"Lateral Raises",p:"https://via.placeholder.com/65"},{n:"Bent Over Fly",p:"https://via.placeholder.com/65"},{n:"Shrugs",p:"https://via.placeholder.com/65"},{n:"Upright Rows",p:"https://via.placeholder.com/65"}]
+    const db = {
+        chest: [{n:"Incline Press",p:"https://via.placeholder.com/70"},{n:"Decline Press",p:"https://via.placeholder.com/70"},{n:"Flat Press",p:"https://via.placeholder.com/70"},{n:"Chest Fly",p:"https://via.placeholder.com/70"},{n:"Dips",p:"https://via.placeholder.com/70"},{n:"Heavy Lifting",p:"https://via.placeholder.com/70"}],
+        tricep: [{n:"Pulley Pushdown",p:"https://via.placeholder.com/70"},{n:"Close Grip Bench",p:"https://via.placeholder.com/70"},{n:"Rope Pushdown",p:"https://via.placeholder.com/70"},{n:"Reverse Pushdown",p:"https://via.placeholder.com/70"}],
+        back: [{n:"Pull Ups",p:"https://via.placeholder.com/70"},{n:"Wide Grip Pull",p:"https://via.placeholder.com/70"},{n:"T-Bar Row",p:"https://via.placeholder.com/70"},{n:"Barbell Rows",p:"https://via.placeholder.com/70"},{n:"Cable Row",p:"https://via.placeholder.com/70"},{n:"Deadlifts",p:"https://via.placeholder.com/70"}],
+        bicep: [{n:"Barbell Curl",p:"https://via.placeholder.com/70"},{n:"Dumbbell Curl",p:"https://via.placeholder.com/70"},{n:"Preacher Curl",p:"https://via.placeholder.com/70"},{n:"Concentration",p:"https://via.placeholder.com/70"},{n:"Hammer Curl",p:"https://via.placeholder.com/70"}],
+        legs: [{n:"Barbell Squats",p:"https://via.placeholder.com/70"},{n:"Leg Extension",p:"https://via.placeholder.com/70"},{n:"Hamstring Curls",p:"https://via.placeholder.com/70"},{n:"Calf Extension",p:"https://via.placeholder.com/70"}],
+        shoulder: [{n:"Shoulder Press",p:"https://via.placeholder.com/70"},{n:"Lateral Raises",p:"https://via.placeholder.com/70"},{n:"Bent Over Fly",p:"https://via.placeholder.com/70"},{n:"Shrugs",p:"https://via.placeholder.com/70"},{n:"Upright Rows",p:"https://via.placeholder.com/70"}]
     };
 
     function toggle(id) { let x = document.getElementById(id); x.style.display = (x.style.display==="block")?"none":"block"; }
 
-    function updateFullPlan() {
-        const goal = document.getElementById('goalSelect').value;
-        const menu = document.getElementById('workoutMenu');
-        const diet = document.getElementById('dietDisplay');
+    function update() {
+        const goal = document.getElementById('goal').value;
+        const workArea = document.getElementById('workoutArea');
+        const dietArea = document.getElementById('dietArea');
         const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         
-        // 1. Workout Logic
-        let sch = [];
-        let reps = goal==='bulking'?"4 Sets x 8 Reps":"3 Sets x 15 Reps";
-        
+        let reps = goal==='bulking' ? "4 Sets x 8 Reps" : "3 Sets x 15 Reps";
+        let schedule = [];
+
         if(goal==='bulking') {
-            sch = [{t:"Chest & Tricep",c:["chest","tricep"]},{t:"Back & Biceps",c:["back","bicep"]},{t:"Legs & Shoulder",c:["legs","shoulder"]},{t:"Chest & Tricep",c:["chest","tricep"]},{t:"Back & Biceps",c:["back","bicep"]},{t:"Legs & Shoulder",c:["legs","shoulder"]}];
+            schedule = [{t:"Chest & Tricep",m:["chest","tricep"]},{t:"Back & Biceps",m:["back","bicep"]},{t:"Legs & Shoulder",m:["legs","shoulder"]},{t:"Chest & Tricep",m:["chest","tricep"]},{t:"Back & Biceps",m:["back","bicep"]},{t:"Legs & Shoulder",m:["legs","shoulder"]}];
         } else if(goal==='weightloss') {
-            sch = [{t:"Only Chest",c:["chest"]},{t:"Only Back",c:["back"]},{t:"Only Biceps",c:["bicep"]},{t:"Only Tricep",c:["tricep"]},{t:"Only Shoulder",c:["shoulder"]},{t:"Only Legs",c:["legs"]}];
+            schedule = [{t:"Only Chest",m:["chest"]},{t:"Only Back",m:["back"]},{t:"Only Biceps",m:["bicep"]},{t:"Only Tricep",m:["tricep"]},{t:"Only Shoulder",m:["shoulder"]},{t:"Only Legs",m:["legs"]}];
         } else {
-            menu.innerHTML = "<div style='text-align:center; padding:15px; border:1px dashed var(--primary);'>Any exercise, but focus on 30-45 min Cardio!</div>";
+            workArea.innerHTML = "<p style='text-align:center;'>Focus on 40 min Cardio (Running/Cycling)!</p>";
         }
 
         if(goal !== 'cutting') {
-            menu.innerHTML = "";
+            workArea.innerHTML = "";
             days.forEach((day, i) => {
-                let content = "";
-                sch[i].c.forEach(cat => {
-                    exercises[cat].forEach(ex => {
-                        content += `<div class="exercise-item"><img src="${ex.p}" class="ex-img"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`;
+                let inner = "";
+                schedule[i].m.forEach(muscle => {
+                    inner += `<span class="muscle-label">${muscle}</span>`;
+                    db[muscle].forEach(ex => {
+                        inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`;
                     });
                 });
-                menu.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${content}</div></div>`;
+                workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${schedule[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
             });
         }
 
-        // 2. Diet Logic
-        let dText = "";
-        if(goal==='bulking') dText = "<div class='diet-box'><div class='diet-item'><b>Breakfast:</b> 4 Eggs + Oats + Banana</div><div class='diet-item'><b>Lunch:</b> Chicken/Paneer + Rice + Dal</div><div class='diet-item'><b>Dinner:</b> Fish/Soya + 2 Roti + Ghee</div></div>";
-        else if(goal==='weightloss') dText = "<div class='diet-box'><div class='diet-item'><b>Breakfast:</b> Green Tea + Sprouts</div><div class='diet-item'><b>Lunch:</b> Dal Soup + 1 Roti + Salad</div><div class='diet-item'><b>Dinner:</b> Boiled Veggies + Roasted Paneer</div></div>";
-        else dText = "<div class='diet-box'><div class='diet-item'><b>Morning:</b> Black Coffee + Cardo</div><div class='diet-item'><b>Meals:</b> High Protein, Very Low Carbs</div></div>";
-        diet.innerHTML = dText;
+        // Diet Update
+        if(goal==='bulking') dietArea.innerHTML = "<div class='diet-box'><b>Bulking Plan:</b><br>• Breakfast: 4 Eggs + Oats<br>• Lunch: Chicken/Paneer + Rice<br>• Dinner: 2 Roti + Dal + Ghee</div>";
+        else if(goal==='weightloss') dietArea.innerHTML = "<div class='diet-box'><b>Weight Loss Plan:</b><br>• Breakfast: Green Tea + Sprouts<br>• Lunch: Dal Soup + 1 Roti<br>• Dinner: Roasted Paneer + Salad</div>";
+        else dietArea.innerHTML = "<div class='diet-box'><b>Cutting Plan:</b><br>• High Protein & Very Low Carbs<br>• Morning: Black Coffee</div>";
     }
 
-    function calcBMI() {
-        let w = document.getElementById('weight').value;
-        let h = document.getElementById('height').value / 100;
-        if(w && h) { let bmi = (w / (h*h)).toFixed(1); document.getElementById('bmiRes').innerText = "Your BMI: " + bmi; }
+    function calc() {
+        let weight = document.getElementById('w').value;
+        let height = document.getElementById('h').value / 100;
+        if(weight && height) { document.getElementById('res').innerText = "BMI: " + (weight/(height*height)).toFixed(1); }
     }
 
-    let glasses = 0;
-    function addWater() { if(glasses < 14) { glasses++; document.getElementById('waterVal').innerText = glasses + " / 14 Glasses"; } }
+    let g = 0;
+    function drink() { if(g<14) { g++; document.getElementById('waterVal').innerText = g + " / 14 Glasses"; } }
 
-    updateFullPlan();
+    update();
 </script>
 </body>
 </html>
