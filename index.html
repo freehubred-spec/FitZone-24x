@@ -3,157 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitZone-24x | Professional</title>
+    <title>FitZone-24x | Ultimate Guide</title>
     <style>
-        :root { --primary: #ff4757; --dark: #121212; --card-bg: #1e1e1e; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; margin: 0; padding-bottom: 50px; }
-        .header { text-align: center; padding: 25px; background: #000; border-bottom: 3px solid var(--primary); }
-        .logo { font-size: 1.8rem; font-weight: 900; letter-spacing: 1px; }
-        .logo span { color: var(--primary); }
+        :root { --primary: #ff4757; --dark: #0f0f0f; --card-bg: #1e1e1e; --accent: #2ecc71; }
+        body { font-family: 'Poppins', sans-serif; background: var(--dark); color: #fff; margin: 0; padding-bottom: 50px; }
+        .header { text-align: center; padding: 25px 10px; background: #000; border-bottom: 3px solid var(--primary); }
+        .logo-text { font-size: 1.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
+        .logo-text span { color: var(--primary); }
         .container { padding: 15px; max-width: 600px; margin: auto; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 18px; margin-bottom: 20px; border: 1px solid #333; }
-        h3 { color: var(--primary); border-bottom: 1px solid #444; padding-bottom: 8px; margin-top: 0; }
-        select, input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #252525; color: white; box-sizing: border-box; }
-        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .workout-item { background: #2d3436; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid var(--primary); }
-        .ex-name { font-size: 1.1rem; font-weight: bold; color: #fff; }
-        .ex-desc { font-size: 0.85rem; color: #bbb; margin-top: 5px; }
-        .gif-box { width: 60px; height: 60px; background: #444; float: right; border-radius: 5px; text-align: center; font-size: 10px; }
-        .clear { clear: both; }
-        .diet-box { background: rgba(255, 71, 87, 0.1); padding: 12px; border-radius: 8px; line-height: 1.6; }
+        
+        .card { background: var(--card-bg); border-radius: 12px; padding: 18px; margin-bottom: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
+        select { width: 100%; padding: 12px; border-radius: 8px; background: #252525; color: white; border: 1px solid var(--primary); font-size: 1rem; }
+
+        /* Workout Menu */
+        .day-wrapper { margin-bottom: 10px; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
+        .day-header { background: #2d3436; padding: 15px; cursor: pointer; display: flex; justify-content: space-between; font-weight: bold; }
+        .day-content { display: none; background: #1a1a1a; padding: 10px; }
+        
+        .category-label { color: var(--primary); font-size: 0.8rem; font-weight: bold; text-transform: uppercase; margin: 10px 0 5px 5px; display: block; border-left: 3px solid var(--primary); padding-left: 8px; }
+        .exercise-item { display: flex; align-items: center; background: #252525; margin-bottom: 8px; padding: 10px; border-radius: 8px; }
+        .ex-img { width: 75px; height: 75px; border-radius: 6px; object-fit: cover; background: #333; margin-right: 12px; border: 1px solid #444; }
+        .ex-name { font-size: 0.9rem; font-weight: bold; color: #fff; }
+        .ex-reps { font-size: 0.75rem; color: var(--accent); display: block; margin-top: 3px; }
+
+        .cardio-box { text-align: center; padding: 20px; background: rgba(255, 71, 87, 0.1); border: 1px dashed var(--primary); border-radius: 10px; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div class="logo">FitZone-<span>24x</span></div>
+    <div class="logo-text">FitZone-<span>24x</span></div>
 </div>
 
 <div class="container">
+
     <div class="card">
-        <h3>🎯 Apna Goal Chunye</h3>
-        <select id="userGoal" onchange="updateContent()">
-            <option value="">-- Select Goal --</option>
-            <option value="bulking">Bulking (Vajan Badhana)</option>
-            <option value="weightloss">Weight Loss (Vajan Ghatana)</option>
-            <option value="cutting">Cutting (Muscle Definition)</option>
+        <h3 style="margin-top:0;">🎯 Select Your Goal</h3>
+        <select id="goalSelect" onchange="refreshWorkout()">
+            <option value="bulking">Bulking (Muscle Gain)</option>
+            <option value="weightloss">Weight Loss (Fat Burn)</option>
+            <option value="cutting">Cutting Body (Max Cardio)</option>
         </select>
     </div>
 
-    <div id="wSection" class="card" style="display:none;">
-        <h3>🏋️ Weekly Workout Schedule</h3>
-        <div id="wList"></div>
-    </div>
-
-    <div id="dSection" class="card" style="display:none;">
-        <h3>🍱 Diet Plan Details</h3>
-        <div id="dList" class="diet-box"></div>
-    </div>
-
     <div class="card">
-        <h3>🧘 Yoga & Ayurvedic Corner</h3>
-        <p><b>Zaroori Yoga:</b></p>
-        <div class="workout-item">
-            <div class="gif-box">Yoga GIF</div>
-            <div class="ex-name">Surya Namaskar</div>
-            <div class="ex-desc">Pure sharir ki lachak aur taqat ke liye 12 steps ka ek set.</div>
-        </div>
-        <div class="workout-item">
-            <div class="gif-box">Yoga GIF</div>
-            <div class="ex-name">Anulom Vilom</div>
-            <div class="ex-desc">Fefron (lungs) ko saaf rakhne aur stress kam karne ke liye.</div>
-        </div>
-        <p><b>Ayurvedic Tips:</b></p>
-        <ul style="color: #bbb; padding-left: 20px;">
-            <li><b>Ashwagandha:</b> Raat ko doodh ke saath lein recovery ke liye.</li>
-            <li><b>Shilajit:</b> Stamina badhane ke liye natural tarika.</li>
-            <li><b>Honey & Lemon:</b> Subah khali pet vajan control karne ke liye.</li>
-            <li><b>Triphala:</b> Pet ki safai aur digestion ke liye best.</li>
-        </ul>
+        <h3 style="margin-top:0;">📅 Weekly Workout Schedule</h3>
+        <div id="workoutMenu">
+            </div>
     </div>
 
-    <div class="card">
-        <h3>📊 Health Calculator</h3>
-        <p>Apna Vajan aur Height daal kar check karein:</p>
-        <input type="number" id="weight" placeholder="Weight (kg)">
-        <input type="number" id="height" placeholder="Height (cm)">
-        <button class="btn" onclick="checkBMI()">BMI Calculate Karein</button>
-        <div id="res" style="margin-top:15px; font-weight:bold; color:#2ecc71;"></div>
-    </div>
-
-    <div class="card">
-        <h3>💧 Water Tracker</h3>
-        <p id="glassCount">Aaj aapko 12 glass pani peena hai.</p>
-        <button class="btn" style="background:#0984e3;" onclick="drink()">Maine 1 Glass Piya</button>
-    </div>
 </div>
 
 <script>
-    const info = {
-        bulking: {
-            work: [
-                {n: "Bench Press", d: "Chest ke liye best exercise. 3 sets, 8-10 reps karein heavy weight ke saath."},
-                {n: "Deadlift", d: "Puri body ki power badhane ke liye. 3 sets karein, dhyan se."},
-                {n: "Barbell Squats", d: "Legs ko majboot banane ke liye. Pura niche tak jayein."},
-                {n: "Bicep Curls", d: "Dolo (Arms) ka size badhane ke liye barbell ka use karein."}
-            ],
-            diet: "<b>Subah:</b> 4 Ande + Oats + Kele<br><b>Dopehar:</b> Paneer ya Chicken + 200g Chawal + Dal<br><b>Sham:</b> Dry fruits ya Peanut butter sandwich<br><b>Raat:</b> Machli ya Soya + 3 Roti + Salad"
-        },
-        weightloss: {
-            work: [
-                {n: "Running/Walking", d: "Subah khali pet 20-30 minute tez chalein ya daudein."},
-                {n: "Burpees", d: "Fat jaldi jalane ke liye sabse fast exercise. 3 sets karein jitna ho sake."},
-                {n: "Plank", d: "Pet ki charbi kam karne aur core tight karne ke liye 1 minute hold karein."},
-                {n: "Jumping Jacks", d: "Full body warmup aur cardio ke liye 50-100 baar karein."}
-            ],
-            diet: "<b>Subah:</b> Nimbu Pani + Bheege hue badam<br><b>Dopehar:</b> 1 Roti + Sabzi + Bahut sara Salad<br><b>Sham:</b> Green Tea + Ek seb (Apple)<br><b>Raat:</b> Daal ka soup ya ubla hua chicken/paneer"
-        },
-        cutting: {
-            work: [
-                {n: "Pull-ups", d: "V-shape body ke liye jitne ho sake utne reps lagayein."},
-                {n: "Incline Dumbbell Press", d: "Upper chest ki cutting ke liye best hai."},
-                {n: "Crunches", d: "Abs dikhane ke liye pet ki exercises rozana karein."},
-                {n: "HIIT Cardio", d: "10 minute bahut fast cardio karein paseena nikalne ke liye."}
-            ],
-            diet: "<b>Subah:</b> Egg whites + Coffee (no sugar)<br><b>Dopehar:</b> Roasted Chicken/Paneer + Thoda sa chawal<br><b>Sham:</b> Chana (Bhuna hua)<br><b>Raat:</b> Sirf Sabzi aur Salad (Roti kam karein)"
-        }
+    const exercises = {
+        chest: [
+            {n: "Incline Bench Press", p: "https://via.placeholder.com/75?text=Incline"},
+            {n: "Decline Bench Press", p: "https://via.placeholder.com/75?text=Decline"},
+            {n: "Flat Bench Press", p: "https://via.placeholder.com/75?text=Flat"},
+            {n: "Chest Fly Machine", p: "https://via.placeholder.com/75?text=Fly"},
+            {n: "Parallel Bar Dips", p: "https://via.placeholder.com/75?text=Dips"},
+            {n: "Heavyweight Lifting", p: "https://via.placeholder.com/75?text=Heavy"}
+        ],
+        tricep: [
+            {n: "Pulley Push Down", p: "https://via.placeholder.com/75?text=Pulley"},
+            {n: "Close Grip Bench Press", p: "https://via.placeholder.com/75?text=CloseGrip"},
+            {n: "Rope Push Down", p: "https://via.placeholder.com/75?text=Rope"},
+            {n: "Reverse Triceps Push Down", p: "https://via.placeholder.com/75?text=Reverse"}
+        ],
+        back: [
+            {n: "Pull Ups", p: "https://via.placeholder.com/75?text=PullUps"},
+            {n: "Wide Grip Pull", p: "https://via.placeholder.com/75?text=WideGrip"},
+            {n: "T-Bar Row", p: "https://via.placeholder.com/75?text=TBar"},
+            {n: "Barbell Rows", p: "https://via.placeholder.com/75?text=Rows"},
+            {n: "Cable Row", p: "https://via.placeholder.com/75?text=Cable"},
+            {n: "Deadlifts", p: "https://via.placeholder.com/75?text=Deadlift"}
+        ],
+        bicep: [
+            {n: "Barbell Curl", p: "https://via.placeholder.com/75?text=Barbell"},
+            {n: "Dumbbell Curls", p: "https://via.placeholder.com/75?text=Dumbbell"},
+            {n: "Preacher Curl", p: "https://via.placeholder.com/75?text=Preacher"},
+            {n: "Concentration Curl", p: "https://via.placeholder.com/75?text=Concentrate"},
+            {n: "Hammer Curl", p: "https://via.placeholder.com/75?text=Hammer"}
+        ],
+        legs: [
+            {n: "Barbell Squats", p: "https://via.placeholder.com/75?text=Squats"},
+            {n: "Leg Extension", p: "https://via.placeholder.com/75?text=LegEx"},
+            {n: "Hamstring Curls", p: "https://via.placeholder.com/75?text=Hamstring"},
+            {n: "Calf Extension", p: "https://via.placeholder.com/75?text=Calf"}
+        ],
+        shoulder: [
+            {n: "Dumbbell Shoulder Press", p: "https://via.placeholder.com/75?text=ShoulderPress"},
+            {n: "Lateral Raises", p: "https://via.placeholder.com/75?text=Lateral"},
+            {n: "Bent Over Flys", p: "https://via.placeholder.com/75?text=BentFly"},
+            {n: "Shrugs", p: "https://via.placeholder.com/75?text=Shrugs"},
+            {n: "Upright Rows", p: "https://via.placeholder.com/75?text=Upright"}
+        ]
     };
 
-    function updateContent() {
-        const g = document.getElementById('userGoal').value;
-        if(!g) return;
-        document.getElementById('wSection').style.display = 'block';
-        document.getElementById('dSection').style.display = 'block';
-        
-        let wHtml = '';
-        info[g].work.forEach(item => {
-            wHtml += `<div class="workout-item">
-                        <div class="gif-box">Exercise GIF</div>
-                        <div class="ex-name">${item.n}</div>
-                        <div class="ex-desc">${item.d}</div>
-                        <div class="clear"></div>
-                      </div>`;
+    function toggle(id) {
+        let x = document.getElementById(id);
+        x.style.display = (x.style.display === "block") ? "none" : "block";
+    }
+
+    function getExHtml(catName, list, reps) {
+        let h = `<span class="category-label">${catName}</span>`;
+        list.forEach(ex => {
+            h += `<div class="exercise-item">
+                <img src="${ex.p}" class="ex-img">
+                <div><span class="ex-name">${ex.n}</span><span class="ex-reps">${reps}</span></div>
+            </div>`;
         });
-        document.getElementById('wList').innerHTML = wHtml;
-        document.getElementById('dList').innerHTML = info[g].diet;
+        return h;
     }
 
-    function checkBMI() {
-        let w = document.getElementById('weight').value;
-        let h = document.getElementById('height').value / 100;
-        if(w && h) {
-            let bmi = (w / (h * h)).toFixed(1);
-            document.getElementById('res').innerText = "Aapka BMI " + bmi + " hai. (Normal 18-25 hota hai)";
+    function refreshWorkout() {
+        const goal = document.getElementById('goalSelect').value;
+        const menu = document.getElementById('workoutMenu');
+        menu.innerHTML = "";
+
+        if(goal === 'cutting') {
+            menu.innerHTML = `<div class="cardio-box"><h3>🔥 Cutting Mode</h3><p>Isme aap koi bhi workout karein, lekin <b>Cardio (Running, Cycling, Skipping)</b> ko maximum rakhein.</p><p>Har session ke baad 20-30 min cardio zaroori hai.</p></div>`;
+            return;
         }
+
+        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        let schedule = [];
+
+        if(goal === 'bulking') {
+            schedule = [
+                {title: "Chest & Tricep", cats: ["chest", "tricep"], reps: "4 Sets x 8-10 Reps (Heavy)"},
+                {title: "Back & Biceps", cats: ["back", "bicep"], reps: "4 Sets x 8-10 Reps (Heavy)"},
+                {title: "Legs & Shoulder", cats: ["legs", "shoulder"], reps: "4 Sets x 10-12 Reps (Heavy)"},
+                {title: "Chest & Tricep", cats: ["chest", "tricep"], reps: "4 Sets x 8-10 Reps (Heavy)"},
+                {title: "Back & Biceps", cats: ["back", "bicep"], reps: "4 Sets x 8-10 Reps (Heavy)"},
+                {title: "Legs & Shoulder", cats: ["legs", "shoulder"], reps: "4 Sets x 10-12 Reps (Heavy)"}
+            ];
+        } else {
+            schedule = [
+                {title: "Only Chest", cats: ["chest"], reps: "3 Sets x 15-20 Reps (Light)"},
+                {title: "Only Back", cats: ["back"], reps: "3 Sets x 15-20 Reps (Light)"},
+                {title: "Only Biceps", cats: ["bicep"], reps: "3 Sets x 15-20 Reps (Light)"},
+                {title: "Only Tricep", cats: ["tricep"], reps: "3 Sets x 15-20 Reps (Light)"},
+                {title: "Only Shoulder", cats: ["shoulder"], reps: "3 Sets x 15-20 Reps (Light)"},
+                {title: "Only Legs", cats: ["legs"], reps: "3 Sets x 15-20 Reps (Light)"}
+            ];
+        }
+
+        days.forEach((day, i) => {
+            let dayId = "day" + i;
+            let content = "";
+            schedule[i].cats.forEach(cat => {
+                content += getExHtml(cat, exercises[cat], schedule[i].reps);
+            });
+
+            menu.innerHTML += `
+                <div class="day-wrapper">
+                    <div class="day-header" onclick="toggle('${dayId}')">${day}: ${schedule[i].title} <span>▼</span></div>
+                    <div id="${dayId}" class="day-content">${content}</div>
+                </div>`;
+        });
     }
 
-    let gLeft = 12;
-    function drink() {
-        if(gLeft > 0) {
-            gLeft--;
-            document.getElementById('glassCount').innerText = "Ab aapko " + gLeft + " glass pani aur peena hai.";
-        }
-    }
+    refreshWorkout();
 </script>
 
 </body>
