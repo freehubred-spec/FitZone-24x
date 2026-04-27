@@ -3,166 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitZone-24x | Ultimate Fitness Guide</title>
+    <title>FitZone-24x | Professional Fitness Hub</title>
     <style>
-        :root { --primary: #ff4757; --secondary: #2f3542; --accent: #2ecc71; --dark: #121212; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--dark); color: white; margin: 0; padding: 0; }
-        .container { padding: 15px; max-width: 600px; margin: auto; }
+        :root { --primary: #ff4757; --secondary: #2f3542; --accent: #2ecc71; --dark: #121212; --card-bg: #1e1e1e; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--dark); color: white; margin: 0; padding-bottom: 50px; }
         
-        /* Header */
-        .header { text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #ff4757, #ff6b81); border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4); }
-        .header h1 { margin: 0; font-size: 2.5rem; letter-spacing: 2px; }
-        
-        /* Cards */
-        .card { background: #1e1e1e; border-radius: 15px; padding: 20px; margin-bottom: 20px; border-left: 5px solid var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        h3 { color: var(--primary); border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; }
-        
-        /* Tools & Inputs */
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: #252525; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #ff6b81; transform: translateY(-2px); }
-        
-        /* Workout Grid */
-        .workout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .day-card { background: #2d3436; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #3d4446; }
-        .day-card b { color: var(--primary); display: block; margin-bottom: 5px; }
-        
-        /* Exercise Detail Section */
-        .ex-gif { width: 100%; border-radius: 10px; margin: 10px 0; background: #333; min-height: 150px; display: flex; align-items: center; justify-content: center; color: #666; font-size: 0.8rem; }
-        
-        /* Navigation Tabs (Simulated) */
-        .nav-btns { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; }
-        .nav-btns button { width: auto; white-space: nowrap; padding: 8px 20px; background: #333; font-size: 0.8rem; }
-        .nav-btns button.active { background: var(--primary); }
+        /* 1. Header & Logo Area */
+        .header { text-align: center; padding: 30px 15px; background: linear-gradient(135deg, #1e1e1e, #000); border-bottom: 3px solid var(--primary); }
+        .logo-box { display: inline-block; padding: 10px 20px; border: 3px solid var(--primary); border-radius: 10px; margin-bottom: 10px; }
+        .logo-text { font-size: 2rem; font-weight: 900; color: white; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+        .logo-text span { color: var(--primary); }
 
-        .tips-box { background: rgba(46, 204, 113, 0.1); border: 1px dashed var(--accent); padding: 15px; border-radius: 10px; color: #ddd; line-height: 1.6; }
+        .container { padding: 15px; max-width: 600px; margin: auto; }
+        .card { background: var(--card-bg); border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid #333; }
+        h3 { color: var(--primary); margin-top: 0; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+
+        /* Goal Selection Design */
+        select { width: 100%; padding: 15px; border-radius: 8px; background: #252525; color: white; border: 2px solid var(--primary); font-size: 1rem; margin-bottom: 10px; }
         
-        .video-box { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 15px; overflow: hidden; background: #000; }
-        .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        /* Workout & Diet Display */
+        .display-area { display: none; margin-top: 15px; animation: fadeIn 0.5s; }
+        .workout-row { background: #2d3436; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; border-left: 4px solid var(--primary); }
+        .gif-placeholder { width: 50px; height: 50px; background: #444; border-radius: 5px; font-size: 10px; display: flex; align-items: center; text-align: center; }
+        
+        /* Yoga & Ayurvedic Section */
+        .yoga-box { background: rgba(46, 204, 113, 0.1); border: 1px solid var(--accent); padding: 15px; border-radius: 10px; }
+        .tips-list { list-style: none; padding: 0; }
+        .tips-list li { margin-bottom: 10px; padding-left: 20px; position: relative; }
+        .tips-list li::before { content: "🌿"; position: absolute; left: 0; }
+
+        /* Health Tools Styles */
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; background: #252525; color: white; border: 1px solid #444; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-water { background: #0984e3; margin-top: 10px; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>FitZone-24x</h1>
-    <p>Guwahati's Own Fitness Revolution</p>
+    <div class="logo-box">
+        <p class="logo-text">FitZone-<span>24x</span></p>
+    </div>
+    <p style="margin: 0; color: #888;">Professional Fitness Guide</p>
 </div>
 
 <div class="container">
 
     <div class="card">
-        <h3>📊 Health Calculators</h3>
-        <p style="font-size: 0.9rem; color: #aaa;">BMI, BMR aur Calorie ka sahi hisab lagayein.</p>
-        <input type="number" id="weight" placeholder="Wazan (Weight - kg)">
-        <input type="number" id="height" placeholder="Lambai (Height - cm)">
-        <input type="number" id="age" placeholder="Umar (Age)">
-        <button onclick="calculateFitness()">Calculate My Stats</button>
-        <div id="calcResults" style="margin-top: 15px; display: none;" class="tips-box"></div>
+        <h3>🎯 Choose Your Goal</h3>
+        <select id="userGoal" onchange="updateAllPlans()">
+            <option value="">-- Select Goal --</option>
+            <option value="bulking">Bulking (Muscle Gain)</option>
+            <option value="weightloss">Weight Loss (Fat Burn)</option>
+            <option value="cutting">Cutting (Definition)</option>
+        </select>
+        <p style="font-size: 0.8rem; color: #aaa;">Goal select karte hi Workout aur Diet apne aap badal jayenge.</p>
+    </div>
+
+    <div id="workoutSection" class="card display-area">
+        <h3>🏋️ Weekly Workout Plan</h3>
+        <div id="workoutList"></div>
+    </div>
+
+    <div id="dietSection" class="card display-area">
+        <h3>🍱 Detailed Diet Plan</h3>
+        <div id="dietList"></div>
+    </div>
+
+    <div class="card">
+        <h3>🧘 Yoga & Ayurveda Corner</h3>
+        <div class="yoga-box">
+            <b>Daily Yoga Poses:</b>
+            <div class="workout-row" style="margin-top:10px;">Surya Namaskar <div class="gif-placeholder">Yoga GIF</div></div>
+            <div class="workout-row">Bhujangasana <div class="gif-placeholder">Yoga GIF</div></div>
+            <div class="workout-row">Anulom Vilom <div class="gif-placeholder">Yoga GIF</div></div>
+            <hr style="border: 0.5px solid #444;">
+            <b>Ayurvedic Secrets:</b>
+            <ul class="tips-list">
+                <li><b>Shilajit:</b> Strength aur recovery ke liye best hai.</li>
+                <li><b>Triphala:</b> Raat ko gungune pani ke saath pet saaf rakhne ke liye.</li>
+                <li><b>Neem Juice:</b> Blood purification aur skin ke liye.</li>
+                <li><b>Ashwagandha:</b> Stress kam karne aur testosterone badhane ke liye.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>📊 Health Tools</h3>
+        <input type="number" id="w" placeholder="Weight (kg)">
+        <input type="number" id="h" placeholder="Height (cm)">
+        <button class="btn" onclick="calcBMI()">Check BMI</button>
+        <div id="bmiResult" style="margin-top:10px; color: var(--accent);"></div>
     </div>
 
     <div class="card">
         <h3>💧 Water Tracker</h3>
-        <p>Target: 3.5 Liters (12-14 Glasses)</p>
-        <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 10px;" id="waterDisplay">Remaining: 12 Glasses</div>
-        <button onclick="addWater()" style="background: #0984e3;">I Drank 1 Glass 🥤</button>
-    </div>
-
-    <div class="card">
-        <h3>🏋️ Weekly Workout (Mon-Sat)</h3>
-        <div class="workout-grid">
-            <div class="day-card"><b>Mon</b> Chest & Tri</div>
-            <div class="day-card"><b>Tue</b> Back & Bi</div>
-            <div class="day-card"><b>Wed</b> Legs Day</div>
-            <div class="day-card"><b>Thu</b> Shoulders</div>
-            <div class="day-card"><b>Fri</b> Full Arms</div>
-            <div class="day-card"><b>Sat</b> Cardio/Abs</div>
-        </div>
-        <div class="ex-gif">
-            [Exercise Animation Link will appear here]
-        </div>
-    </div>
-
-    <div class="card">
-        <h3>🍱 Choose Your Goal</h3>
-        <select id="goalSelect">
-            <option value="bulking">Bulking (Vazan Badhana)</option>
-            <option value="cutting">Cutting (Vazan Ghatana)</option>
-            <option value="pro">Bodybuilding (Muscle Shape)</option>
-        </select>
-        <button onclick="showGoalDetails()" style="background: var(--accent);">Get My Plan</button>
-        <div id="goalDetails" style="margin-top: 15px; line-height: 1.6;"></div>
-    </div>
-
-    <div class="card">
-        <h3>🌿 Ayurvedic Corner</h3>
-        <div class="tips-box">
-            • <b>Ashwagandha:</b> Raat ko doodh ke saath lein muscle recovery ke liye.<br>
-            • <b>Pani:</b> Khane se 30 min pehle aur 40 min baad hi peeyein.<br>
-            • <b>Subah:</b> Khali pet gunguna pani peena shuru karein detox ke liye.
-        </div>
-    </div>
-
-    <div class="card">
-        <h3>🎥 Training Videos</h3>
-        <div class="video-box">
-            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
-        </div>
-        <p style="font-size: 0.8rem; color: #888; margin-top: 5px;">*Aapke personal training videos yahan dikhenge.</p>
+        <p id="waterGoal">Target: 12 Glasses Remaining</p>
+        <button class="btn btn-water" onclick="drinkWater()">I Drank 1 Glass</button>
     </div>
 
 </div>
 
 <script>
-    // 1. Fitness Calculator Logic
-    function calculateFitness() {
-        let w = parseFloat(document.getElementById('weight').value);
-        let h = parseFloat(document.getElementById('height').value) / 100;
-        let age = parseInt(document.getElementById('age').value);
+    const data = {
+        bulking: {
+            workout: [
+                {day: "Mon", ex: "Heavy Bench Press"},
+                {day: "Tue", ex: "Deadlifts & Rows"},
+                {day: "Wed", ex: "Weighted Squats"},
+                {day: "Thu", ex: "Overhead Press"},
+                {day: "Fri", ex: "Barbell Curls & Dips"},
+                {day: "Sat", ex: "Leg Press & Calves"}
+            ],
+            diet: "<b>Breakfast:</b> 4 Eggs + Oats<br><b>Lunch:</b> Chicken/Paneer + Rice + Dal<br><b>Snacks:</b> Banana Shake + Nuts<br><b>Dinner:</b> Fish/Soya + 3 Roti + Salad"
+        },
+        weightloss: {
+            workout: [
+                {day: "Mon", ex: "Treadmill 20min + Burpees"},
+                {day: "Tue", ex: "Jumping Jacks + Pushups"},
+                {day: "Wed", ex: "Cycling 30min + Planks"},
+                {day: "Thu", ex: "High Knees + Mountain Climbers"},
+                {day: "Fri", ex: "Bodyweight Squats + Lunges"},
+                {day: "Sat", ex: "Long Walk / Swimming"}
+            ],
+            diet: "<b>Breakfast:</b> Green Tea + Boiled Moong<br><b>Lunch:</b> 1 Roti + Sabzi + Big Bowl Salad<br><b>Snacks:</b> Apple/Papaya<br><b>Dinner:</b> Clear Soup + Boiled Chicken/Dal"
+        },
+        cutting: {
+            workout: [
+                {day: "Mon", ex: "Incline Press (High Reps)"},
+                {day: "Tue", ex: "Pullups (Max Sets)"},
+                {day: "Wed", ex: "Goblet Squats + HIIT"},
+                {day: "Thu", ex: "Lateral Raises (Dropsets)"},
+                {day: "Fri", ex: "Diamond Pushups + Crunches"},
+                {day: "Sat", ex: "Morning Fasted Cardio"}
+            ],
+            diet: "<b>Breakfast:</b> Egg Whites + Black Coffee<br><b>Lunch:</b> Grilled Chicken + Broccoli<br><b>Snacks:</b> Roasted Chana<br><b>Dinner:</b> Paneer Tikka (Low Oil) + Salad"
+        }
+    };
 
-        if(!w || !h || !age) { alert("Sahi details daalein!"); return; }
+    function updateAllPlans() {
+        const goal = document.getElementById('userGoal').value;
+        if(!goal) return;
 
-        let bmi = (w / (h * h)).toFixed(1);
-        let bmr = (10 * w) + (6.25 * (h * 100)) - (5 * age) + 5; // Mifflin-St Jeor Formula
-        
-        let status = "";
-        if(bmi < 18.5) status = "Underweight (Vazan kam hai)";
-        else if(bmi < 25) status = "Normal (Ekdum sahi)";
-        else status = "Overweight (Vazan zyada hai)";
+        document.getElementById('workoutSection').style.display = 'block';
+        document.getElementById('dietSection').style.display = 'block';
 
-        let res = document.getElementById('calcResults');
-        res.style.display = "block";
-        res.innerHTML = `
-            <b>BMI:</b> ${bmi} (${status})<br>
-            <b>Daily Maintenance Calories:</b> ${bmr} kcal<br>
-            <b>Weight Loss:</b> ${Math.round(bmr - 500)} kcal<br>
-            <b>Bulking:</b> ${Math.round(bmr + 500)} kcal
-        `;
+        // Update Workout
+        let wHtml = '';
+        data[goal].workout.forEach(item => {
+            wHtml += `<div class="workout-row">
+                        <div><b>${item.day}:</b> ${item.ex}</div>
+                        <div class="gif-placeholder">GIF Link</div>
+                      </div>`;
+        });
+        document.getElementById('workoutList').innerHTML = wHtml;
+
+        // Update Diet
+        document.getElementById('dietList').innerHTML = `<div class="yoga-box">${data[goal].diet}</div>`;
     }
 
-    // 2. Water Tracker Logic
+    function calcBMI() {
+        let weight = document.getElementById('w').value;
+        let height = document.getElementById('h').value / 100;
+        if(weight && height) {
+            let bmi = (weight / (height * height)).toFixed(1);
+            document.getElementById('bmiResult').innerHTML = "Aapka BMI: " + bmi;
+        }
+    }
+
     let glasses = 12;
-    function addWater() {
+    function drinkWater() {
         if(glasses > 0) {
             glasses--;
-            document.getElementById('waterDisplay').innerText = `Remaining: ${glasses} Glasses`;
-            if(glasses == 0) alert("Mubarak ho! Aaj ka water target pura hua.");
+            document.getElementById('waterGoal').innerText = "Target: " + glasses + " Glasses Remaining";
         }
-    }
-
-    // 3. Diet & Goal Logic
-    function showGoalDetails() {
-        let goal = document.getElementById('goalSelect').value;
-        let box = document.getElementById('goalDetails');
-        let info = "";
-
-        if(goal === "bulking") {
-            info = "<b>Bulking Plan:</b> 5-6 baar khayein. Kele, Chawal, Paneer aur Complex Carbs zyada lein. Heavy weights uthayein (6-8 reps).";
-        } else if(goal === "cutting") {
-            info = "<b>Cutting Plan:</b> Protein high rakhein (Anda, Dal). Meetha aur tel ekdum band. 30 min cardio workout ke baad zaroor karein.";
-        } else {
-            info = "<b>Bodybuilding:</b> Sleep cycle sahi karein (8 ghante). Protein supplement ya soya chunks add karein. Form par dhyan dein.";
-        }
-        box.innerHTML = `<div class="tips-box" style="border-color: #f1c40f;">${info}</div>`;
     }
 </script>
 
