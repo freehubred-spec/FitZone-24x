@@ -28,7 +28,6 @@
         .yoga-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .yoga-card { background: #2d3436; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.8rem; }
         .yoga-card img { width: 100%; border-radius: 5px; height: 90px; object-fit: cover; margin-bottom: 5px; }
-
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
         .tool-card { background: #252525; padding: 12px; border-radius: 10px; border-top: 2px solid var(--blue); margin-bottom: 15px; }
         #stopwatch { font-family: monospace; font-size: 2.2rem; color: var(--accent); text-align: center; margin: 10px 0; }
@@ -130,10 +129,10 @@
     <div class="card">
         <h3>🌿 Ayurveda & Yoga Power</h3>
         <div class="yoga-grid">
-            <div class="yoga-card"><img src="https://via.placeholder.com/100?text=Sun">Surya Namaskar</div>
-            <div class="yoga-card"><img src="https://via.placeholder.com/100?text=Cobra">Bhujangasana</div>
-            <div class="yoga-card"><img src="https://i.ibb.co/PGzb0BRh/vrikshasana.jpg">Vrikshasana</div>
-            <div class="yoga-card"><img src="https://via.placeholder.com/100?text=Lotus">Padmasana</div>
+            <div class="yoga-card"><img src="https://via.placeholder.com/100?text=Sun" alt="Sun">Surya Namaskar</div>
+            <div class="yoga-card"><img src="https://via.placeholder.com/100?text=Cobra" alt="Cobra">Bhujangasana</div>
+            <div class="yoga-card"><img src="https://i.ibb.co/PGzb0BRh/vrikshasana.jpg" alt="Vrikshasana">Vrikshasana</div>
+            <div class="yoga-card"><img src="https://via.placeholder.com/100?text=Lotus" alt="Lotus">Padmasana</div>
         </div>
     </div>
 </div>
@@ -150,7 +149,10 @@
 
     let targetWater = 10, currentWater = 0, timer, sec=0;
 
-    function toggle(id) { let x = document.getElementById(id); x.style.display = (x.style.display==="block")?"none":"block"; }
+    function toggle(id) { 
+        let x = document.getElementById(id); 
+        if (x) x.style.display = (x.style.display==="block")?"none":"block"; 
+    }
 
     function calcHealth() {
         let w = parseFloat(document.getElementById('w').value), h = parseFloat(document.getElementById('h').value) / 100;
@@ -172,6 +174,9 @@
         const workArea = document.getElementById('workoutArea');
         const dietArea = document.getElementById('dietArea');
         const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        
+        if(!workArea || !dietArea) return;
+
         if(goal==='bulking') {
             let reps = "4 Sets x 8-10 Reps";
             let sch = [{t:"Chest & Tricep",m:["chest","tricep"]},{t:"Back & Biceps",m:["back","bicep"]},{t:"Legs & Shoulder",m:["legs","shoulder"]},{t:"Chest & Tricep",m:["chest","tricep"]},{t:"Back & Biceps",m:["back","bicep"]},{t:"Legs & Shoulder",m:["legs","shoulder"]}];
@@ -180,7 +185,7 @@
                 let inner = "";
                 sch[i].m.forEach(muscle => {
                     inner += `<span class="muscle-label">${muscle}</span>`;
-                    db[muscle].forEach(ex => { inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`; });
+                    db[muscle].forEach(ex => { inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img" alt="ex"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`; });
                 });
                 workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
             });
@@ -193,7 +198,7 @@
                 let inner = "";
                 sch[i].m.forEach(muscle => {
                     inner += `<span class="muscle-label">${muscle}</span>`;
-                    db[muscle].forEach(ex => { inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`; });
+                    db[muscle].forEach(ex => { inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img" alt="ex"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`; });
                 });
                 workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
             });
