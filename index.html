@@ -29,7 +29,6 @@
         .yoga-card { background: #2d3436; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.8rem; }
         .yoga-card img { width: 100%; border-radius: 5px; height: 90px; object-fit: cover; margin-bottom: 5px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
-        .tool-card { background: #252525; padding: 12px; border-radius: 10px; border-top: 2px solid var(--blue); margin-bottom: 15px; }
         #stopwatch { font-family: monospace; font-size: 2.2rem; color: var(--accent); text-align: center; margin: 10px 0; }
         .muscle-map-btn { padding: 10px; background: #333; border-radius: 5px; cursor: pointer; border: 1px solid #444; font-size: 0.75rem; text-align: center; }
         .chat-container { height: 180px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; font-size: 0.8rem; border: 1px solid #333; }
@@ -85,19 +84,6 @@
     </div>
 
     <div class="card">
-        <h3>🚀 Power Calculator</h3>
-        <div class="tool-card">
-            <b>1-Rep Max:</b>
-            <div style="display: flex; gap: 5px;">
-                <input type="number" id="orm-w" placeholder="Wt">
-                <input type="number" id="orm-r" placeholder="Reps">
-            </div>
-            <button class="btn-main" style="padding: 8px;" onclick="calcORM()">Calculate</button>
-            <div id="orm-res" style="margin-top:5px; color:var(--accent); font-weight:bold;"></div>
-        </div>
-    </div>
-
-    <div class="card">
         <h3>📅 Weekly Workout Schedule</h3>
         <div id="workoutArea"></div>
     </div>
@@ -105,18 +91,6 @@
     <div class="card">
         <h3>🍱 Extra Power Diet Plan</h3>
         <div id="dietArea"></div>
-    </div>
-
-    <div class="card" style="border: 1px solid var(--blue);">
-        <h3>🔐 SmartGym Community</h3>
-        <button id="biometric-btn" onclick="simBiometric()">🖐️ Scan Fingerprint to Enter</button>
-        <div id="chat-section" style="display:none; margin-top:10px;">
-            <div class="chat-container" id="chatbox"></div>
-            <div style="display:flex; gap:5px; margin-top:10px;">
-                <input type="text" id="msg" placeholder="Ask here...">
-                <button onclick="sendMsg()" style="background:var(--blue); border:none; padding:10px; border-radius:5px; color:#fff;">Send</button>
-            </div>
-        </div>
     </div>
 
     <div class="card">
@@ -129,10 +103,10 @@
     <div class="card">
         <h3>🌿 Ayurveda & Yoga Power</h3>
         <div class="yoga-grid">
-            <div class="yoga-card"><img src="https://via.placeholder.com/100?text=Sun" alt="Sun">Surya Namaskar</div>
-            <div class="yoga-card"><img src="https://via.placeholder.com/100?text=Cobra" alt="Cobra">Bhujangasana</div>
-            <div class="yoga-card"><img src="https://i.ibb.co/PGzb0BRh/vrikshasana.jpg" alt="Vrikshasana">Vrikshasana</div>
-            <div class="yoga-card"><img src="https://via.placeholder.com/100?text=Lotus" alt="Lotus">Padmasana</div>
+            <div class="yoga-card"><img src="https://via.placeholder.com/100?text=Sun">Surya Namaskar</div>
+            <div class="yoga-card"><img src="https://via.placeholder.com/100?text=Cobra">Bhujangasana</div>
+            <div class="yoga-card"><img src="https://i.ibb.co/PGzb0BRh/vrikshasana.jpg">Vrikshasana</div>
+            <div class="yoga-card"><img src="https://via.placeholder.com/100?text=Lotus">Padmasana</div>
         </div>
     </div>
 </div>
@@ -149,19 +123,16 @@
 
     let targetWater = 10, currentWater = 0, timer, sec=0;
 
-    function toggle(id) { 
-        let x = document.getElementById(id); 
-        if (x) x.style.display = (x.style.display==="block")?"none":"block"; 
-    }
+    function toggle(id) { let x = document.getElementById(id); if(x) x.style.display = (x.style.display==="block")?"none":"block"; }
 
     function calcHealth() {
         let w = parseFloat(document.getElementById('w').value), h = parseFloat(document.getElementById('h').value) / 100;
         if(!w || !h) return;
         let bmi = (w / (h*h)).toFixed(1);
         let status = "", color = "";
-        if(bmi < 18.5) { status = "Underweight (Wajan Kam Hai)"; color = "var(--warning)"; }
-        else if(bmi < 25) { status = "Normal (Ekdum Perfect)"; color = "var(--accent)"; }
-        else { status = "Overweight (Wajan Jyada Hai)"; color = "var(--primary)"; }
+        if(bmi < 18.5) { status = "Underweight"; color = "var(--warning)"; }
+        else if(bmi < 25) { status = "Normal"; color = "var(--accent)"; }
+        else { status = "Overweight"; color = "var(--primary)"; }
         document.getElementById('res').innerHTML = `BMI: ${bmi} - <span style="color:${color}">${status}</span>`;
         targetWater = Math.round(w / 7);
         document.getElementById('waterTarget').innerText = `Target: ${targetWater} Glass`;
@@ -174,9 +145,6 @@
         const workArea = document.getElementById('workoutArea');
         const dietArea = document.getElementById('dietArea');
         const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        
-        if(!workArea || !dietArea) return;
-
         if(goal==='bulking') {
             let reps = "4 Sets x 8-10 Reps";
             let sch = [{t:"Chest & Tricep",m:["chest","tricep"]},{t:"Back & Biceps",m:["back","bicep"]},{t:"Legs & Shoulder",m:["legs","shoulder"]},{t:"Chest & Tricep",m:["chest","tricep"]},{t:"Back & Biceps",m:["back","bicep"]},{t:"Legs & Shoulder",m:["legs","shoulder"]}];
@@ -185,27 +153,27 @@
                 let inner = "";
                 sch[i].m.forEach(muscle => {
                     inner += `<span class="muscle-label">${muscle}</span>`;
-                    db[muscle].forEach(ex => { inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img" alt="ex"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`; });
+                    db[muscle].forEach(ex => { inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`; });
                 });
                 workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
             });
-            dietArea.innerHTML = `<div class="diet-box"><div class="meal"><b>🍳 Mega Breakfast:</b><p>10 Egg Whites, 100g Oats, 3 Bananas, Nuts.</p></div><div class="meal"><b>🍛 Heavy Lunch:</b><p>Chicken/Paneer, 2 Cups Rice, Dal, Salad.</p></div><div class="meal"><b>🍗 Dinner:</b><p>Fish/Soya, 4 Ghee Roti, Ashwagandha Milk.</p></div></div>`;
+            dietArea.innerHTML = `<div class="diet-box"><div class="meal"><b>🍳 Breakfast:</b><p>10 Egg Whites, Oats, Bananas.</p></div><div class="meal"><b>🍛 Lunch:</b><p>Chicken/Paneer, Rice, Dal.</p></div><div class="meal"><b>🍗 Dinner:</b><p>Fish/Soya, Roti.</p></div></div>`;
         } else if(goal==='weightloss') {
             let reps = "3 Sets x 15-20 Reps";
-            let sch = [{t:"Only Chest",m:["chest"]},{t:"Only Back",m:["back"]},{t:"Only Bicep",m:["bicep"]},{t:"Only Tricep",m:["tricep"]},{t:"Only Shoulder",m:["shoulder"]},{t:"Only Legs",m:["legs"]}];
+            let sch = [{t:"Chest",m:["chest"]},{t:"Back",m:["back"]},{t:"Bicep",m:["bicep"]},{t:"Tricep",m:["tricep"]},{t:"Shoulder",m:["shoulder"]},{t:"Legs",m:["legs"]}];
             workArea.innerHTML = "";
             days.forEach((day, i) => {
                 let inner = "";
                 sch[i].m.forEach(muscle => {
                     inner += `<span class="muscle-label">${muscle}</span>`;
-                    db[muscle].forEach(ex => { inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img" alt="ex"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`; });
+                    db[muscle].forEach(ex => { inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`; });
                 });
                 workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
             });
-            dietArea.innerHTML = `<div class="diet-box"><div class="meal"><b>☕ Morning:</b><p>Warm Lemon Water.</p></div><div class="meal"><b>🥗 Lunch:</b><p>1 Roti, Dal, Sabzi, Buttermilk.</p></div><div class="meal"><b>🥒 Dinner:</b><p>Veg Soup / Roasted Paneer.</p></div></div>`;
+            dietArea.innerHTML = `<div class="diet-box"><div class="meal"><b>☕ Morning:</b><p>Lemon Water.</p></div><div class="meal"><b>🥗 Lunch:</b><p>1 Roti, Dal, Sabzi.</p></div></div>`;
         } else if(goal==='cutting') {
-            workArea.innerHTML = "<div class='exercise-item'><b>Cutting Mode:</b> 45 min Cardio + HIIT. Zero Sugar!</div>";
-            dietArea.innerHTML = `<div class="diet-box"><div class="meal"><b>🥚 Breakfast:</b><p>8 Egg Whites.</p></div><div class="meal"><b>🍗 Lunch:</b><p>Grilled Chicken + Salad.</p></div><div class="meal"><b>🥦 Dinner:</b><p>Soya Chunks + Broccoli.</p></div></div>`;
+            workArea.innerHTML = "<div class='exercise-item'><b>Cutting Mode:</b> Cardio + HIIT. No Sugar!</div>";
+            dietArea.innerHTML = `<div class="diet-box"><p>High Protein, Low Carbs.</p></div>`;
         }
     }
 
@@ -213,9 +181,6 @@
     function pauseTimer() { clearInterval(timer); timer = null; }
     function resetTimer() { pauseTimer(); sec=0; document.getElementById('stopwatch').innerText="00:00:00"; }
     function filterWorkout(m) { let h = `<div style="background:#111; padding:10px; border-radius:8px; margin-top:10px; border:1px solid var(--primary);">`; db[m].forEach(ex => { h += `<div>🔥 ${ex.n}</div>`; }); h += `</div>`; document.getElementById('quickView').innerHTML = h; }
-    function calcORM() { let w = parseFloat(document.getElementById('orm-w').value), r = parseFloat(document.getElementById('orm-r').value); if(w && r) document.getElementById('orm-res').innerText = `1RM: ${Math.round(w*(1+r/30))} kg`; }
-    function simBiometric() { let b = document.getElementById('biometric-btn'); b.innerText = "Scanning..."; setTimeout(() => { b.style.display="none"; document.getElementById('chat-section').style.display="block"; }, 1000); }
-    function sendMsg() { let m = document.getElementById('msg').value; if(m) { document.getElementById('chatbox').innerHTML += `<div><b>You:</b> ${m}</div>`; document.getElementById('msg').value=""; } }
     function drink() { if(currentWater < targetWater) { currentWater++; document.getElementById('waterVal').innerText = `${currentWater} / ${targetWater}`; } }
 
     updateAll();
