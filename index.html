@@ -7,9 +7,26 @@
     <style>
         :root { --primary: #ff4757; --dark: #0f0f0f; --card-bg: #1e1e1e; --accent: #2ecc71; --blue: #0984e3; --warning: #ffa502; }
         body { font-family: 'Poppins', sans-serif; background: var(--dark); color: #fff; margin: 0; padding-bottom: 50px; }
-        .header { text-align: center; padding: 25px 10px; background: #000; border-bottom: 3px solid var(--primary); }
-        .logo-text { font-size: 1.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
+        
+        /* Logo Section Update */
+        .header { 
+            text-align: center; 
+            padding: 15px 10px; 
+            background: #000; 
+            border-bottom: 3px solid var(--primary); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 12px;
+        }
+        .nav-logo {
+            height: 45px; /* Logo ka size yahan se adjust karein */
+            width: auto;
+            border-radius: 5px;
+        }
+        .logo-text { font-size: 1.6rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
         .logo-text span { color: var(--primary); }
+        
         .container { padding: 15px; max-width: 600px; margin: auto; }
         .card { background: var(--card-bg); border-radius: 12px; padding: 18px; margin-bottom: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
         h3 { color: var(--primary); margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; }
@@ -40,6 +57,7 @@
 <body>
 
 <div class="header">
+    <img src="https://i.ibb.co/PGZ19M1V/smart-gym-logo.jpg" alt="Smart Gym Logo" class="nav-logo">
     <div class="logo-text">Smart Gym-<span>24x</span></div>
 </div>
 
