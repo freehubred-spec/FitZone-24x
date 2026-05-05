@@ -3,157 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartGym-24x | Smart Coach</title>
+    <title>SmartGym-24x</title>
     <style>
-        :root { --primary: #ff4757; --dark: #0f0f0f; --card-bg: #1e1e1e; --accent: #2ecc71; --blue: #0984e3; --warning: #ffa502; }
-        body { font-family: 'Poppins', sans-serif; background: var(--dark); color: #fff; margin: 0; padding-bottom: 50px; }
-        .header { text-align: center; padding: 15px 10px; background: #000; border-bottom: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; gap: 12px; }
-        .nav-logo { height: 45px; width: auto; border-radius: 5px; }
-        .logo-text { font-size: 1.6rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
-        .logo-text span { color: var(--primary); }
-        .container { padding: 15px; max-width: 600px; margin: auto; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 18px; margin-bottom: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.4); border: 1px solid #333; }
-        h3 { color: var(--primary); margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; }
-        input, select { width: 100%; padding: 12px; border-radius: 8px; background: #252525; color: white; border: 1px solid #444; margin: 8px 0; box-sizing: border-box; }
-        .btn-main { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 5px; }
-        .day-wrapper { margin-bottom: 8px; border-radius: 8px; overflow: hidden; border: 1px solid #444; }
-        .day-header { background: #2d3436; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; font-weight: bold; }
-        .day-content { display: none; background: #1a1a1a; padding: 15px; border-top: 1px solid #333; }
-        .exercise-item { display: flex; align-items: center; background: #252525; margin-bottom: 8px; padding: 10px; border-radius: 6px; border: 1px solid #333; cursor: pointer; }
-        .ex-img { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; margin-right: 12px; background: #333; }
-        .image-viewer { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; }
-        .image-viewer img { max-width: 90%; max-height: 80%; border-radius: 10px; border: 2px solid var(--primary); }
-        .close-viewer { position: absolute; top: 20px; right: 25px; font-size: 40px; color: white; cursor: pointer; font-weight: bold; }
-        #stopwatch { font-family: monospace; font-size: 2.2rem; color: var(--accent); text-align: center; margin: 10px 0; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        :root { --primary: #ff4757; --dark: #0f0f0f; --card-bg: #1e1e1e; --accent: #2ecc71; }
+        body { font-family: sans-serif; background: var(--dark); color: #fff; margin: 0; padding: 15px; }
+        .header { text-align: center; padding: 20px; border-bottom: 3px solid var(--primary); margin-bottom: 20px; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 20px; border: 1px solid #333; }
+        h3 { color: var(--primary); margin: 0 0 15px 0; font-size: 1.2rem; }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; box-sizing: border-box; }
+        input, select { background: #252525; color: white; border: 1px solid #444; }
+        button { background: var(--primary); color: white; font-weight: bold; cursor: pointer; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .day-box { background: #2d3436; margin: 5px 0; padding: 10px; border-radius: 5px; cursor: pointer; }
+        .content { display: none; padding: 10px; background: #1a1a1a; font-size: 0.9rem; }
+        .ex-img { width: 100%; max-width: 150px; border-radius: 5px; margin-top: 10px; display: block; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <img src="https://i.ibb.co/PGZ19M1V/smart-gym-logo.jpg" alt="Logo" class="nav-logo">
-    <div class="logo-text">Smart Gym-<span>24x</span></div>
+    <h1 style="margin:0;">Smart Gym-<span>24x</span></h1>
 </div>
 
-<div id="viewer" class="image-viewer">
-    <span class="close-viewer" onclick="closeImage()">&times;</span>
-    <img id="big-img" src="">
+<div class="card">
+    <h3>📊 BMI Calculator</h3>
+    <div class="grid">
+        <input type="number" id="wt" placeholder="Weight (kg)">
+        <input type="number" id="ht" placeholder="Height (cm)">
+    </div>
+    <button onclick="calculateBMI()">Check Health</button>
+    <p id="bmiResult" style="text-align:center; font-weight:bold; color:var(--accent);"></p>
 </div>
 
-<div class="container">
-    <div class="card">
-        <h3>📊 Health Metrics</h3>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <input type="number" id="w" placeholder="Weight (kg)">
-            <input type="number" id="h" placeholder="Height (cm)">
-            <input type="number" id="age" placeholder="Age">
-            <select id="gender"><option value="male">Male</option><option value="female">Female</option></select>
-        </div>
-        <select id="activity">
-            <option value="1.2">Sedentary</option>
-            <option value="1.55">Moderate</option>
-            <option value="1.725">Daily Training</option>
-        </select>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-main" onclick="calcHealth()">Check BMI</button>
-            <button class="btn-main" style="background:var(--blue);" onclick="calcBMR()">Get Calories</button>
-        </div>
-        <div id="res" style="margin-top:10px; text-align:center; font-weight:bold; color:var(--accent);"></div>
-        <div id="bmr-result" style="margin-top:10px; text-align:center;"></div>
-    </div>
+<div class="card">
+    <h3>📅 Workout Schedule</h3>
+    <select id="myGoal" onchange="showSchedule()">
+        <option value="bulking">Bulking</option>
+        <option value="cutting">Weight Loss</option>
+    </select>
+    <div id="scheduleArea"></div>
+</div>
 
-    <div class="card">
-        <h3>🎯 Goal & Tools</h3>
-        <select id="goal" onchange="updateAll()">
-            <option value="bulking">Bulking</option>
-            <option value="weightloss">Weight Loss</option>
-        </select>
-        <div id="stopwatch">00:00:00</div>
-        <div class="grid-3">
-            <button class="btn-main" style="background:var(--accent);" onclick="startTimer()">Start</button>
-            <button class="btn-main" style="background:var(--warning);" onclick="pauseTimer()">Pause</button>
-            <button class="btn-main" style="background:var(--primary);" onclick="resetTimer()">Reset</button>
-        </div>
+<div class="card">
+    <h3>💪 Exercise Guide</h3>
+    <div class="grid">
+        <button style="background:#444;" onclick="showExercise('chest')">Chest</button>
+        <button style="background:#444;" onclick="showExercise('bicep')">Bicep</button>
     </div>
-
-    <div class="card">
-        <h3>💪 Muscle Exercise Guide</h3>
-        <div class="grid-3">
-            <button class="btn-main" style="background:#333;" onclick="filterWorkout('chest')">Chest</button>
-            <button class="btn-main" style="background:#333;" onclick="filterWorkout('back')">Back</button>
-            <button class="btn-main" style="background:#333;" onclick="filterWorkout('bicep')">Bicep</button>
-        </div>
-        <div id="quickView" style="margin-top:10px;"></div>
-    </div>
-
-    <div class="card">
-        <h3>📅 Weekly Schedule</h3>
-        <div id="workoutArea"></div>
-    </div>
+    <div id="exerciseDisplay" style="text-align:center;"></div>
 </div>
 
 <script>
-    const db = {
-        chest: [{n:"Bench Press",p:"https://i.ibb.co/G38QLCHG/flate-bench-press.jpg"},{n:"Incline Press",p:"https://i.ibb.co/MDhpXw7p/incline-bench-press.jpg"}],
-        back: [{n:"Pull Ups",p:"https://i.ibb.co/zT69dCps/pull-ups.jpg"},{n:"Deadlift",p:"https://i.ibb.co/qLZJtnZW/deadlift.jpg"}],
-        bicep: [{n:"Barbell Curl",p:"https://i.ibb.co/jpLwxZv/barbell-curl.jpg"},{n:"Hammer Curl",p:"https://i.ibb.co/6cMVfjrR/hammer-curl.jpg"}]
-    };
-
-    let timer, sec=0;
-
-    function viewImage(url) { document.getElementById('big-img').src = url; document.getElementById('viewer').style.display = 'flex'; }
-    function closeImage() { document.getElementById('viewer').style.display = 'none'; }
-    function toggle(id) { 
-        const x = document.getElementById(id);
-        x.style.display = (x.style.display === "block") ? "none" : "block"; 
+    function calculateBMI() {
+        const w = document.getElementById('wt').value;
+        const h = document.getElementById('ht').value / 100;
+        if(w && h) {
+            const bmi = (w / (h * h)).toFixed(1);
+            document.getElementById('bmiResult').innerText = "Your BMI: " + bmi;
+        }
     }
 
-    function calcHealth() {
-        const w = parseFloat(document.getElementById('w').value);
-        const h = parseFloat(document.getElementById('h').value)/100;
-        if(w && h) document.getElementById('res').innerText = "BMI: " + (w/(h*h)).toFixed(1);
-    }
-
-    function calcBMR() {
-        const w = parseFloat(document.getElementById('w').value);
-        const h = parseFloat(document.getElementById('h').value);
-        const a = parseInt(document.getElementById('age').value);
-        if(!w || !h || !a) return alert("Fill all info!");
-        const bmr = (document.getElementById('gender').value === 'male') ? (10*w)+(6.25*h)-(5*a)+5 : (10*w)+(6.25*h)-(5*a)-161;
-        const tdee = Math.round(bmr * parseFloat(document.getElementById('activity').value));
-        document.getElementById('bmr-result').innerHTML = "Maintain: <b>" + tdee + " kcal</b>";
-    }
-
-    function filterWorkout(m) {
-        let h = "";
-        db[m].forEach(ex => { 
-            h += `<div class="exercise-item" onclick="viewImage('${ex.p}')">
-                    <img src="${ex.p}" class="ex-img">
-                    <b>${ex.n}</b>
-                  </div>`; 
-        });
-        document.getElementById('quickView').innerHTML = h;
-    }
-
-    function updateAll() {
-        const goal = document.getElementById('goal').value;
-        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    function showSchedule() {
+        const goal = document.getElementById('myGoal').value;
+        const days = ["Monday", "Tuesday", "Wednesday"];
         let html = "";
-        days.forEach((day, i) => {
-            const detail = (goal === 'bulking') ? "Heavy Weights + High Carbs" : "Cardio + Lean Protein";
-            html += `<div class="day-wrapper">
-                <div class="day-header" onclick="toggle('day${i}')">${day} <span>▼</span></div>
-                <div id="day${i}" class="day-content">${detail}</div>
-            </div>`;
+        days.forEach((d, i) => {
+            html += `<div class="day-box" onclick="toggle('${i}')">${d} ▼</div>
+                     <div id="box${i}" class="content">${goal === 'bulking' ? 'Heavy Weight Training' : 'High Intensity Cardio'}</div>`;
         });
-        document.getElementById('workoutArea').innerHTML = html;
+        document.getElementById('scheduleArea').innerHTML = html;
     }
 
-    function startTimer() { if(!timer) timer = setInterval(() => { sec++; let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; document.getElementById('stopwatch').innerText = `${h<10?'0':''}${h}:${m<10?'0':''}${m}:${s<10?'0':''}${s}`; }, 1000); }
-    function pauseTimer() { clearInterval(timer); timer = null; }
-    function resetTimer() { pauseTimer(); sec=0; document.getElementById('stopwatch').innerText="00:00:00"; }
+    function toggle(id) {
+        const x = document.getElementById('box' + id);
+        x.style.display = (x.style.display === "block") ? "none" : "block";
+    }
 
-    window.onload = updateAll;
+    function showExercise(type) {
+        const area = document.getElementById('exerciseDisplay');
+        if(type === 'chest') {
+            area.innerHTML = "<h4>Flat Bench Press</h4><img src='https://i.ibb.co/G38QLCHG/flate-bench-press.jpg' class='ex-img'>";
+        } else {
+            area.innerHTML = "<h4>Barbell Curl</h4><img src='https://i.ibb.co/jpLwxZv/barbell-curl.jpg' class='ex-img'>";
+        }
+    }
+
+    window.onload = showSchedule;
 </script>
+
 </body>
 </html>
