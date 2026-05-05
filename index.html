@@ -8,7 +8,6 @@
         :root { --primary: #ff4757; --dark: #0f0f0f; --card-bg: #1e1e1e; --accent: #2ecc71; --blue: #0984e3; --warning: #ffa502; }
         body { font-family: 'Poppins', sans-serif; background: var(--dark); color: #fff; margin: 0; padding-bottom: 50px; }
         
-        /* Logo Section Update */
         .header { 
             text-align: center; 
             padding: 15px 10px; 
@@ -53,10 +52,14 @@
         .chat-container { height: 180px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; font-size: 0.8rem; border: 1px solid #333; }
         #biometric-btn { background: #6c5ce7; border: none; padding: 15px; border-radius: 8px; color: #fff; cursor: pointer; width: 100%; font-weight: bold; }
 
-        /* --- NEW MODAL CSS (Sirf Ye Add Hua Hai) --- */
+        /* MODAL CSS */
         .image-viewer { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); align-items: center; justify-content: center; }
         .image-viewer img { max-width: 90%; max-height: 80%; border-radius: 10px; border: 2px solid var(--primary); }
         .close-viewer { position: absolute; top: 20px; right: 20px; font-size: 40px; color: white; cursor: pointer; font-weight: bold; }
+        
+        /* BMR Result Styling */
+        .bmr-res { margin-top: 15px; padding: 10px; border-radius: 8px; background: #111; border-left: 4px solid var(--accent); font-size: 0.9rem; }
+        .bmr-res b { color: var(--accent); }
     </style>
 </head>
 <body>
@@ -72,6 +75,7 @@
 </div>
 
 <div class="container">
+    <!-- BMI SECTION -->
     <div class="card">
         <h3>📊 BMI Health Checker</h3>
         <div style="display:flex; gap:10px;">
@@ -80,6 +84,26 @@
         </div>
         <button class="btn-main" onclick="calcHealth()">Check Status</button>
         <div id="res" style="text-align:center; margin-top:15px; font-weight:bold; font-size: 1.1rem;"></div>
+    </div>
+
+    <!-- NEW BMR & CALORIE SECTION -->
+    <div class="card">
+        <h3>🔥 BMR & Daily Calorie Tracker</h3>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <input type="number" id="age" placeholder="Age (Umar)">
+            <select id="gender">
+                <option value="male">Male (Purush)</option>
+                <option value="female">Female (Mahila)</option>
+            </select>
+        </div>
+        <select id="activity">
+            <option value="1.2">Sedentary (No Exercise)</option>
+            <option value="1.375">Light (1-3 days/week)</option>
+            <option value="1.55">Moderate (3-5 days/week)</option>
+            <option value="1.725">Active (6-7 days/week)</option>
+        </select>
+        <button class="btn-main" style="background:var(--blue);" onclick="calcBMR()">Calculate Calories</button>
+        <div id="bmr-result"></div>
     </div>
 
     <div class="card">
@@ -91,6 +115,7 @@
         </select>
     </div>
 
+    <!-- REST OF YOUR CARDS REMAIN SAME -->
     <div class="card">
         <h3>🛠️ Smart Gym Tools</h3>
         <div id="stopwatch">00:00:00</div>
@@ -178,7 +203,6 @@
 
     let targetWater = 10, currentWater = 0, timer, sec=0;
 
-    // IMAGE VIEW FUNCTIONS (Naya add kiya)
     function viewImage(url) {
         document.getElementById('big-img').src = url;
         document.getElementById('viewer').style.display = 'flex';
@@ -204,6 +228,30 @@
         currentWater = 0;
     }
 
+    // NEW BMR CALCULATION LOGIC
+    function calcBMR() {
+        let w = parseFloat(document.getElementById('w').value);
+        let h = parseFloat(document.getElementById('h').value);
+        let a = parseInt(document.getElementById('age').value);
+        let g = document.getElementById('gender').value;
+        let act = parseFloat(document.getElementById('activity').value);
+
+        if(!w || !h || !a) { alert("Pehle BMI section mein weight/height aur yahan age bharein!"); return; }
+
+        let bmr = (g === 'male') 
+            ? (10 * w) + (6.25 * h) - (5 * a) + 5 
+            : (10 * w) + (6.25 * h) - (5 * a) - 161;
+        
+        let tdee = Math.round(bmr * act);
+        
+        document.getElementById('bmr-result').innerHTML = `
+            <div class="bmr-res">
+                BMR (Basal Metabolic Rate): <b>${Math.round(bmr)} kcal</b><br>
+                Maintenance Calories: <b>${tdee} kcal/day</b><br>
+                <small>*Weight loss ke liye isse 300-500 kam khayein, Muscle gain ke liye 300-500 jyada.</small>
+            </div>`;
+    }
+
     function updateAll() {
         const goal = document.getElementById('goal').value;
         const workArea = document.getElementById('workoutArea');
@@ -217,7 +265,6 @@
                 let inner = "";
                 sch[i].m.forEach(muscle => {
                     inner += `<span class="muscle-label">${muscle}</span>`;
-                    // Updated here with onclick="viewImage('${ex.p}')"
                     db[muscle].forEach(ex => { inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img" onclick="viewImage('${ex.p}')"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`; });
                 });
                 workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
@@ -231,7 +278,6 @@
                 let inner = "";
                 sch[i].m.forEach(muscle => {
                     inner += `<span class="muscle-label">${muscle}</span>`;
-                    // Updated here with onclick="viewImage('${ex.p}')"
                     db[muscle].forEach(ex => { inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img" onclick="viewImage('${ex.p}')"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`; });
                 });
                 workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
