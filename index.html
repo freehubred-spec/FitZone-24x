@@ -14,19 +14,17 @@
         .container { padding: 15px; max-width: 600px; margin: auto; }
         .card { background: var(--card-bg); border-radius: 12px; padding: 18px; margin-bottom: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.4); border: 1px solid #333; }
         h3 { color: var(--primary); margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; }
-        input, select { width: 100%; padding: 12px; border-radius: 8px; background: #252525; color: white; border: 1px solid #444; margin: 8px 0; box-sizing: border-box; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; border-radius: 8px; background: #252525; color: white; border: 1px solid #444; margin: 8px 0; box-sizing: border-box; }
         .btn-main { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 5px; }
         .day-wrapper { margin-bottom: 8px; border-radius: 8px; overflow: hidden; border: 1px solid #444; }
-        .day-header { background: #2d3436; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; font-weight: bold; transition: 0.3s; }
-        .day-header:hover { background: #3d4446; }
-        .day-content { display: none; background: #1a1a1a; padding: 15px; line-height: 1.6; border-top: 1px solid #333; }
-        .exercise-item { display: flex; align-items: center; background: #252525; margin-bottom: 8px; padding: 10px; border-radius: 6px; border: 1px solid #333; }
-        .ex-img { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; background: #333; margin-right: 12px; cursor: pointer; }
-        .bmr-res { margin-top: 15px; padding: 12px; border-radius: 8px; background: rgba(46, 204, 113, 0.1); border-left: 4px solid var(--accent); color: #fff; }
-        .image-viewer { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); align-items: center; justify-content: center; }
-        .image-viewer img { max-width: 90%; max-height: 80%; border-radius: 10px; border: 2px solid var(--primary); box-shadow: 0 0 20px var(--primary); }
-        .close-viewer { position: absolute; top: 20px; right: 25px; font-size: 45px; color: white; cursor: pointer; font-weight: bold; }
-        #stopwatch { font-family: 'Courier New', monospace; font-size: 2.5rem; color: var(--accent); text-align: center; margin: 15px 0; background: #000; border-radius: 8px; padding: 10px; }
+        .day-header { background: #2d3436; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; font-weight: bold; }
+        .day-content { display: none; background: #1a1a1a; padding: 15px; border-top: 1px solid #333; }
+        .exercise-item { display: flex; align-items: center; background: #252525; margin-bottom: 8px; padding: 10px; border-radius: 6px; border: 1px solid #333; cursor: pointer; }
+        .ex-img { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; margin-right: 12px; background: #333; }
+        .image-viewer { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; }
+        .image-viewer img { max-width: 90%; max-height: 80%; border-radius: 10px; border: 2px solid var(--primary); }
+        .close-viewer { position: absolute; top: 20px; right: 25px; font-size: 40px; color: white; cursor: pointer; font-weight: bold; }
+        #stopwatch { font-family: monospace; font-size: 2.2rem; color: var(--accent); text-align: center; margin: 10px 0; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
     </style>
 </head>
@@ -44,7 +42,7 @@
 
 <div class="container">
     <div class="card">
-        <h3>📊 Health & Calorie Tracker</h3>
+        <h3>📊 Health Metrics</h3>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <input type="number" id="w" placeholder="Weight (kg)">
             <input type="number" id="h" placeholder="Height (cm)">
@@ -52,28 +50,24 @@
             <select id="gender"><option value="male">Male</option><option value="female">Female</option></select>
         </div>
         <select id="activity">
-            <option value="1.2">No Exercise (Sedentary)</option>
-            <option value="1.55">Moderate (3-5 days)</option>
-            <option value="1.725">Active (Daily Training)</option>
+            <option value="1.2">Sedentary</option>
+            <option value="1.55">Moderate</option>
+            <option value="1.725">Daily Training</option>
         </select>
         <div style="display:flex; gap:10px;">
             <button class="btn-main" onclick="calcHealth()">Check BMI</button>
             <button class="btn-main" style="background:var(--blue);" onclick="calcBMR()">Get Calories</button>
         </div>
         <div id="res" style="margin-top:10px; text-align:center; font-weight:bold; color:var(--accent);"></div>
-        <div id="bmr-result"></div>
+        <div id="bmr-result" style="margin-top:10px; text-align:center;"></div>
     </div>
 
     <div class="card">
-        <h3>🎯 Your Fitness Goal</h3>
+        <h3>🎯 Goal & Tools</h3>
         <select id="goal" onchange="updateAll()">
-            <option value="bulking">Bulking (Muscle Gain)</option>
-            <option value="weightloss">Weight Loss (Fat Burn)</option>
+            <option value="bulking">Bulking</option>
+            <option value="weightloss">Weight Loss</option>
         </select>
-    </div>
-
-    <div class="card">
-        <h3>⏱️ Workout Timer</h3>
         <div id="stopwatch">00:00:00</div>
         <div class="grid-3">
             <button class="btn-main" style="background:var(--accent);" onclick="startTimer()">Start</button>
@@ -85,9 +79,9 @@
     <div class="card">
         <h3>💪 Muscle Exercise Guide</h3>
         <div class="grid-3">
-            <div class="btn-main" style="background:#333; font-size: 12px; text-align:center;" onclick="filterWorkout('chest')">Chest</div>
-            <div class="btn-main" style="background:#333; font-size: 12px; text-align:center;" onclick="filterWorkout('back')">Back</div>
-            <div class="btn-main" style="background:#333; font-size: 12px; text-align:center;" onclick="filterWorkout('bicep')">Bicep</div>
+            <button class="btn-main" style="background:#333;" onclick="filterWorkout('chest')">Chest</button>
+            <button class="btn-main" style="background:#333;" onclick="filterWorkout('back')">Back</button>
+            <button class="btn-main" style="background:#333;" onclick="filterWorkout('bicep')">Bicep</button>
         </div>
         <div id="quickView" style="margin-top:10px;"></div>
     </div>
@@ -99,7 +93,6 @@
 </div>
 
 <script>
-    // Data Object
     const db = {
         chest: [{n:"Bench Press",p:"https://i.ibb.co/G38QLCHG/flate-bench-press.jpg"},{n:"Incline Press",p:"https://i.ibb.co/MDhpXw7p/incline-bench-press.jpg"}],
         back: [{n:"Pull Ups",p:"https://i.ibb.co/zT69dCps/pull-ups.jpg"},{n:"Deadlift",p:"https://i.ibb.co/qLZJtnZW/deadlift.jpg"}],
@@ -108,34 +101,27 @@
 
     let timer, sec=0;
 
-    // Functions
     function viewImage(url) { document.getElementById('big-img').src = url; document.getElementById('viewer').style.display = 'flex'; }
     function closeImage() { document.getElementById('viewer').style.display = 'none'; }
     function toggle(id) { 
-        let x = document.getElementById(id); 
+        const x = document.getElementById(id);
         x.style.display = (x.style.display === "block") ? "none" : "block"; 
     }
 
     function calcHealth() {
-        let w = parseFloat(document.getElementById('w').value);
-        let h = parseFloat(document.getElementById('h').value) / 100;
-        if(w > 0 && h > 0) {
-            let bmi = (w / (h * h)).toFixed(1);
-            document.getElementById('res').innerHTML = "Your BMI: " + bmi;
-        } else { alert("Please enter Weight and Height!"); }
+        const w = parseFloat(document.getElementById('w').value);
+        const h = parseFloat(document.getElementById('h').value)/100;
+        if(w && h) document.getElementById('res').innerText = "BMI: " + (w/(h*h)).toFixed(1);
     }
 
     function calcBMR() {
-        let w = parseFloat(document.getElementById('w').value);
-        let h = parseFloat(document.getElementById('h').value);
-        let a = parseInt(document.getElementById('age').value);
-        if(!w || !h || !a) return alert("Fill all fields first!");
-        
-        let gender = document.getElementById('gender').value;
-        let bmr = (gender === 'male') ? (10*w)+(6.25*h)-(5*a)+5 : (10*w)+(6.25*h)-(5*a)-161;
-        let tdee = Math.round(bmr * parseFloat(document.getElementById('activity').value));
-        
-        document.getElementById('bmr-result').innerHTML = `<div class="bmr-res">Maintenance: <b>${tdee} Calories/day</b></div>`;
+        const w = parseFloat(document.getElementById('w').value);
+        const h = parseFloat(document.getElementById('h').value);
+        const a = parseInt(document.getElementById('age').value);
+        if(!w || !h || !a) return alert("Fill all info!");
+        const bmr = (document.getElementById('gender').value === 'male') ? (10*w)+(6.25*h)-(5*a)+5 : (10*w)+(6.25*h)-(5*a)-161;
+        const tdee = Math.round(bmr * parseFloat(document.getElementById('activity').value));
+        document.getElementById('bmr-result').innerHTML = "Maintain: <b>" + tdee + " kcal</b>";
     }
 
     function filterWorkout(m) {
@@ -143,7 +129,7 @@
         db[m].forEach(ex => { 
             h += `<div class="exercise-item" onclick="viewImage('${ex.p}')">
                     <img src="${ex.p}" class="ex-img">
-                    <div><b>${ex.n}</b><br><small style="color:#aaa;">Click to enlarge</small></div>
+                    <b>${ex.n}</b>
                   </div>`; 
         });
         document.getElementById('quickView').innerHTML = h;
@@ -153,34 +139,20 @@
         const goal = document.getElementById('goal').value;
         const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         let html = "";
-        
         days.forEach((day, i) => {
-            let detail = (goal === 'bulking') ? 
-                "⚡ Workout: Heavy Lifting (4 sets each). <br>🍱 Diet: High Protein + Rice/Sweet Potato." : 
-                "🔥 Workout: High Reps + 20min Cardio. <br>🍱 Diet: Salads + Boiled Chicken/Paneer.";
-            
+            const detail = (goal === 'bulking') ? "Heavy Weights + High Carbs" : "Cardio + Lean Protein";
             html += `<div class="day-wrapper">
-                        <div class="day-header" onclick="toggle('day${i}')">${day} <span>▼</span></div>
-                        <div id="day${i}" class="day-content">${detail}</div>
-                     </div>`;
+                <div class="day-header" onclick="toggle('day${i}')">${day} <span>▼</span></div>
+                <div id="day${i}" class="day-content">${detail}</div>
+            </div>`;
         });
         document.getElementById('workoutArea').innerHTML = html;
     }
 
-    // Timer Logic
-    function startTimer() { 
-        if(!timer) {
-            timer = setInterval(() => { 
-                sec++; 
-                let hr = Math.floor(sec/3600), min = Math.floor((sec%3600)/60), s = sec%60; 
-                document.getElementById('stopwatch').innerText = `${hr<10?'0':''}${hr}:${min<10?'0':''}${min}:${s<10?'0':''}${s}`; 
-            }, 1000); 
-        }
-    }
+    function startTimer() { if(!timer) timer = setInterval(() => { sec++; let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; document.getElementById('stopwatch').innerText = `${h<10?'0':''}${h}:${m<10?'0':''}${m}:${s<10?'0':''}${s}`; }, 1000); }
     function pauseTimer() { clearInterval(timer); timer = null; }
-    function resetTimer() { pauseTimer(); sec = 0; document.getElementById('stopwatch').innerText = "00:00:00"; }
+    function resetTimer() { pauseTimer(); sec=0; document.getElementById('stopwatch').innerText="00:00:00"; }
 
-    // Init
     window.onload = updateAll;
 </script>
 </body>
