@@ -123,19 +123,6 @@
     <div id="protRes" style="margin-top:15px; text-align:center;"></div>
 </div>
     <div class="card">
-    <h3>🥗 Smart Diet Planner</h3>
-    <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 10px;">Goal aur Type select karke diet dekhein:</p>
-    
-    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:10px; margin-bottom: 10px;">
-        <button id="vBtn" class="btn-main" style="background:#2ecc71;" onclick="setDietType('veg')">Veg Only</button>
-        <button id="nvBtn" class="btn-main" style="background:#333;" onclick="setDietType('nonveg')">Non-Veg</button>
-    </div>
-
-    <div id="dietResult" style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; border:1px solid #444;">
-        <p style="text-align:center; color:#aaa;">Pehle upar Goal select karein (Bulking/Loss), fir Veg/Non-Veg dabayein.</p>
-    </div>
-</div>
-    <div class="card">
         <h3>🛠️ Smart Gym Tools</h3>
         <div id="stopwatch">00:00:00</div>
         <div class="grid-3">
@@ -341,46 +328,6 @@
         </div>
     `;
 }
-    let currentType = 'veg';
-
-function setDietType(type) {
-    currentType = type;
-    // Button color change logic
-    document.getElementById('vBtn').style.background = (type === 'veg') ? '#2ecc71' : '#333';
-    document.getElementById('nvBtn').style.background = (type === 'nonveg') ? '#ff4757' : '#333';
-    showDiet();
-}
-
-function showDiet() {
-    // Ye aapke pehle se bane hue 'goal' id se value lega
-    const goal = document.getElementById('goal').value; 
-    let dietHTML = "";
-
-    const dietData = {
-        bulking: {
-            veg: "⭐ <b>Diet:</b> Paneer, Soya, Oats, Banana Shake.<br>💪 <b>Protein:</b> Soya (52g), Paneer (18g).<br>💊 <b>Vitamins:</b> B12, Magnesium.",
-            nonveg: "⭐ <b>Diet:</b> Chicken Breast, Eggs, Brown Rice, Fish.<br>💪 <b>Protein:</b> Chicken (31g), Eggs (6g).<br>💊 <b>Vitamins:</b> Zinc, B6, B12."
-        },
-        weightloss: {
-            veg: "⭐ <b>Diet:</b> Sprouts, Curd, Roasted Chana, Salad.<br>💪 <b>Protein:</b> Curd (11g), Chana (19g).<br>💊 <b>Vitamins:</b> Fiber, Vitamin C.",
-            nonveg: "⭐ <b>Diet:</b> Egg Whites, Grilled Fish, Lemon Chicken.<br>💪 <b>Protein:</b> Fish (22g), Egg White (4g).<br>💊 <b>Vitamins:</b> Omega-3, Protein."
-        },
-        cutting: {
-            veg: "⭐ <b>Diet:</b> Tofu, Spinach, Soya Salad, Cucumber.<br>💪 <b>Protein:</b> Tofu (8g), Soya (52g).<br>💊 <b>Vitamins:</b> Vitamin K, Folate.",
-            nonveg: "⭐ <b>Diet:</b> Steamed Fish, Tuna, Egg Whites.<br>💪 <b>Protein:</b> Tuna (28g), Fish (20g).<br>💊 <b>Vitamins:</b> Vitamin D, Selenium."
-        }
-    };
-
-    // Goal matching logic
-    const selectedGoal = (goal === 'cutting') ? 'cutting' : (goal === 'weightloss' ? 'weightloss' : 'bulking');
-    
-    dietHTML = dietData[selectedGoal][currentType];
-    document.getElementById('dietResult').innerHTML = dietHTML;
-}
-// Taaki page load hote hi diet dikhe
-showDiet();
-// updateAll() function mein showDiet() ko add kar dena taaki goal badalte hi diet badal jaye
-// Aap apne purane updateAll() ke andar bas aakhri mein showDiet(); likh dein.
 </script>
 </body>
 </html>
