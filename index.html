@@ -107,7 +107,21 @@
             <option value="cutting">Cutting Body (Max Cardio)</option>
         </select>
     </div>
+<div class="card">
+    <h3>🍗 Protein Requirement</h3>
+    <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 10px;">Goal ke hisab se daily protein target:</p>
+    
+    <select id="fitnessGoal" style="margin-bottom:10px;">
+        <option value="1.2">Sedentary (Normal Activity)</option>
+        <option value="1.6">Muscle Building (Beginner)</option>
+        <option value="2.0">Heavy Bodybuilding (Pro)</option>
+        <option value="1.4">Weight Loss (Maintain Muscle)</option>
+    </select>
 
+    <button class="btn-main" style="background:#2ecc71;" onclick="calculateProtein()">Calculate Protein</button>
+    
+    <div id="protRes" style="margin-top:15px; text-align:center;"></div>
+</div>
     <div class="card">
         <h3>🛠️ Smart Gym Tools</h3>
         <div id="stopwatch">00:00:00</div>
@@ -292,6 +306,25 @@
         <div style="background:rgba(255,255,255,0.1); padding:10px; border-radius:5px; border-left:4px solid #2ecc71; margin-top:10px;">
             <p style="margin:5px 0;">BMR: <b>${Math.round(bmr)} kcal</b></p>
             <p style="margin:5px 0; color:#2ecc71;">Daily Calories: <b>${tdee} kcal</b></p>
+        </div>
+    `;
+}
+    function calculateProtein() {
+    // Ye 'w' ID se aapka weight lega jo upar BMI mein hai
+    const weight = parseFloat(document.getElementById('w').value);
+    const multiplier = parseFloat(document.getElementById('fitnessGoal').value);
+
+    if (!weight) {
+        alert("Pehle sabse upar Weight (kg) bhariye!");
+        return;
+    }
+
+    const totalProtein = (weight * multiplier).toFixed(1);
+
+    document.getElementById('protRes').innerHTML = `
+        <div style="background:rgba(46, 204, 113, 0.1); padding:10px; border-radius:5px; border-left:4px solid #2ecc71;">
+            <p style="margin:5px 0;">Target: <b style="font-size:1.2rem; color:#2ecc71;">${totalProtein}g</b>/day</p>
+            <small style="color:#aaa;">Sahi protein intake se muscle jaldi bante hain.</small>
         </div>
     `;
 }
