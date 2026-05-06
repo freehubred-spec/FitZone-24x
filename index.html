@@ -283,6 +283,19 @@
     }
 
     window.onload = updateAll;
+    function updateDiet(type) {
+        const area = document.getElementById('dietArea');
+        // Button click hote hi content change hoga
+        area.innerHTML = dietData[type];
+        
+        // Visual feedback ke liye alert (aap ise hata bhi sakte hain)
+        console.log("Diet updated to: " + type);
+    }
+
+    // Default load
+    window.onload = function() {
+        updateDiet('nonveg'); 
+    };
 </script>
 </body>
 </html>
