@@ -7,25 +7,10 @@
     <style>
         :root { --primary: #ff4757; --dark: #0f0f0f; --card-bg: #1e1e1e; --accent: #2ecc71; --blue: #0984e3; --warning: #ffa502; }
         body { font-family: 'Poppins', sans-serif; background: var(--dark); color: #fff; margin: 0; padding-bottom: 50px; }
-        
-        .header { 
-            text-align: center; 
-            padding: 15px 10px; 
-            background: #000; 
-            border-bottom: 3px solid var(--primary); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 12px;
-        }
-        .nav-logo {
-            height: 45px;
-            width: auto;
-            border-radius: 5px;
-        }
+        .header { text-align: center; padding: 15px 10px; background: #000; border-bottom: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .nav-logo { height: 45px; width: auto; border-radius: 5px; }
         .logo-text { font-size: 1.6rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
         .logo-text span { color: var(--primary); }
-        
         .container { padding: 15px; max-width: 600px; margin: auto; }
         .card { background: var(--card-bg); border-radius: 12px; padding: 18px; margin-bottom: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
         h3 { color: var(--primary); margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; }
@@ -44,14 +29,12 @@
         .yoga-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .yoga-card { background: #2d3436; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.8rem; }
         .yoga-card img { width: 100%; border-radius: 5px; height: 90px; object-fit: cover; margin-bottom: 5px; cursor: pointer; }
-
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
         .tool-card { background: #252525; padding: 12px; border-radius: 10px; border-top: 2px solid var(--blue); margin-bottom: 15px; }
         #stopwatch { font-family: monospace; font-size: 2.2rem; color: var(--accent); text-align: center; margin: 10px 0; }
         .muscle-map-btn { padding: 10px; background: #333; border-radius: 5px; cursor: pointer; border: 1px solid #444; font-size: 0.75rem; text-align: center; }
         .chat-container { height: 180px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; font-size: 0.8rem; border: 1px solid #333; }
         #biometric-btn { background: #6c5ce7; border: none; padding: 15px; border-radius: 8px; color: #fff; cursor: pointer; width: 100%; font-weight: bold; }
-
         .image-viewer { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); align-items: center; justify-content: center; }
         .image-viewer img { max-width: 90%; max-height: 80%; border-radius: 10px; border: 2px solid var(--primary); }
         .close-viewer { position: absolute; top: 20px; right: 20px; font-size: 40px; color: white; cursor: pointer; font-weight: bold; }
@@ -70,7 +53,6 @@
 </div>
 
 <div class="container">
-    <!-- BMI SECTION -->
     <div class="card">
         <h3>📊 BMI Health Checker</h3>
         <div style="display:flex; gap:10px;">
@@ -81,7 +63,6 @@
         <div id="res" style="text-align:center; margin-top:15px; font-weight:bold; font-size: 1.1rem;"></div>
     </div>
 
-    <!-- BMR SECTION -->
     <div class="card">
         <h3>🔥 BMR & Daily Calories</h3>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
@@ -101,7 +82,6 @@
         <div id="bmrRes" style="margin-top:15px; text-align:center;"></div>
     </div>
 
-    <!-- GOAL & DIET PREFERENCE -->
     <div class="card">
         <h3>🎯 Select Workout Goal</h3>
         <select id="goal" onchange="updateAll()">
@@ -116,7 +96,6 @@
         </div>
     </div>
 
-    <!-- PROTEIN CALCULATOR -->
     <div class="card">
         <h3>🍗 Protein Requirement</h3>
         <select id="fitnessGoal" style="margin-bottom:10px;">
@@ -129,7 +108,6 @@
         <div id="protRes" style="margin-top:15px; text-align:center;"></div>
     </div>
 
-    <!-- TOOLS SECTION -->
     <div class="card">
         <h3>🛠️ Smart Gym Tools</h3>
         <div id="stopwatch">00:00:00</div>
@@ -152,7 +130,6 @@
         </div>
     </div>
 
-    <!-- POWER CALCULATOR -->
     <div class="card">
         <h3>🚀 Power Calculator</h3>
         <div class="tool-card">
@@ -166,19 +143,16 @@
         </div>
     </div>
 
-    <!-- WORKOUT SCHEDULE AREA -->
     <div class="card">
         <h3>📅 Weekly Workout Schedule</h3>
         <div id="workoutArea"></div>
     </div>
 
-    <!-- DIET PLAN AREA -->
     <div class="card">
         <h3>🍱 Extra Power Diet Plan</h3>
         <div id="dietArea"></div>
     </div>
 
-    <!-- COMMUNITY SECTION -->
     <div class="card" style="border: 1px solid var(--blue);">
         <h3>🔐 SmartGym Community</h3>
         <button id="biometric-btn" onclick="simBiometric()">🖐️ Scan Fingerprint to Enter</button>
@@ -191,7 +165,6 @@
         </div>
     </div>
 
-    <!-- WATER TRACKER -->
     <div class="card">
         <h3>💧 Water Tracker</h3>
         <div id="waterTarget" style="text-align:center; color:var(--blue); font-size:0.8rem;">BMI check karein</div>
@@ -199,7 +172,6 @@
         <button class="btn-main" style="background:var(--blue);" onclick="drink()">Drink 1 Glass 🥤</button>
     </div>
 
-    <!-- YOGA SECTION -->
     <div class="card">
         <h3>🌿 Ayurveda & Yoga Power</h3>
         <div class="yoga-grid">
@@ -223,10 +195,7 @@
 
     let targetWater = 10, currentWater = 0, timer, sec=0, currentDiet = 'nonveg';
 
-    function viewImage(url) {
-        document.getElementById('big-img').src = url;
-        document.getElementById('viewer').style.display = 'flex';
-    }
+    function viewImage(url) { document.getElementById('big-img').src = url; document.getElementById('viewer').style.display = 'flex'; }
     function closeImage() { document.getElementById('viewer').style.display = 'none'; }
     function toggle(id) { let x = document.getElementById(id); x.style.display = (x.style.display==="block")?"none":"block"; }
 
@@ -257,17 +226,18 @@
             [{t:"Chest & Tricep",m:["chest","tricep"]},{t:"Back & Biceps",m:["back","bicep"]},{t:"Legs & Shoulder",m:["legs","shoulder"]},{t:"Chest & Tricep",m:["chest","tricep"]},{t:"Back & Biceps",m:["back","bicep"]},{t:"Legs & Shoulder",m:["legs","shoulder"]}] :
             [{t:"Only Chest",m:["chest"]},{t:"Only Back",m:["back"]},{t:"Only Bicep",m:["bicep"]},{t:"Only Tricep",m:["tricep"]},{t:"Only Shoulder",m:["shoulder"]},{t:"Only Legs",m:["legs"]}];
 
-        workArea.innerHTML = "";
-        days.forEach((day, i) => {
-            let inner = "";
-            sch[i].m.forEach(muscle => {
-                inner += `<span class="muscle-label">${muscle}</span>`;
-                db[muscle].forEach(ex => { inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img" onclick="viewImage('${ex.p}')"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`; });
+        if(workArea) {
+            workArea.innerHTML = "";
+            days.forEach((day, i) => {
+                let inner = "";
+                sch[i].m.forEach(muscle => {
+                    inner += `<span class="muscle-label">${muscle}</span>`;
+                    db[muscle].forEach(ex => { inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img" onclick="viewImage('${ex.p}')"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`; });
+                });
+                workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
             });
-            workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
-        });
+        }
 
-        // Diet Logic
         const dietData = {
             bulking: {
                 veg: `<div class="meal"><b>🍳 Breakfast:</b><p>Paneer Bhurji, 100g Oats, 3 Bananas.</p></div><div class="meal"><b>🍛 Lunch:</b><p>Tofu/Paneer, 2 Cups Rice, Dal, Salad.</p></div><div class="meal"><b>🥛 Dinner:</b><p>Soya Chunks, 4 Roti, Ashwagandha Milk.</p></div>`,
@@ -282,7 +252,7 @@
                 nonveg: `<div class="meal"><b>🍳 Breakfast:</b><p>8 Egg Whites.</p></div><div class="meal"><b>🍗 Lunch:</b><p>Grilled Chicken & Spinach.</p></div>`
             }
         };
-        dietArea.innerHTML = `<div class="diet-box">${dietData[goal][currentDiet]}</div>`;
+        if(dietArea) dietArea.innerHTML = `<div class="diet-box">${dietData[goal][currentDiet]}</div>`;
     }
 
     function startTimer() { if(!timer) timer = setInterval(() => { sec++; let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; document.getElementById('stopwatch').innerText = `${h<10?'0':''}${h}:${m<10?'0':''}${m}:${s<10?'0':''}${s}`; }, 1000); }
@@ -312,69 +282,7 @@
         document.getElementById('protRes').innerHTML = `<div style="background:rgba(46, 204, 113, 0.1); padding:10px; border-radius:5px; border-left:4px solid #2ecc71;"><p>Target: <b style="font-size:1.2rem; color:#2ecc71;">${(weight * multiplier).toFixed(1)}g</b>/day</p></div>`;
     }
 
-    updateAll();
-    <script>
-    // Global variable jo diet choice yaad rakhega
-    let currentDiet = 'nonveg'; 
-
-    // Veg/Non-Veg change karne wala function
-    function setDietType(type) {
-        currentDiet = type;
-        updateAll(); // Har click par diet refresh hogi
-    }
-
-    // Main Function: Workout aur Diet dono update karta hai
-    function updateAll() {
-        const goal = document.getElementById('goal').value;
-        const dietArea = document.getElementById('dietArea');
-        const workArea = document.getElementById('workoutArea');
-        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        
-        let reps = (goal === 'bulking') ? "4 Sets x 8-10 Reps" : "3 Sets x 15-20 Reps";
-        let sch = (goal === 'bulking') ? 
-            [{t:"Chest & Tricep",m:["chest","tricep"]},{t:"Back & Biceps",m:["back","bicep"]},{t:"Legs & Shoulder",m:["legs","shoulder"]},{t:"Chest & Tricep",m:["chest","tricep"]},{t:"Back & Biceps",m:["back","bicep"]},{t:"Legs & Shoulder",m:["legs","shoulder"]}] :
-            [{t:"Only Chest",m:["chest"]},{t:"Only Back",m:["back"]},{t:"Only Bicep",m:["bicep"]},{t:"Only Tricep",m:["tricep"]},{t:"Only Shoulder",m:["shoulder"]},{t:"Only Legs",m:["legs"]}];
-
-        // 1. Workout Schedule Update
-        if(workArea) {
-            workArea.innerHTML = "";
-            days.forEach((day, i) => {
-                let inner = "";
-                sch[i].m.forEach(muscle => {
-                    inner += `<span class="muscle-label">${muscle}</span>`;
-                    db[muscle].forEach(ex => { 
-                        inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img" onclick="viewImage('${ex.p}')"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`; 
-                    });
-                });
-                workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
-            });
-        }
-
-        // 2. Diet Data Object
-        const dietData = {
-            bulking: {
-                veg: `<div class="meal"><b>🍳 Breakfast:</b><p>Paneer Bhurji, 100g Oats, 3 Bananas.</p></div><div class="meal"><b>🍛 Lunch:</b><p>Tofu/Paneer, 2 Cups Rice, Dal, Salad.</p></div><div class="meal"><b>🥛 Dinner:</b><p>Soya Chunks, 4 Roti, Ashwagandha Milk.</p></div>`,
-                nonveg: `<div class="meal"><b>🍳 Breakfast:</b><p>10 Egg Whites, 100g Oats, 3 Bananas.</p></div><div class="meal"><b>🍛 Lunch:</b><p>Chicken, 2 Cups Rice, Dal, Salad.</p></div><div class="meal"><b>🍗 Dinner:</b><p>Fish/Chicken, 4 Roti, Milk.</p></div>`
-            },
-            weightloss: {
-                veg: `<div class="meal"><b>☕ Morning:</b><p>Green Tea & Roasted Makhana.</p></div><div class="meal"><b>🥗 Lunch:</b><p>1 Roti, Mix Veg, Curd.</p></div><div class="meal"><b>🥒 Dinner:</b><p>Boiled Dal / Paneer Salad.</p></div>`,
-                nonveg: `<div class="meal"><b>☕ Morning:</b><p>Warm Lemon Water.</p></div><div class="meal"><b>🥗 Lunch:</b><p>Grilled Chicken Salad / 4 Eggs.</p></div><div class="meal"><b>🥒 Dinner:</b><p>Clear Chicken Soup.</p></div>`
-            },
-            cutting: {
-                veg: `<div class="meal"><b>🍳 Breakfast:</b><p>Sprouts & Black Coffee.</p></div><div class="meal"><b>🥗 Lunch:</b><p>Soya Chunks & Broccoli.</p></div>`,
-                nonveg: `<div class="meal"><b>🍳 Breakfast:</b><p>8 Egg Whites.</p></div><div class="meal"><b>🍗 Lunch:</b><p>Grilled Chicken & Spinach.</p></div>`
-            }
-        };
-
-        // 3. Diet Area Display
-        if(dietArea) {
-            dietArea.innerHTML = `<div class="diet-box">${dietData[goal][currentDiet]}</div>`;
-        }
-    }
-
-    // App load hote hi update run hoga
     window.onload = updateAll;
-</script>
 </script>
 </body>
 </html>
