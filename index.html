@@ -283,19 +283,30 @@
     }
 
     window.onload = updateAll;
-    function updateDiet(type) {
-        const area = document.getElementById('dietArea');
-        // Button click hote hi content change hoga
-        area.innerHTML = dietData[type];
-        
-        // Visual feedback ke liye alert (aap ise hata bhi sakte hain)
-        console.log("Diet updated to: " + type);
-    }
+    let currentType = 'nonveg'; // Default preference
 
-    // Default load
-    window.onload = function() {
-        updateDiet('nonveg'); 
-    };
+function setDietType(type) {
+    currentType = type;
+    showDiet(); // Button dabate hi diet badal jayegi
+}
+
+function showDiet() {
+    const goal = document.getElementById('goal').value; 
+    const dietResult = document.getElementById('dietResult'); 
+    
+    // Aapke screenshot ke matching logic ke hisab se
+    const selectedGoal = (goal === 'cutting') ? 'cutting' : (goal === 'weightloss' ? 'weightloss' : 'bulking');
+
+    if(dietData[selectedGoal] && dietData[selectedGoal][currentType]) {
+        dietResult.innerHTML = dietData[selectedGoal][currentType];
+    }
+}
+
+// Page load hote hi diet dikhane ke liye
+window.onload = function() {
+    updateAll();
+    showDiet();
+};
 </script>
 </body>
 </html>
