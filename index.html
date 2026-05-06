@@ -5,13 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartGym-24x | Smart Coach</title>
     <style>
-        :root { --primary: #ff4757; --dark: #0f0f0f; --card-bg: #1e1e1e; --accent: #2ecc71; --blue: #0984e3; }
-        body { font-family: 'Poppins', sans-serif; background: var(--dark); color: #fff; margin: 0; padding: 15px; }
-        .header { text-align: center; padding: 15px 10px; background: #000; border-bottom: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; gap: 12px; }
-        .nav-logo { height: 45px; width: auto; border-radius: 5px; }
+        :root { --primary: #ff4757; --dark: #0f0f0f; --card-bg: #1e1e1e; --accent: #2ecc71; --blue: #0984e3; --warning: #ffa502; }
+        body { font-family: 'Poppins', sans-serif; background: var(--dark); color: #fff; margin: 0; padding-bottom: 50px; }
+        
+        /* Logo Section Update */
+        .header { 
+            text-align: center; 
+            padding: 15px 10px; 
+            background: #000; 
+            border-bottom: 3px solid var(--primary); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 12px;
+        }
+        .nav-logo {
+            height: 45px;
+            width: auto;
+            border-radius: 5px;
+        }
         .logo-text { font-size: 1.6rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
         .logo-text span { color: var(--primary); }
-        .container { padding: 0; max-width: 600px; margin: auto; }
+        
+        .container { padding: 15px; max-width: 600px; margin: auto; }
         .card { background: var(--card-bg); border-radius: 12px; padding: 18px; margin-bottom: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
         h3 { color: var(--primary); margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; }
         input, select { width: 100%; padding: 12px; border-radius: 8px; background: #252525; color: white; border: 1px solid #444; margin: 8px 0; box-sizing: border-box; }
@@ -19,14 +35,40 @@
         .day-wrapper { margin-bottom: 8px; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
         .day-header { background: #2d3436; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; font-weight: bold; }
         .day-content { display: none; background: #1a1a1a; padding: 10px; }
-        .bmr-res { margin-top: 15px; padding: 10px; border-radius: 8px; background: #111; border-left: 4px solid var(--accent); font-size: 0.9rem; }
+        .muscle-label { color: var(--primary); font-size: 0.7rem; font-weight: bold; text-transform: uppercase; margin: 12px 0 5px; display: block; border-left: 3px solid var(--primary); padding-left: 8px; }
+        .exercise-item { display: flex; align-items: center; background: #252525; margin-bottom: 8px; padding: 10px; border-radius: 6px; }
+        .ex-img { width: 65px; height: 65px; border-radius: 5px; object-fit: cover; background: #333; margin-right: 12px; cursor: pointer; }
+        .diet-box { background: rgba(46, 204, 113, 0.05); border: 1px solid #333; padding: 15px; border-radius: 10px; }
+        .meal { margin-bottom: 15px; }
+        .meal b { color: var(--accent); display: block; }
+        .meal p { margin: 0; font-size: 0.9rem; color: #ccc; }
+        .yoga-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .yoga-card { background: #2d3436; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.8rem; }
+        .yoga-card img { width: 100%; border-radius: 5px; height: 90px; object-fit: cover; margin-bottom: 5px; cursor: pointer; }
+
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
+        .tool-card { background: #252525; padding: 12px; border-radius: 10px; border-top: 2px solid var(--blue); margin-bottom: 15px; }
+        #stopwatch { font-family: monospace; font-size: 2.2rem; color: var(--accent); text-align: center; margin: 10px 0; }
+        .muscle-map-btn { padding: 10px; background: #333; border-radius: 5px; cursor: pointer; border: 1px solid #444; font-size: 0.75rem; text-align: center; }
+        .chat-container { height: 180px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; font-size: 0.8rem; border: 1px solid #333; }
+        #biometric-btn { background: #6c5ce7; border: none; padding: 15px; border-radius: 8px; color: #fff; cursor: pointer; width: 100%; font-weight: bold; }
+
+        /* --- NEW MODAL CSS (Sirf Ye Add Hua Hai) --- */
+        .image-viewer { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); align-items: center; justify-content: center; }
+        .image-viewer img { max-width: 90%; max-height: 80%; border-radius: 10px; border: 2px solid var(--primary); }
+        .close-viewer { position: absolute; top: 20px; right: 20px; font-size: 40px; color: white; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <img src="https://i.ibb.co/PGZ19M1V/smart-gym-logo.jpg" alt="Logo" class="nav-logo">
+    <img src="https://i.ibb.co/PGZ19M1V/smart-gym-logo.jpg" alt="Smart Gym Logo" class="nav-logo">
     <div class="logo-text">Smart Gym-<span>24x</span></div>
+</div>
+
+<div id="viewer" class="image-viewer">
+    <span class="close-viewer" onclick="closeImage()">&times;</span>
+    <img id="big-img" src="">
 </div>
 
 <div class="container">
@@ -37,80 +79,180 @@
             <input type="number" id="h" placeholder="Height (cm)">
         </div>
         <button class="btn-main" onclick="calcHealth()">Check Status</button>
-        <div id="res" style="text-align:center; margin-top:15px; font-weight:bold;"></div>
+        <div id="res" style="text-align:center; margin-top:15px; font-weight:bold; font-size: 1.1rem;"></div>
     </div>
 
     <div class="card">
-        <h3>🔥 BMR & Daily Calories</h3>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <input type="number" id="age" placeholder="Age">
-            <select id="gender"><option value="male">Male</option><option value="female">Female</option></select>
-        </div>
-        <select id="activity">
-            <option value="1.2">No Exercise (Office Job)</option>
-            <option value="1.375">Light (1-3 days/week)</option>
-            <option value="1.55">Moderate (3-5 days/week)</option>
-            <option value="1.725">Very Active (Daily gym)</option>
+        <h3>🎯 Select Workout Goal</h3>
+        <select id="goal" onchange="updateAll()">
+            <option value="bulking">Bulking (Muscle Gain)</option>
+            <option value="weightloss">Weight Loss (Fat Burn)</option>
+            <option value="cutting">Cutting Body (Max Cardio)</option>
         </select>
-        <button class="btn-main" style="background:var(--blue);" onclick="calcBMR()">Calculate Calories</button>
-        <div id="bmr-result"></div>
     </div>
 
     <div class="card">
-        <h3>📅 Workout Schedule</h3>
-        <div class="day-wrapper">
-            <div class="day-header" onclick="toggle('mon')">Monday <span>▼</span></div>
-            <div id="mon" class="day-content">Chest & Triceps Workout</div>
+        <h3>🛠️ Smart Gym Tools</h3>
+        <div id="stopwatch">00:00:00</div>
+        <div class="grid-3">
+            <button class="btn-main" style="background:var(--accent); padding: 8px;" onclick="startTimer()">Start</button>
+            <button class="btn-main" style="background:var(--warning); padding: 8px;" onclick="pauseTimer()">Pause</button>
+            <button class="btn-main" style="background:var(--primary); padding: 8px;" onclick="resetTimer()">Reset</button>
         </div>
-        <div class="day-wrapper">
-            <div class="day-header" onclick="toggle('tue')">Tuesday <span>▼</span></div>
-            <div id="tue" class="day-content">Back & Biceps Workout</div>
+        <div style="margin-top: 20px;">
+            <b style="font-size: 0.85rem; color: var(--blue);">Muscle Map Selector:</b>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 10px;">
+                <div class="muscle-map-btn" onclick="filterWorkout('chest')">Chest</div>
+                <div class="muscle-map-btn" onclick="filterWorkout('back')">Back</div>
+                <div class="muscle-map-btn" onclick="filterWorkout('legs')">Legs</div>
+                <div class="muscle-map-btn" onclick="filterWorkout('bicep')">Bicep</div>
+                <div class="muscle-map-btn" onclick="filterWorkout('tricep')">Tricep</div>
+                <div class="muscle-map-btn" onclick="filterWorkout('shoulder')">Shoulder</div>
+            </div>
+            <div id="quickView"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>🚀 Power Calculator</h3>
+        <div class="tool-card">
+            <b>1-Rep Max:</b>
+            <div style="display: flex; gap: 5px;">
+                <input type="number" id="orm-w" placeholder="Wt">
+                <input type="number" id="orm-r" placeholder="Reps">
+            </div>
+            <button class="btn-main" style="padding: 8px;" onclick="calcORM()">Calculate</button>
+            <div id="orm-res" style="margin-top:5px; color:var(--accent); font-weight:bold;"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>📅 Weekly Workout Schedule</h3>
+        <div id="workoutArea"></div>
+    </div>
+
+    <div class="card">
+        <h3>🍱 Extra Power Diet Plan</h3>
+        <div id="dietArea"></div>
+    </div>
+
+    <div class="card" style="border: 1px solid var(--blue);">
+        <h3>🔐 SmartGym Community</h3>
+        <button id="biometric-btn" onclick="simBiometric()">🖐️ Scan Fingerprint to Enter</button>
+        <div id="chat-section" style="display:none; margin-top:10px;">
+            <div class="chat-container" id="chatbox"></div>
+            <div style="display:flex; gap:5px; margin-top:10px;">
+                <input type="text" id="msg" placeholder="Ask here...">
+                <button onclick="sendMsg()" style="background:var(--blue); border:none; padding:10px; border-radius:5px; color:#fff;">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>💧 Water Tracker</h3>
+        <div id="waterTarget" style="text-align:center; color:var(--blue); font-size:0.8rem;">BMI check karein</div>
+        <div id="waterVal" style="text-align:center; font-size:1.8rem; color:var(--blue); font-weight:bold; margin:10px 0;">0 / --</div>
+        <button class="btn-main" style="background:var(--blue);" onclick="drink()">Drink 1 Glass 🥤</button>
+    </div>
+
+    <div class="card">
+        <h3>🌿 Ayurveda & Yoga Power</h3>
+        <div class="yoga-grid">
+            <div class="yoga-card"><img src="https://i.ibb.co/67zw8PFN/surya-namaskar.jpg" onclick="viewImage(this.src)">Surya Namaskar</div>
+            <div class="yoga-card"><img src="https://i.ibb.co/zWV3M6c6/bhujangasana.jpg" onclick="viewImage(this.src)">Bhujangasana</div>
+            <div class="yoga-card"><img src="https://i.ibb.co/PGzb0BRh/vrikshasana.jpg" onclick="viewImage(this.src)">Vrikshasana</div>
+            <div class="yoga-card"><img src="https://i.ibb.co/cc9kGB1q/padmasana.jpg" onclick="viewImage(this.src)">Padmasana</div>
         </div>
     </div>
 </div>
 
 <script>
-    // Aapka purana toggle function
-    function toggle(id) {
-        var x = document.getElementById(id);
-        if (x.style.display === "block") { x.style.display = "none"; } 
-        else { x.style.display = "block"; }
+    const db = {
+        chest: [{n:"Incline Bench Press",p:"https://i.ibb.co/MDhpXw7p/incline-bench-press.jpg"},{n:"Decline Bench Press",p:"https://i.ibb.co/CKkWXTr7/decline-bench-press.jpg"},{n:"Flat Bench Press",p:"https://i.ibb.co/G38QLCHG/flate-bench-press.jpg"},{n:"Chest Fly Machine",p:"https://i.ibb.co/3Yz9JHgz/chest-fly-machine.jpg"},{n:"Parallel Bar Dips",p:"https://i.ibb.co/V0j64Qs0/parallel-bar-dips.jpg"},{n:"Heavyweight Lifting",p:"https://i.ibb.co/rfG772z8/heavyweight-lifting.jpg"}],
+        tricep: [{n:"Pulley Pushdown",p:"https://i.ibb.co/nNQjBK24/pulley-push-down.jpg"},{n:"Close Grip Bench",p:"https://i.ibb.co/TxJQzXQf/close-grip-bench.jpg"},{n:"Rope Pushdown",p:"https://i.ibb.co/Zp7ZV37W/cable-pushdown.jpg"},{n:"Reverse Triceps Pushdown",p:"https://i.ibb.co/5hhpqvvw/cable-tricep-pushdown.jpg"}],
+        back: [{n:"Pull Ups",p:"https://i.ibb.co/zT69dCps/pull-ups.jpg"},{n:"Wide Grip Pull Down",p:"https://i.ibb.co/1YQQZxb0/wide-grip-pulldown.jpg"},{n:"T-Bar Row",p:"https://i.ibb.co/KjL9r1jb/t-bar-row.jpg"},{n:"Barbell Rows",p:"https://i.ibb.co/B5Y2XNyc/barbell-row.jpg"},{n:"Cable Row",p:"https://i.ibb.co/LX4PcVZw/cable-row.jpg"},{n:"Deadlifts",p:"https://i.ibb.co/qLZJtnZW/deadlift.jpg"}],
+        bicep: [{n:"Barbell Curl",p:"https://i.ibb.co/jpLwxZv/barbell-curl.jpg"},{n:"Dumbbell Curls",p:"https://i.ibb.co/fYY622pD/dumbbell-curl.jpg"},{n:"Preacher Curl",p:"https://i.ibb.co/2LzRLqs/preacher-curl.jpg"},{n:"Concentration Curl",p:"https://i.ibb.co/Z1VcqnMm/concentration-curl.jpg"},{n:"Hammer Curl",p:"https://i.ibb.co/6cMVfjrR/hammer-curl.jpg"}],
+        legs: [{n:"Barbell Squats",p:"https://i.ibb.co/DHX0YmcF/barbell-squat.jpg"},{n:"Leg Extension",p:"https://i.ibb.co/tw9FcpGx/leg-extension.jpg"},{n:"Hamstring Curls",p:"https://i.ibb.co/bj9gfJj1/humstring-curl.jpg"},{n:"Calf Extension",p:"https://i.ibb.co/rRjnwRfv/calf-extension.jpg"}],
+        shoulder: [{n:"Dumbbell Shoulder Press",p:"https://i.ibb.co/mCBDFFPW/shoulder-press.jpg"},{n:"Lateral Raises",p:"https://i.ibb.co/MyBbktLp/lateral-raise.jpg"},{n:"Bent Over Flys",p:"https://i.ibb.co/m5MDVM19/dumbbell-fly.jpg"},{n:"Shrugs",p:"https://i.ibb.co/N6Mz1SCQ/shrugs.jpg"},{n:"Upright Rows",p:"https://i.ibb.co/5ZJbWMt/upright-row.jpg"}]
+    };
+
+    let targetWater = 10, currentWater = 0, timer, sec=0;
+
+    // IMAGE VIEW FUNCTIONS (Naya add kiya)
+    function viewImage(url) {
+        document.getElementById('big-img').src = url;
+        document.getElementById('viewer').style.display = 'flex';
+    }
+    function closeImage() {
+        document.getElementById('viewer').style.display = 'none';
     }
 
-    // Aapka purana BMI function
+    function toggle(id) { let x = document.getElementById(id); x.style.display = (x.style.display==="block")?"none":"block"; }
+
     function calcHealth() {
-        var w = document.getElementById('w').value;
-        var h = document.getElementById('h').value / 100;
-        if(w && h) {
-            var bmi = (w / (h * h)).toFixed(1);
-            document.getElementById('res').innerHTML = "Your BMI: " + bmi;
+        let w = parseFloat(document.getElementById('w').value), h = parseFloat(document.getElementById('h').value) / 100;
+        if(!w || !h) return;
+        let bmi = (w / (h*h)).toFixed(1);
+        let status = "", color = "";
+        if(bmi < 18.5) { status = "Underweight (Wajan Kam Hai)"; color = "var(--warning)"; }
+        else if(bmi < 25) { status = "Normal (Ekdum Perfect)"; color = "var(--accent)"; }
+        else { status = "Overweight (Wajan Jyada Hai)"; color = "var(--primary)"; }
+        document.getElementById('res').innerHTML = `BMI: ${bmi} - <span style="color:${color}">${status}</span>`;
+        targetWater = Math.round(w / 7);
+        document.getElementById('waterTarget').innerText = `Target: ${targetWater} Glass`;
+        document.getElementById('waterVal').innerText = `0 / ${targetWater}`;
+        currentWater = 0;
+    }
+
+    function updateAll() {
+        const goal = document.getElementById('goal').value;
+        const workArea = document.getElementById('workoutArea');
+        const dietArea = document.getElementById('dietArea');
+        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        if(goal==='bulking') {
+            let reps = "4 Sets x 8-10 Reps";
+            let sch = [{t:"Chest & Tricep",m:["chest","tricep"]},{t:"Back & Biceps",m:["back","bicep"]},{t:"Legs & Shoulder",m:["legs","shoulder"]},{t:"Chest & Tricep",m:["chest","tricep"]},{t:"Back & Biceps",m:["back","bicep"]},{t:"Legs & Shoulder",m:["legs","shoulder"]}];
+            workArea.innerHTML = "";
+            days.forEach((day, i) => {
+                let inner = "";
+                sch[i].m.forEach(muscle => {
+                    inner += `<span class="muscle-label">${muscle}</span>`;
+                    // Updated here with onclick="viewImage('${ex.p}')"
+                    db[muscle].forEach(ex => { inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img" onclick="viewImage('${ex.p}')"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`; });
+                });
+                workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
+            });
+            dietArea.innerHTML = `<div class="diet-box"><div class="meal"><b>🍳 Mega Breakfast:</b><p>10 Egg Whites, 100g Oats, 3 Bananas, Nuts.</p></div><div class="meal"><b>🍛 Heavy Lunch:</b><p>Chicken/Paneer, 2 Cups Rice, Dal, Salad.</p></div><div class="meal"><b>🍗 Dinner:</b><p>Fish/Soya, 4 Ghee Roti, Ashwagandha Milk.</p></div></div>`;
+        } else if(goal==='weightloss') {
+            let reps = "3 Sets x 15-20 Reps";
+            let sch = [{t:"Only Chest",m:["chest"]},{t:"Only Back",m:["back"]},{t:"Only Bicep",m:["bicep"]},{t:"Only Tricep",m:["tricep"]},{t:"Only Shoulder",m:["shoulder"]},{t:"Only Legs",m:["legs"]}];
+            workArea.innerHTML = "";
+            days.forEach((day, i) => {
+                let inner = "";
+                sch[i].m.forEach(muscle => {
+                    inner += `<span class="muscle-label">${muscle}</span>`;
+                    // Updated here with onclick="viewImage('${ex.p}')"
+                    db[muscle].forEach(ex => { inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img" onclick="viewImage('${ex.p}')"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`; });
+                });
+                workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
+            });
+            dietArea.innerHTML = `<div class="diet-box"><div class="meal"><b>☕ Morning:</b><p>Warm Lemon Water.</p></div><div class="meal"><b>🥗 Lunch:</b><p>1 Roti, Dal, Sabzi, Buttermilk.</p></div><div class="meal"><b>🥒 Dinner:</b><p>Veg Soup / Roasted Paneer.</p></div></div>`;
+        } else if(goal==='cutting') {
+            workArea.innerHTML = "<div class='exercise-item'><b>Cutting Mode:</b> 45 min Cardio + HIIT. Zero Sugar!</div>";
+            dietArea.innerHTML = `<div class="diet-box"><div class="meal"><b>🥚 Breakfast:</b><p>8 Egg Whites.</p></div><div class="meal"><b>🍗 Lunch:</b><p>Grilled Chicken + Salad.</p></div><div class="meal"><b>🥦 Dinner:</b><p>Soya Chunks + Broccoli.</p></div></div>`;
         }
     }
 
-    // Naya BMR & Calories Tracker function
-    function calcBMR() {
-        var w = parseFloat(document.getElementById('w').value);
-        var h = parseFloat(document.getElementById('h').value);
-        var a = parseInt(document.getElementById('age').value);
-        var g = document.getElementById('gender').value;
-        var act = parseFloat(document.getElementById('activity').value);
+    function startTimer() { if(!timer) timer = setInterval(() => { sec++; let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; document.getElementById('stopwatch').innerText = `${h<10?'0':''}${h}:${m<10?'0':''}${m}:${s<10?'0':''}${s}`; }, 1000); }
+    function pauseTimer() { clearInterval(timer); timer = null; }
+    function resetTimer() { pauseTimer(); sec=0; document.getElementById('stopwatch').innerText="00:00:00"; }
+    function filterWorkout(m) { let h = `<div style="background:#111; padding:10px; border-radius:8px; margin-top:10px; border:1px solid var(--primary);">`; db[m].forEach(ex => { h += `<div>🔥 ${ex.n}</div>`; }); h += `</div>`; document.getElementById('quickView').innerHTML = h; }
+    function calcORM() { let w = parseFloat(document.getElementById('orm-w').value), r = parseFloat(document.getElementById('orm-r').value); if(w && r) document.getElementById('orm-res').innerText = `1RM: ${Math.round(w*(1+r/30))} kg`; }
+    function simBiometric() { let b = document.getElementById('biometric-btn'); b.innerText = "Scanning..."; setTimeout(() => { b.style.display="none"; document.getElementById('chat-section').style.display="block"; }, 1000); }
+    function sendMsg() { let m = document.getElementById('msg').value; if(m) { document.getElementById('chatbox').innerHTML += `<div><b>You:</b> ${m}</div>`; document.getElementById('msg').value=""; } }
+    function drink() { if(currentWater < targetWater) { currentWater++; document.getElementById('waterVal').innerText = `${currentWater} / ${targetWater}`; } }
 
-        if(!w || !h || !a) {
-            alert("Pehle Weight, Height aur Age bharein!");
-            return;
-        }
-
-        // Mifflin-St Jeor Equation
-        var bmr = (g === 'male') ? (10 * w) + (6.25 * h) - (5 * a) + 5 : (10 * w) + (6.25 * h) - (5 * a) - 161;
-        var tdee = Math.round(bmr * act);
-
-        document.getElementById('bmr-result').innerHTML = `
-            <div class="bmr-res">
-                BMR: <b>${Math.round(bmr)} kcal</b><br>
-                Daily Calories (TDEE): <b>${tdee} kcal</b>
-            </div>`;
-    }
+    updateAll();
 </script>
-
 </body>
 </html>
