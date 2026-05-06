@@ -81,7 +81,24 @@
         <button class="btn-main" onclick="calcHealth()">Check Status</button>
         <div id="res" style="text-align:center; margin-top:15px; font-weight:bold; font-size: 1.1rem;"></div>
     </div>
-
+<div class="card">
+        <h3>🔥 BMR & Daily Calories</h3>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <input type="number" id="age" placeholder="Age (Umar)">
+            <select id="sex">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+        </div>
+        <select id="act" style="margin-top:10px;">
+            <option value="1.2">No Exercise (Sust)</option>
+            <option value="1.375">Light (1-2 din workout)</option>
+            <option value="1.55">Moderate (3-5 din workout)</option>
+            <option value="1.725">Hard (Daily Heavy Training)</option>
+        </select>
+        <button class="btn-main" style="background:#0984e3; margin-top:10px;" onclick="calculateCalories()">Get Results</button>
+        <div id="bmrRes" style="margin-top:15px; text-align:center;"></div>
+    </div>
     <div class="card">
         <h3>🎯 Select Workout Goal</h3>
         <select id="goal" onchange="updateAll()">
@@ -253,6 +270,31 @@
     function drink() { if(currentWater < targetWater) { currentWater++; document.getElementById('waterVal').innerText = `${currentWater} / ${targetWater}`; } }
 
     updateAll();
+    function calculateCalories() {
+    const weight = parseFloat(document.getElementById('w').value);
+    const height = parseFloat(document.getElementById('h').value);
+    const age = parseInt(document.getElementById('age').value);
+    const gender = document.getElementById('sex').value;
+    const activity = parseFloat(document.getElementById('act').value);
+
+    if (!weight || !height || !age) {
+        alert("Bhai, pehle Weight, Height aur Age bhariye!");
+        return;
+    }
+
+    let bmr = (gender === "male") 
+        ? (10 * weight) + (6.25 * height) - (5 * age) + 5 
+        : (10 * weight) + (6.25 * height) - (5 * age) - 161;
+
+    const tdee = Math.round(bmr * activity);
+
+    document.getElementById('bmrRes').innerHTML = `
+        <div style="background:rgba(255,255,255,0.1); padding:10px; border-radius:5px; border-left:4px solid #2ecc71; margin-top:10px;">
+            <p style="margin:5px 0;">BMR: <b>${Math.round(bmr)} kcal</b></p>
+            <p style="margin:5px 0; color:#2ecc71;">Daily Calories: <b>${tdee} kcal</b></p>
+        </div>
+    `;
+}
 </script>
 </body>
 </html>
