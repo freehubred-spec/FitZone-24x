@@ -55,18 +55,59 @@
         .image-viewer { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); align-items: center; justify-content: center; }
         .image-viewer img { max-width: 90%; max-height: 80%; border-radius: 10px; border: 2px solid var(--primary); }
         .close-viewer { position: absolute; top: 20px; right: 20px; font-size: 40px; color: white; cursor: pointer; font-weight: bold; }
+
+        /* Naye Features Ke Liye Three Dots aur Popup Ki Custom Styling */
+        .three-dots-btn { font-size: 1.8rem; cursor: pointer; padding: 0 10px; user-select: none; color: #fff; }
+        .overflow-menu-box { display: none; position: absolute; right: 15px; top: 50px; background: #252525; border: 1px solid #444; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 10000; min-width: 190px; text-align: left; }
+        .overflow-menu-item { padding: 12px; cursor: pointer; font-size: 0.9rem; color: white; border-bottom: 1px solid #333; transition: 0.2s; }
+        .overflow-menu-item:hover { background: #333; }
+        .overflow-menu-item:last-child { border-bottom: none; }
+        .alarm-modal-body { background: var(--card-bg); border-radius: 12px; padding: 20px; width: 90%; max-width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,0.7); border: 1px solid var(--primary); position: relative; box-sizing: border-box; }
+        .alarm-list-box { max-height: 140px; overflow-y: auto; background: #111; padding: 8px; border-radius: 6px; font-size: 0.85rem; margin-top: 10px; border: 1px solid #333; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <img src="https://i.ibb.co/PGZ19M1V/smart-gym-logo.jpg" alt="Smart Gym Logo" class="nav-logo">
-    <div class="logo-text">Smart Gym-<span>24x</span></div>
+<!-- UPDATED HEADER WITH THREE DOTS OVERFLOW MENU -->
+<div class="header" style="justify-content: space-between; padding: 15px 15px;">
+    <div style="width: 35px;"></div> <!-- Left spacing to balance design -->
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <img src="https://i.ibb.co/PGZ19M1V/smart-gym-logo.jpg" alt="Smart Gym Logo" class="nav-logo">
+        <div class="logo-text">Smart Gym-<span>24x</span></div>
+    </div>
+    
+    <!-- Three Dots Wrapper -->
+    <div style="position: relative;">
+        <div class="three-dots-btn" onclick="toggleOverflowMenu(event)">⋮</div>
+        <div id="overflowMenu" class="overflow-menu-box">
+            <div class="overflow-menu-item" onclick="openAlarmModal()">⏰ Diet & Medicine Reminder</div>
+            <!-- Aane wale naye features aap yahan bina kisi darr ke jod sakte hain -->
+        </div>
+    </div>
 </div>
 
 <div id="viewer" class="image-viewer">
     <span class="close-viewer" onclick="closeImage()">&times;</span>
     <img id="big-img" src="">
+</div>
+
+<!-- NAYA ALARM POPUP MODAL -->
+<div id="alarmModal" class="image-viewer">
+    <div class="alarm-modal-body">
+        <span class="close-viewer" style="top: 10px; right: 15px; font-size: 28px;" onclick="closeAlarmModal()">&times;</span>
+        <h3 style="margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 5px; color: var(--primary);">⏰ Diet & Medicine Reminder</h3>
+        
+        <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Remind Time Set Karein:</label>
+        <input type="time" id="alarmTime">
+        
+        <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 10px; margin-bottom: 2px;">Kya Khana/Lena He? (Naam Likhein):</label>
+        <input type="text" id="alarmText" placeholder="E.g., 4 Ande Oats / Multi-Vitamin Dawai">
+        
+        <button class="btn-main" style="margin-top: 12px;" onclick="addCustomAlarm()">Set Voice Reminder</button>
+        
+        <b style="margin-top: 15px; display:block; font-size: 0.85rem; color: var(--accent);">Aapke Active Alarms:</b>
+        <div id="alarmListContainer" class="alarm-list-box"></div>
+    </div>
 </div>
 
 <div class="container">
@@ -174,7 +215,7 @@
 
     <!-- DIET PLAN AREA -->
     <div class="card">
-        <h3>🍱 Extra Power Diet Plan</h3>
+        <h3>📅 Extra Power Diet Plan</h3>
         <div id="dietArea"></div>
     </div>
 
@@ -311,6 +352,103 @@
         if (!weight) { alert("Pehle Weight (kg) bhariye!"); return; }
         document.getElementById('protRes').innerHTML = `<div style="background:rgba(46, 204, 113, 0.1); padding:10px; border-radius:5px; border-left:4px solid #2ecc71;"><p>Target: <b style="font-size:1.2rem; color:#2ecc71;">${(weight * multiplier).toFixed(1)}g</b>/day</p></div>`;
     }
+
+    // -------------------------------------------------------------
+    // NAYE ALARM AUR THREE DOTS SYSTEM KA JS LOGIC (NO CHHEDKHANI)
+    // -------------------------------------------------------------
+    let gymAlarms = JSON.parse(localStorage.getItem('smartGymAlarms')) || [];
+
+    function toggleOverflowMenu(e) {
+        e.stopPropagation();
+        let m = document.getElementById('overflowMenu');
+        m.style.display = (m.style.display === 'block') ? 'none' : 'block';
+    }
+
+    // Screen par kahin bhi click karne par menu chhup jaye
+    document.addEventListener('click', function() {
+        document.getElementById('overflowMenu').style.display = 'none';
+    });
+
+    function openAlarmModal() {
+        document.getElementById('alarmModal').style.display = 'flex';
+        showAlarmsList();
+    }
+
+    function closeAlarmModal() {
+        document.getElementById('alarmModal').style.display = 'none';
+    }
+
+    function addCustomAlarm() {
+        let tVal = document.getElementById('alarmTime').value;
+        let txtVal = document.getElementById('alarmText').value.trim();
+        
+        if(!tVal || !txtVal) {
+            alert("Bhai, pehle Time aur Name dono toh bharo!");
+            return;
+        }
+        
+        gymAlarms.push({
+            time: tVal,
+            text: txtVal,
+            lastFiredDate: ""
+        });
+        
+        localStorage.setItem('smartGymAlarms', JSON.stringify(gymAlarms));
+        document.getElementById('alarmText').value = "";
+        showAlarmsList();
+    }
+
+    function removeAlarm(index) {
+        gymAlarms.splice(index, 1);
+        localStorage.setItem('smartGymAlarms', JSON.stringify(gymAlarms));
+        showAlarmsList();
+    }
+
+    function showAlarmsList() {
+        let box = document.getElementById('alarmListContainer');
+        if(gymAlarms.length === 0) {
+            box.innerHTML = `<div style="color:#555; text-align:center; padding-top:20px;">Koi reminder active nahi he.</div>`;
+            return;
+        }
+        let listHtml = "";
+        gymAlarms.forEach((al, i) => {
+            listHtml += `<div style="display:flex; justify-content:space-between; align-items:center; background:#252525; padding:8px; margin-bottom:6px; border-radius:5px; border-left:3px solid var(--accent);">
+                <div><b style="color:var(--accent); font-family:monospace;">${al.time}</b> - <span>${al.text}</span></div>
+                <span style="color:var(--primary); cursor:pointer; font-weight:bold; padding:2px 6px;" onclick="removeAlarm(${i})">✕</span>
+            </div>`;
+        });
+        box.innerHTML = listHtml;
+    }
+
+    // Background Alarm Engine Tracker Loop (Har second check karega)
+    setInterval(() => {
+        let d = new Date();
+        let hours = String(d.getHours()).padStart(2, '0');
+        let minutes = String(d.getMinutes()).padStart(2, '0');
+        let rightNow = `${hours}:${minutes}`;
+        let today = d.toDateString();
+        let localUpdated = false;
+
+        gymAlarms.forEach(al => {
+            if(al.time === rightNow && al.lastFiredDate !== today) {
+                al.lastFiredDate = today;
+                localUpdated = true;
+                
+                // Voice Speech Mechanism Trigger
+                if ('speechSynthesis' in window) {
+                    let alertSpeech = `Bhai, ${al.text} lene ka waqt ho gaya hai. Dobara suniye, ${al.text} lene ka waqt ho gaya hai.`;
+                    let speakEngine = new SpeechSynthesisUtterance(alertSpeech);
+                    speakEngine.lang = 'hi-IN'; // Clear Indian Hindi Voice Accent
+                    speakEngine.rate = 0.95; // Clear natural reading speed
+                    window.speechSynthesis.speak(speakEngine);
+                }
+            }
+        });
+
+        if(localUpdated) {
+            localStorage.setItem('smartGymAlarms', JSON.stringify(gymAlarms));
+        }
+    }, 1000);
 
     updateAll();
 </script>
