@@ -81,7 +81,6 @@
         <div class="three-dots-btn" onclick="toggleOverflowMenu(event)">⋮</div>
         <div id="overflowMenu" class="overflow-menu-box">
             <div class="overflow-menu-item" onclick="openAlarmModal()">⏰ Diet & Medicine Reminder</div>
-            <!-- Aane wale naye features aap yahan bina kisi darr ke jod sakte hain -->
         </div>
     </div>
 </div>
@@ -111,6 +110,20 @@
 </div>
 
 <div class="container">
+
+    <!-- NAYA FEATURE 1 & 2: STREAK & GYM ATTENDANCE CARD -->
+    <div class="card" style="border: 1px solid var(--primary);">
+        <h3>🔥 Daily Streak & Gym Attendance</h3>
+        <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:15px;">
+            <div style="text-align:center;">
+                <span style="font-size: 2.2rem; font-weight: bold; color: var(--primary);" id="streakDisplay">0</span>
+                <div style="color: #aaa; font-size: 0.8rem;">Days Active Streak</div>
+            </div>
+        </div>
+        <button id="checkInBtn" class="btn-main" style="background: var(--accent);" onclick="markAttendance()">📍 Daily Gym Check-In</button>
+        <div id="checkInMsg" style="text-align:center; margin-top:8px; font-size:0.85rem; font-weight:bold; color:var(--accent);"></div>
+    </div>
+
     <!-- BMI SECTION -->
     <div class="card">
         <h3>📊 BMI Health Checker</h3>
@@ -120,6 +133,17 @@
         </div>
         <button class="btn-main" onclick="calcHealth()">Check Status</button>
         <div id="res" style="text-align:center; margin-top:15px; font-weight:bold; font-size: 1.1rem;"></div>
+    </div>
+
+    <!-- NAYA FEATURE 3: WEIGHT & PROGRESS GRAPH LOGGER -->
+    <div class="card">
+        <h3>📈 Weight & Progress Logger</h3>
+        <div style="display:flex; gap:10px;">
+            <input type="number" id="weightInput" placeholder="Enter Weight (kg)" step="0.1">
+            <button class="btn-main" style="width: 120px;" onclick="addWeightLog()">Save</button>
+        </div>
+        <canvas id="weightChart" width="500" height="180" style="width:100%; height:180px; background:#111; border-radius:8px; margin-top:15px; border:1px solid #333;"></canvas>
+        <div id="weightHistory" style="margin-top:10px; max-height:90px; overflow-y:auto; font-size:0.85rem; color:#ccc;"></div>
     </div>
 
     <!-- BMR SECTION -->
@@ -152,8 +176,26 @@
         </select>
         <h3 style="margin-top: 15px;">🥗 Diet Preference</h3>
         <div style="display: flex; gap: 10px;">
-            <button class="btn-main" style="background:#2ecc71;" onclick="setDietType('veg')">Pure Veg</button>
-            <button class="btn-main" style="background:#e67e22;" onclick="setDietType('nonveg')">Non-Veg</button>
+            <button id="btn-veg" class="btn-main" style="background:#2ecc71;" onclick="setDietType('veg')">Pure Veg</button>
+            <button id="btn-nonveg" class="btn-main" style="background:#e67e22;" onclick="setDietType('nonveg')">Non-Veg</button>
+        </div>
+    </div>
+
+    <!-- NAYA FEATURE 4: 30 DAY FITNESS CHALLENGE -->
+    <div class="card">
+        <h3>🏆 30-Day Fitness Challenge</h3>
+        <div style="margin-bottom: 8px; font-size: 0.85rem; display:flex; justify-content:space-between;">
+            <span>Overall Progress:</span>
+            <b id="challengeProgressText" style="color:var(--accent);">0/30 Days</b>
+        </div>
+        <div style="background:#333; height:8px; border-radius:4px; overflow:hidden; margin-bottom:15px;">
+            <div id="challengeProgressBar" style="width:0%; background:var(--accent); height:100%; transition:0.3s;"></div>
+        </div>
+        <div id="challengeGrid" style="display:grid; grid-template-columns: repeat(6, 1fr); gap:6px;"></div>
+        <div id="challengeTaskBox" style="margin-top:15px; background:#111; padding:12px; border-radius:8px; border:1px solid var(--primary); display:none;">
+            <h4 id="taskTitle" style="margin:0 0 5px 0; color:var(--primary); font-size:0.95rem;"></h4>
+            <p id="taskDesc" style="margin:0 0 10px 0; font-size:0.85rem; color:#eee;"></p>
+            <button id="completeTaskBtn" class="btn-main" style="padding:8px; background:var(--accent);" onclick="toggleChallengeDay()">Mark as Done ✅</button>
         </div>
     </div>
 
@@ -273,6 +315,16 @@
 
     function setDietType(type) {
         currentDiet = type;
+        // Visual active feedback update for Veg/Nonveg buttons
+        let btnVeg = document.getElementById('btn-veg');
+        let btnNonVeg = document.getElementById('btn-nonveg');
+        if(type === 'veg') {
+            btnVeg.style.outline = '3px solid #fff';
+            btnNonVeg.style.outline = 'none';
+        } else {
+            btnNonVeg.style.outline = '3px solid #fff';
+            btnVeg.style.outline = 'none';
+        }
         updateAll();
     }
 
@@ -354,7 +406,7 @@
     }
 
     // -------------------------------------------------------------
-    // NAYE ALARM AUR THREE DOTS SYSTEM KA JS LOGIC (NO CHHEDKHANI)
+    // ALARM AUR THREE DOTS SYSTEM LOGIC
     // -------------------------------------------------------------
     let gymAlarms = JSON.parse(localStorage.getItem('smartGymAlarms')) || [];
 
@@ -364,7 +416,6 @@
         m.style.display = (m.style.display === 'block') ? 'none' : 'block';
     }
 
-    // Screen par kahin bhi click karne par menu chhup jaye
     document.addEventListener('click', function() {
         document.getElementById('overflowMenu').style.display = 'none';
     });
@@ -420,7 +471,6 @@
         box.innerHTML = listHtml;
     }
 
-    // Background Alarm Engine Tracker Loop (Har second check karega)
     setInterval(() => {
         let d = new Date();
         let hours = String(d.getHours()).padStart(2, '0');
@@ -434,12 +484,11 @@
                 al.lastFiredDate = today;
                 localUpdated = true;
                 
-                // Voice Speech Mechanism Trigger
                 if ('speechSynthesis' in window) {
                     let alertSpeech = `Bhai, ${al.text} lene ka waqt ho gaya hai. Dobara suniye, ${al.text} lene ka waqt ho gaya hai.`;
                     let speakEngine = new SpeechSynthesisUtterance(alertSpeech);
-                    speakEngine.lang = 'hi-IN'; // Clear Indian Hindi Voice Accent
-                    speakEngine.rate = 0.95; // Clear natural reading speed
+                    speakEngine.lang = 'hi-IN';
+                    speakEngine.rate = 0.95;
                     window.speechSynthesis.speak(speakEngine);
                 }
             }
@@ -450,7 +499,197 @@
         }
     }, 1000);
 
+    // -------------------------------------------------------------
+    // LOGIC FOR NEW FEATURES (STREAK, CHECK-IN, WEIGHT GRAPH, 30-DAY CHALLENGE)
+    // -------------------------------------------------------------
+
+    // 1 & 2. STREAK & ATTENDANCE LOGIC
+    function initStreakAndAttendance() {
+        let streakData = JSON.parse(localStorage.getItem('smartGymStreak')) || { streak: 0, lastCheckIn: null };
+        let today = new Date().toISOString().split('T')[0];
+        document.getElementById('streakDisplay').innerText = streakData.streak;
+
+        if (streakData.lastCheckIn === today) {
+            let btn = document.getElementById('checkInBtn');
+            btn.disabled = true;
+            btn.style.background = '#444';
+            btn.innerText = '✅ Attendance Marked Today';
+            document.getElementById('checkInMsg').innerText = 'Aaj ki gym attendance lag chuki hai!';
+        }
+    }
+
+    function markAttendance() {
+        let streakData = JSON.parse(localStorage.getItem('smartGymStreak')) || { streak: 0, lastCheckIn: null };
+        let todayObj = new Date();
+        let todayStr = todayObj.toISOString().split('T')[0];
+
+        if (streakData.lastCheckIn === todayStr) return;
+
+        let yesterdayObj = new Date();
+        yesterdayObj.setDate(todayObj.getDate() - 1);
+        let yesterdayStr = yesterdayObj.toISOString().split('T')[0];
+
+        if (streakData.lastCheckIn === yesterdayStr) {
+            streakData.streak += 1;
+        } else {
+            streakData.streak = 1;
+        }
+
+        streakData.lastCheckIn = todayStr;
+        localStorage.setItem('smartGymStreak', JSON.stringify(streakData));
+        initStreakAndAttendance();
+    }
+
+    // 3. WEIGHT & PROGRESS GRAPH LOGIC
+    let weightLogs = JSON.parse(localStorage.getItem('smartGymWeightLogs')) || [];
+
+    function addWeightLog() {
+        let val = parseFloat(document.getElementById('weightInput').value);
+        if (!val) { alert("Kripya sahi weight (kg) bhariye!"); return; }
+        let dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+        weightLogs.push({ date: dateStr, weight: val });
+        if(weightLogs.length > 8) weightLogs.shift(); // Keep latest 8 records
+        localStorage.setItem('smartGymWeightLogs', JSON.stringify(weightLogs));
+        document.getElementById('weightInput').value = "";
+        renderWeightChart();
+    }
+
+    function renderWeightChart() {
+        let historyDiv = document.getElementById('weightHistory');
+        historyDiv.innerHTML = weightLogs.map(l => `<div>📍 <b>${l.date}:</b> ${l.weight} kg</div>`).reverse().join('');
+
+        let canvas = document.getElementById('weightChart');
+        let ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (weightLogs.length === 0) {
+            ctx.fillStyle = '#777';
+            ctx.font = '14px sans-serif';
+            ctx.fillText('Koi weight record nahi he. Weight daal kar save karein!', 70, 95);
+            return;
+        }
+
+        let weights = weightLogs.map(l => l.weight);
+        let minW = Math.min(...weights) - 2;
+        let maxW = Math.max(...weights) + 2;
+        let pad = 35;
+        let w = canvas.width - pad * 2;
+        let h = canvas.height - pad * 2;
+
+        ctx.beginPath();
+        ctx.strokeStyle = '#ff4757';
+        ctx.lineWidth = 3;
+
+        weightLogs.forEach((item, index) => {
+            let x = pad + (weightLogs.length > 1 ? (index / (weightLogs.length - 1)) * w : w / 2);
+            let y = canvas.height - pad - ((item.weight - minW) / (maxW - minW || 1)) * h;
+
+            if (index === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        weightLogs.forEach((item, index) => {
+            let x = pad + (weightLogs.length > 1 ? (index / (weightLogs.length - 1)) * w : w / 2);
+            let y = canvas.height - pad - ((item.weight - minW) / (maxW - minW || 1)) * h;
+
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#2ecc71';
+            ctx.fill();
+
+            ctx.fillStyle = '#fff';
+            ctx.font = '11px sans-serif';
+            ctx.fillText(`${item.weight}kg`, x - 12, y - 10);
+            ctx.fillText(item.date, x - 15, canvas.height - 10);
+        });
+    }
+
+    // 4. 30 DAY FITNESS CHALLENGE LOGIC
+    const challengeTasks = [
+        "20 Push-ups + 30 sec Plank",
+        "30 Squats + 20 Jumping Jacks",
+        "15 Burpees + 30 sec Wall Sit",
+        "25 Mountain Climbers + 20 Lunges",
+        "Rest & Stretching Day 🧘",
+        "30 Crunches + 1 min Plank",
+        "25 Push-ups + 30 Squats",
+        "35 Jumping Jacks + 20 High Knees",
+        "15 Leg Raises + 30 sec Side Plank",
+        "Rest Day / Light Walk 🚶",
+        "30 Push-ups + 40 Squats",
+        "20 Burpees + 1 min Plank",
+        "35 Crunches + 25 Lunges",
+        "40 Mountain Climbers + 30 sec Wall Sit",
+        "Rest & Recovery Day 🧘",
+        "35 Push-ups + 45 Squats",
+        "25 Burpees + 1.5 min Plank",
+        "40 Crunches + 30 High Knees",
+        "50 Jumping Jacks + 30 Lunges",
+        "Rest Day 😴",
+        "40 Push-ups + 50 Squats",
+        "30 Burpees + 2 min Plank",
+        "45 Crunches + 40 Mountain Climbers",
+        "1 Hour Full Power Gym / Cardio",
+        "Rest Day 🧘",
+        "45 Push-ups + 60 Squats",
+        "35 Burpees + 2 min Plank",
+        "50 Crunches + 50 High Knees",
+        "Max Push-ups Challenge + Full Body Stretch",
+        "🎉 30 Days Completed! You are a Champion!"
+    ];
+
+    let challengeCompleted = JSON.parse(localStorage.getItem('smartGymChallenge')) || [];
+    let selectedDayIndex = null;
+
+    function renderChallengeGrid() {
+        let grid = document.getElementById('challengeGrid');
+        grid.innerHTML = "";
+        challengeTasks.forEach((_, index) => {
+            let isDone = challengeCompleted.includes(index);
+            let dayNum = index + 1;
+            grid.innerHTML += `<div onclick="selectChallengeDay(${index})" style="background:${isDone ? 'var(--accent)' : '#252525'}; color:${isDone ? '#000' : '#fff'}; border:1px solid #444; border-radius:6px; padding:8px 2px; text-align:center; font-size:0.75rem; font-weight:bold; cursor:pointer;">D${dayNum} ${isDone ? '✓' : ''}</div>`;
+        });
+
+        let doneCount = challengeCompleted.length;
+        document.getElementById('challengeProgressText').innerText = `${doneCount}/30 Days`;
+        document.getElementById('challengeProgressBar').style.width = `${(doneCount/30)*100}%`;
+    }
+
+    function selectChallengeDay(index) {
+        selectedDayIndex = index;
+        document.getElementById('challengeTaskBox').style.display = 'block';
+        document.getElementById('taskTitle').innerText = `Day ${index + 1} Challenge`;
+        document.getElementById('taskDesc').innerText = challengeTasks[index];
+        
+        let btn = document.getElementById('completeTaskBtn');
+        if(challengeCompleted.includes(index)) {
+            btn.innerText = "Completed! Click to Undo ↩️";
+            btn.style.background = "#e67e22";
+        } else {
+            btn.innerText = "Mark as Done ✅";
+            btn.style.background = "var(--accent)";
+        }
+    }
+
+    function toggleChallengeDay() {
+        if(selectedDayIndex === null) return;
+        let pos = challengeCompleted.indexOf(selectedDayIndex);
+        if(pos > -1) {
+            challengeCompleted.splice(pos, 1);
+        } else {
+            challengeCompleted.push(selectedDayIndex);
+        }
+        localStorage.setItem('smartGymChallenge', JSON.stringify(challengeCompleted));
+        renderChallengeGrid();
+        selectChallengeDay(selectedDayIndex);
+    }
+
+    // INITIALIZATION CALLS
     updateAll();
+    initStreakAndAttendance();
+    renderWeightChart();
+    renderChallengeGrid();
 </script>
 </body>
 </html>
