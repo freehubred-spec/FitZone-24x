@@ -56,7 +56,6 @@
         .image-viewer img { max-width: 90%; max-height: 80%; border-radius: 10px; border: 2px solid var(--primary); }
         .close-viewer { position: absolute; top: 20px; right: 20px; font-size: 40px; color: white; cursor: pointer; font-weight: bold; }
 
-        /* Custom Styling for Three Dots & Overflow Menu */
         .three-dots-btn { font-size: 1.8rem; cursor: pointer; padding: 0 10px; user-select: none; color: #fff; }
         .overflow-menu-box { display: none; position: absolute; right: 15px; top: 50px; background: #252525; border: 1px solid #444; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 10000; min-width: 190px; text-align: left; }
         .overflow-menu-item { padding: 12px; cursor: pointer; font-size: 0.9rem; color: white; border-bottom: 1px solid #333; transition: 0.2s; }
@@ -68,20 +67,17 @@
 </head>
 <body>
 
-<!-- UPDATED HEADER WITH THREE DOTS OVERFLOW MENU -->
 <div class="header" style="justify-content: space-between; padding: 15px 15px;">
-    <div style="width: 35px;"></div> <!-- Left spacing to balance design -->
+    <div style="width: 35px;"></div>
     <div style="display: flex; align-items: center; gap: 12px;">
         <img src="https://i.ibb.co/PGZ19M1V/smart-gym-logo.jpg" alt="Smart Gym Logo" class="nav-logo">
         <div class="logo-text">Smart Gym-<span>24x</span></div>
     </div>
     
-    <!-- Three Dots Wrapper -->
     <div style="position: relative;">
         <div class="three-dots-btn" onclick="toggleOverflowMenu(event)">⋮</div>
         <div id="overflowMenu" class="overflow-menu-box">
             <div class="overflow-menu-item" onclick="openAlarmModal()">⏰ Diet & Medicine Reminder</div>
-            <div class="overflow-menu-item" onclick="openMoreFeaturesModal()">🚀 More Features</div>
         </div>
     </div>
 </div>
@@ -107,22 +103,6 @@
         
         <b style="margin-top: 15px; display:block; font-size: 0.85rem; color: var(--accent);">Aapke Active Alarms:</b>
         <div id="alarmListContainer" class="alarm-list-box"></div>
-    </div>
-</div>
-
-<!-- NAYA MORE FEATURES POPUP MODAL -->
-<div id="moreFeaturesModal" class="image-viewer">
-    <div class="alarm-modal-body">
-        <span class="close-viewer" style="top: 10px; right: 15px; font-size: 28px;" onclick="closeMoreFeaturesModal()">&times;</span>
-        <h3 style="margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 5px; color: var(--primary);">🚀 More Features</h3>
-        <p style="font-size: 0.85rem; color: #ccc; margin-bottom: 15px;">Yahan aapke aage aane wale naye tools aur features milenge.</p>
-        
-        <!-- YAHAN AAP APNE NAYE FEATURES CODE KO PAST KAR SAKTE HAIN -->
-        <div id="moreFeaturesContainer">
-            <div style="background: #252525; padding: 15px; border-radius: 8px; text-align: center; color: #aaa; border: 1px dashed #555;">
-                ⚡ Naye features add karne ke liye is section me apna HTML/JS code add karein.
-            </div>
-        </div>
     </div>
 </div>
 
@@ -196,6 +176,12 @@
             <button id="btn-veg" class="btn-main" style="background:#2ecc71;" onclick="setDietType('veg')">Pure Veg</button>
             <button id="btn-nonveg" class="btn-main" style="background:#e67e22;" onclick="setDietType('nonveg')">Non-Veg</button>
         </div>
+    </div>
+
+    <!-- DEDICATED RECOMMENDED SUPPLEMENTS CARD -->
+    <div class="card" style="border: 1px solid var(--accent);">
+        <h3>💊 Recommended Supplements</h3>
+        <div id="supplementArea"></div>
     </div>
 
     <!-- 30 DAY FITNESS CHALLENGE -->
@@ -359,6 +345,7 @@
         const goal = document.getElementById('goal').value;
         const workArea = document.getElementById('workoutArea');
         const dietArea = document.getElementById('dietArea');
+        const supplementArea = document.getElementById('supplementArea');
         const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         
         let reps = (goal==='bulking') ? "4 Sets x 8-10 Reps" : "3 Sets x 15-20 Reps";
@@ -391,6 +378,35 @@
             }
         };
         dietArea.innerHTML = `<div class="diet-box">${dietData[goal][currentDiet]}</div>`;
+
+        // DYNAMIC SUPPLEMENT DATA UPDATE
+        const suppData = {
+            bulking: `<div style="background: #252525; padding: 12px; border-radius: 8px; border-left: 4px solid var(--accent);">
+                <b style="color: var(--accent); font-size: 0.95rem; display: block; margin-bottom: 5px;">💪 Bulking (Muscle Gain):</b>
+                <ul style="margin: 0; padding-left: 18px; font-size: 0.85rem; color: #ccc;">
+                    <li><b>Whey Protein / Weight Gainer:</b> Protein requirement poora karne ke liye.</li>
+                    <li><b>Creatine Monohydrate:</b> Muscle strength aur sizing badhane ke liye (3-5g daily).</li>
+                    <li><b>Multivitamin & Fish Oil:</b> Overall recovery aur joint health ke liye.</li>
+                </ul>
+            </div>`,
+            weightloss: `<div style="background: #252525; padding: 12px; border-radius: 8px; border-left: 4px solid var(--warning);">
+                <b style="color: var(--warning); font-size: 0.95rem; display: block; margin-bottom: 5px;">🔥 Weight Loss (Fat Burn):</b>
+                <ul style="margin: 0; padding-left: 18px; font-size: 0.85rem; color: #ccc;">
+                    <li><b>L-Carnitine:</b> Stored fat ko energy me convert karne ke liye.</li>
+                    <li><b>Green Tea Extract / Fat Burner:</b> Metabolism fast karne ke liye.</li>
+                    <li><b>Whey Isolate Protein:</b> Low carb ke saath lean muscle bachaaye rakhne ke liye.</li>
+                </ul>
+            </div>`,
+            cutting: `<div style="background: #252525; padding: 12px; border-radius: 8px; border-left: 4px solid var(--blue);">
+                <b style="color: var(--blue); font-size: 0.95rem; display: block; margin-bottom: 5px;">✂️ Cutting Body:</b>
+                <ul style="margin: 0; padding-left: 18px; font-size: 0.85rem; color: #ccc;">
+                    <li><b>Whey Isolate:</b> Pure protein, zero fat & carbs.</li>
+                    <li><b>BCAA / EAA:</b> Workout ke time muscle loss rokne ke liye.</li>
+                    <li><b>Pre-Workout / Caffeine:</b> Heavy training ke liye intense focus aur energy.</li>
+                </ul>
+            </div>`
+        };
+        supplementArea.innerHTML = suppData[goal];
     }
 
     function startTimer() { if(!timer) timer = setInterval(() => { sec++; let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; document.getElementById('stopwatch').innerText = `${h<10?'0':''}${h}:${m<10?'0':''}${m}:${s<10?'0':''}${s}`; }, 1000); }
@@ -420,20 +436,7 @@
         document.getElementById('protRes').innerHTML = `<div style="background:rgba(46, 204, 113, 0.1); padding:10px; border-radius:5px; border-left:4px solid #2ecc71;"><p>Target: <b style="font-size:1.2rem; color:#2ecc71;">${(weight * multiplier).toFixed(1)}g</b>/day</p></div>`;
     }
 
-    // -------------------------------------------------------------
-    // MORE FEATURES MODAL LOGIC
-    // -------------------------------------------------------------
-    function openMoreFeaturesModal() {
-        document.getElementById('moreFeaturesModal').style.display = 'flex';
-    }
-
-    function closeMoreFeaturesModal() {
-        document.getElementById('moreFeaturesModal').style.display = 'none';
-    }
-
-    // -------------------------------------------------------------
-    // ALARM AUR THREE DOTS SYSTEM LOGIC
-    // -------------------------------------------------------------
+    // ALARM & THREE DOTS SYSTEM LOGIC
     let gymAlarms = JSON.parse(localStorage.getItem('smartGymAlarms')) || [];
 
     function toggleOverflowMenu(e) {
@@ -525,11 +528,7 @@
         }
     }, 1000);
 
-    // -------------------------------------------------------------
-    // LOGIC FOR NEW FEATURES (STREAK, CHECK-IN, WEIGHT GRAPH, 30-DAY CHALLENGE)
-    // -------------------------------------------------------------
-
-    // 1 & 2. STREAK & ATTENDANCE LOGIC
+    // STREAK & ATTENDANCE LOGIC
     function initStreakAndAttendance() {
         let streakData = JSON.parse(localStorage.getItem('smartGymStreak')) || { streak: 0, lastCheckIn: null };
         let today = new Date().toISOString().split('T')[0];
@@ -566,7 +565,7 @@
         initStreakAndAttendance();
     }
 
-    // 3. WEIGHT & PROGRESS GRAPH LOGIC
+    // WEIGHT LOG GRAPH
     let weightLogs = JSON.parse(localStorage.getItem('smartGymWeightLogs')) || [];
 
     function addWeightLog() {
@@ -631,7 +630,7 @@
         });
     }
 
-    // 4. 30 DAY FITNESS CHALLENGE LOGIC
+    // 30 DAY CHALLENGE LOGIC
     const challengeTasks = [
         "20 Push-ups + 30 sec Plank",
         "30 Squats + 20 Jumping Jacks",
@@ -711,7 +710,7 @@
         selectChallengeDay(selectedDayIndex);
     }
 
-    // INITIALIZATION CALLS
+    // INITIALIZATION
     updateAll();
     initStreakAndAttendance();
     renderWeightChart();
