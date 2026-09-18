@@ -56,7 +56,7 @@
         .image-viewer img { max-width: 90%; max-height: 80%; border-radius: 10px; border: 2px solid var(--primary); }
         .close-viewer { position: absolute; top: 20px; right: 20px; font-size: 40px; color: white; cursor: pointer; font-weight: bold; }
 
-        /* Naye Features Ke Liye Three Dots aur Popup Ki Custom Styling */
+        /* Custom Styling for Three Dots & Overflow Menu */
         .three-dots-btn { font-size: 1.8rem; cursor: pointer; padding: 0 10px; user-select: none; color: #fff; }
         .overflow-menu-box { display: none; position: absolute; right: 15px; top: 50px; background: #252525; border: 1px solid #444; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 10000; min-width: 190px; text-align: left; }
         .overflow-menu-item { padding: 12px; cursor: pointer; font-size: 0.9rem; color: white; border-bottom: 1px solid #333; transition: 0.2s; }
@@ -81,6 +81,7 @@
         <div class="three-dots-btn" onclick="toggleOverflowMenu(event)">⋮</div>
         <div id="overflowMenu" class="overflow-menu-box">
             <div class="overflow-menu-item" onclick="openAlarmModal()">⏰ Diet & Medicine Reminder</div>
+            <div class="overflow-menu-item" onclick="openMoreFeaturesModal()">🚀 More Features</div>
         </div>
     </div>
 </div>
@@ -90,7 +91,7 @@
     <img id="big-img" src="">
 </div>
 
-<!-- NAYA ALARM POPUP MODAL -->
+<!-- ALARM POPUP MODAL -->
 <div id="alarmModal" class="image-viewer">
     <div class="alarm-modal-body">
         <span class="close-viewer" style="top: 10px; right: 15px; font-size: 28px;" onclick="closeAlarmModal()">&times;</span>
@@ -109,9 +110,25 @@
     </div>
 </div>
 
+<!-- NAYA MORE FEATURES POPUP MODAL -->
+<div id="moreFeaturesModal" class="image-viewer">
+    <div class="alarm-modal-body">
+        <span class="close-viewer" style="top: 10px; right: 15px; font-size: 28px;" onclick="closeMoreFeaturesModal()">&times;</span>
+        <h3 style="margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 5px; color: var(--primary);">🚀 More Features</h3>
+        <p style="font-size: 0.85rem; color: #ccc; margin-bottom: 15px;">Yahan aapke aage aane wale naye tools aur features milenge.</p>
+        
+        <!-- YAHAN AAP APNE NAYE FEATURES CODE KO PAST KAR SAKTE HAIN -->
+        <div id="moreFeaturesContainer">
+            <div style="background: #252525; padding: 15px; border-radius: 8px; text-align: center; color: #aaa; border: 1px dashed #555;">
+                ⚡ Naye features add karne ke liye is section me apna HTML/JS code add karein.
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container">
 
-    <!-- NAYA FEATURE 1 & 2: STREAK & GYM ATTENDANCE CARD -->
+    <!-- STREAK & GYM ATTENDANCE CARD -->
     <div class="card" style="border: 1px solid var(--primary);">
         <h3>🔥 Daily Streak & Gym Attendance</h3>
         <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:15px;">
@@ -135,7 +152,7 @@
         <div id="res" style="text-align:center; margin-top:15px; font-weight:bold; font-size: 1.1rem;"></div>
     </div>
 
-    <!-- NAYA FEATURE 3: WEIGHT & PROGRESS GRAPH LOGGER -->
+    <!-- WEIGHT & PROGRESS GRAPH LOGGER -->
     <div class="card">
         <h3>📈 Weight & Progress Logger</h3>
         <div style="display:flex; gap:10px;">
@@ -181,7 +198,7 @@
         </div>
     </div>
 
-    <!-- NAYA FEATURE 4: 30 DAY FITNESS CHALLENGE -->
+    <!-- 30 DAY FITNESS CHALLENGE -->
     <div class="card">
         <h3>🏆 30-Day Fitness Challenge</h3>
         <div style="margin-bottom: 8px; font-size: 0.85rem; display:flex; justify-content:space-between;">
@@ -315,7 +332,6 @@
 
     function setDietType(type) {
         currentDiet = type;
-        // Visual active feedback update for Veg/Nonveg buttons
         let btnVeg = document.getElementById('btn-veg');
         let btnNonVeg = document.getElementById('btn-nonveg');
         if(type === 'veg') {
@@ -360,7 +376,6 @@
             workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
         });
 
-        // Diet Logic
         const dietData = {
             bulking: {
                 veg: `<div class="meal"><b>🍳 Breakfast:</b><p>Paneer Bhurji, 100g Oats, 3 Bananas.</p></div><div class="meal"><b>🍛 Lunch:</b><p>Tofu/Paneer, 2 Cups Rice, Dal, Salad.</p></div><div class="meal"><b>🥛 Dinner:</b><p>Soya Chunks, 4 Roti, Ashwagandha Milk.</p></div>`,
@@ -403,6 +418,17 @@
         const multiplier = parseFloat(document.getElementById('fitnessGoal').value);
         if (!weight) { alert("Pehle Weight (kg) bhariye!"); return; }
         document.getElementById('protRes').innerHTML = `<div style="background:rgba(46, 204, 113, 0.1); padding:10px; border-radius:5px; border-left:4px solid #2ecc71;"><p>Target: <b style="font-size:1.2rem; color:#2ecc71;">${(weight * multiplier).toFixed(1)}g</b>/day</p></div>`;
+    }
+
+    // -------------------------------------------------------------
+    // MORE FEATURES MODAL LOGIC
+    // -------------------------------------------------------------
+    function openMoreFeaturesModal() {
+        document.getElementById('moreFeaturesModal').style.display = 'flex';
+    }
+
+    function closeMoreFeaturesModal() {
+        document.getElementById('moreFeaturesModal').style.display = 'none';
     }
 
     // -------------------------------------------------------------
@@ -548,7 +574,7 @@
         if (!val) { alert("Kripya sahi weight (kg) bhariye!"); return; }
         let dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
         weightLogs.push({ date: dateStr, weight: val });
-        if(weightLogs.length > 8) weightLogs.shift(); // Keep latest 8 records
+        if(weightLogs.length > 8) weightLogs.shift();
         localStorage.setItem('smartGymWeightLogs', JSON.stringify(weightLogs));
         document.getElementById('weightInput').value = "";
         renderWeightChart();
