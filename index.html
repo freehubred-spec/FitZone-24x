@@ -249,15 +249,32 @@
         <div id="protRes" style="margin-top:15px; text-align:center;"></div>
     </div>
 
-    <!-- TOOLS SECTION -->
+    <!-- CALORIE BURN CALCULATOR (RENAMED FROM SMART GYM TOOLS) -->
     <div class="card">
-        <h3>🛠️ Smart Gym Tools</h3>
+        <h3>🔥 Calorie Burn Calculator</h3>
         <div id="stopwatch">00:00:00</div>
         <div class="grid-3">
             <button class="btn-main" style="background:var(--accent); padding: 8px;" onclick="startTimer()">Start</button>
             <button class="btn-main" style="background:var(--warning); padding: 8px;" onclick="pauseTimer()">Pause</button>
             <button class="btn-main" style="background:var(--primary); padding: 8px;" onclick="resetTimer()">Reset</button>
         </div>
+
+        <!-- EXERCISE & WEIGHT CALORIE CALCULATOR SECTION -->
+        <div style="margin-top: 15px; background: #181818; padding: 12px; border-radius: 8px; border: 1px solid var(--primary);">
+            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Exercise Select Karein:</label>
+            <select id="calorieExSelect"></select>
+
+            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Aapka Weight (kg):</label>
+            <input type="number" id="calorieUserWeight" placeholder="Enter Weight in kg (e.g. 70)">
+
+            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Workout Time (Minutes) - [Khali chhodein agar Timer ka waqt use karna ho]:</label>
+            <input type="number" id="calorieCustomTime" placeholder="Duration in minutes (Optional)">
+
+            <button class="btn-main" style="margin-top: 10px; background: var(--accent);" onclick="calculateExerciseCalories()">Calculate Burned Calories 🔥</button>
+
+            <div id="calorieResult" style="margin-top: 10px; font-weight: bold; font-size: 0.95rem; text-align: center;"></div>
+        </div>
+
         <div style="margin-top: 20px;">
             <b style="font-size: 0.85rem; color: var(--blue);">Muscle Map Selector:</b>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 10px;">
@@ -340,6 +357,85 @@
         legs: [{n:"Barbell Squats",p:"https://i.ibb.co/DHX0YmcF/barbell-squat.jpg"},{n:"Leg Extension",p:"https://i.ibb.co/tw9FcpGx/leg-extension.jpg"},{n:"Hamstring Curls",p:"https://i.ibb.co/bj9gfJj1/humstring-curl.jpg"},{n:"Calf Extension",p:"https://i.ibb.co/rRjnwRfv/calf-extension.jpg"}],
         shoulder: [{n:"Dumbbell Shoulder Press",p:"https://i.ibb.co/mCBDFFPW/shoulder-press.jpg"},{n:"Lateral Raises",p:"https://i.ibb.co/MyBbktLp/lateral-raise.jpg"},{n:"Bent Over Flys",p:"https://i.ibb.co/m5MDVM19/dumbbell-fly.jpg"},{n:"Shrugs",p:"https://i.ibb.co/N6Mz1SCQ/shrugs.jpg"},{n:"Upright Rows",p:"https://i.ibb.co/5ZJbWMt/upright-row.jpg"}]
     };
+
+    // MET INTENSITY MAP FOR EXERCISES
+    const exerciseMETs = {
+        "Parallel Bar Dips": 8.0, "Deadlifts": 8.0, "Pull Ups": 8.0,
+        "Barbell Squats": 7.5, "Heavyweight Lifting": 7.0,
+        "Incline Bench Press": 6.0, "Decline Bench Press": 6.0, "Flat Bench Press": 6.0,
+        "T-Bar Row": 6.0, "Barbell Rows": 6.0, "Dumbbell Shoulder Press": 5.5,
+        "Close Grip Bench": 5.5, "Wide Grip Pull Down": 5.5,
+        "Chest Fly Machine": 5.0, "Cable Row": 5.0, "Leg Extension": 5.0,
+        "Hamstring Curls": 5.0, "Upright Rows": 5.0, "Pulley Pushdown": 4.5,
+        "Rope Pushdown": 4.5, "Reverse Triceps Pushdown": 4.5, "Barbell Curl": 4.5,
+        "Dumbbell Curls": 4.5, "Preacher Curl": 4.5, "Hammer Curl": 4.5,
+        "Bent Over Flys": 4.5, "Shrugs": 4.5, "Concentration Curl": 4.0,
+        "Calf Extension": 4.0, "Lateral Raises": 4.0
+    };
+
+    function populateCalorieExercises() {
+        let select = document.getElementById('calorieExSelect');
+        if (!select) return;
+        select.innerHTML = "";
+
+        for (let group in db) {
+            let optGroup = document.createElement('optgroup');
+            optGroup.label = group.toUpperCase();
+            db[group].forEach(ex => {
+                let opt = document.createElement('option');
+                let met = exerciseMETs[ex.n] || 5.0;
+                opt.value = met;
+                opt.innerText = ex.n;
+                optGroup.appendChild(opt);
+            });
+            select.appendChild(optGroup);
+        }
+    }
+
+    function calculateExerciseCalories() {
+        let exSelect = document.getElementById('calorieExSelect');
+        let weightInput = parseFloat(document.getElementById('calorieUserWeight').value);
+        let customTime = parseFloat(document.getElementById('calorieCustomTime').value);
+        let resDiv = document.getElementById('calorieResult');
+
+        // Auto fetch weight from BMI if not entered manually
+        if (!weightInput) {
+            let bmiWeight = parseFloat(document.getElementById('w').value);
+            if (bmiWeight) {
+                weightInput = bmiWeight;
+                document.getElementById('calorieUserWeight').value = weightInput;
+            }
+        }
+
+        if (!weightInput || weightInput <= 0) {
+            alert("Kripya apna Weight (kg) bhariye!");
+            return;
+        }
+
+        let durationMinutes = 0;
+        if (!isNaN(customTime) && customTime > 0) {
+            durationMinutes = customTime;
+        } else if (sec > 0) {
+            durationMinutes = sec / 60;
+        } else {
+            alert("Kripya Timer START karein ya Workout Time (Minutes) bhariye!");
+            return;
+        }
+
+        let met = parseFloat(exSelect.value) || 5.0;
+        let selectedExName = exSelect.options[exSelect.selectedIndex].text;
+
+        // Calorie Formula: MET * Weight (kg) * Duration (Hours)
+        let durationHours = durationMinutes / 60;
+        let caloriesBurned = met * weightInput * durationHours;
+
+        resDiv.innerHTML = `
+            <div style="background: rgba(46, 204, 113, 0.15); padding: 10px; border-radius: 8px; border: 1px solid var(--accent); margin-top: 5px;">
+                🔥 <b>${caloriesBurned.toFixed(1)} kcal Burned!</b><br>
+                <small style="color: #ccc; font-weight: normal;">Exercise: ${selectedExName} | Duration: ${durationMinutes.toFixed(1)} mins | Weight: ${weightInput} kg</small>
+            </div>
+        `;
+    }
 
     // EXTENSIVE FOOD NUTRITION DATABASE (PER 100G)
     const foodDb = {
@@ -492,6 +588,11 @@
         targetWater = Math.round(w / 7);
         document.getElementById('waterTarget').innerText = `Target: ${targetWater} Glass`;
         document.getElementById('waterVal').innerText = `0 / ${targetWater}`;
+        
+        // Auto sync weight to Calorie Calculator
+        if(!document.getElementById('calorieUserWeight').value) {
+            document.getElementById('calorieUserWeight').value = w;
+        }
     }
 
     function updateAll() {
@@ -864,6 +965,7 @@
     }
 
     // INITIALIZATION
+    populateCalorieExercises();
     filterFoodCategory('veg');
     updateAll();
     initStreakAndAttendance();
