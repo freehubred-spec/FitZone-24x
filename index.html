@@ -88,7 +88,7 @@
     <img id="big-img" src="">
 </div>
 
-<!-- MORE FEATURES MODAL (CONTAINING NUTRITION CALCULATOR & SUPPLEMENTS) -->
+<!-- MORE FEATURES MODAL -->
 <div id="moreFeaturesModal" class="image-viewer">
     <div class="alarm-modal-body" style="max-height: 85vh; overflow-y: auto;">
         <span class="close-viewer" style="top: 10px; right: 15px; font-size: 28px;" onclick="closeMoreFeaturesModal()">&times;</span>
@@ -110,11 +110,10 @@
             <input type="number" id="foodWeight" value="100" placeholder="Weight in grams (e.g. 100)" oninput="calculateFoodNutrition()">
 
             <div id="foodNutritionResult" style="margin-top: 12px; background: #252525; padding: 10px; border-radius: 6px; font-size: 0.85rem; border-left: 4px solid var(--accent);">
-                <!-- Calculated Result shows here -->
             </div>
         </div>
 
-        <!-- SUPPLEMENTS SECTION INSIDE MORE FEATURES -->
+        <!-- SUPPLEMENTS SECTION -->
         <div style="background: #181818; padding: 12px; border-radius: 8px; border: 1px solid var(--accent); margin-bottom: 15px;">
             <h4 style="color: var(--accent); margin: 0 0 10px 0; font-size: 1rem;">💊 Recommended Supplements</h4>
             <div id="supplementArea"></div>
@@ -145,7 +144,6 @@
 
 <div class="container">
 
-    <!-- MORE FEATURES BUTTON DIRECT ACCESS -->
     <button class="btn-main" style="background: var(--purple); margin-bottom: 15px; font-size: 1rem;" onclick="openMoreFeaturesModal()">⚡ More Features (Food Calculator & Supplements)</button>
 
     <!-- STREAK & GYM ATTENDANCE CARD -->
@@ -172,7 +170,7 @@
         <div id="res" style="text-align:center; margin-top:15px; font-weight:bold; font-size: 1.1rem;"></div>
     </div>
 
-    <!-- WEIGHT & PROGRESS GRAPH LOGGER -->
+    <!-- WEIGHT LOGGER -->
     <div class="card">
         <h3>📈 Weight & Progress Logger</h3>
         <div style="display:flex; gap:10px;">
@@ -249,7 +247,7 @@
         <div id="protRes" style="margin-top:15px; text-align:center;"></div>
     </div>
 
-    <!-- CALORIE BURN CALCULATOR (RENAMED FROM SMART GYM TOOLS) -->
+    <!-- CALORIE BURN CALCULATOR -->
     <div class="card">
         <h3>🔥 Calorie Burn Calculator</h3>
         <div id="stopwatch">00:00:00</div>
@@ -259,15 +257,14 @@
             <button class="btn-main" style="background:var(--primary); padding: 8px;" onclick="resetTimer()">Reset</button>
         </div>
 
-        <!-- EXERCISE & WEIGHT CALORIE CALCULATOR SECTION -->
         <div style="margin-top: 15px; background: #181818; padding: 12px; border-radius: 8px; border: 1px solid var(--primary);">
-            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Exercise Select Karein:</label>
+            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Exercise / Pre-Workout Select Karein:</label>
             <select id="calorieExSelect"></select>
 
             <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Aapka Weight (kg):</label>
             <input type="number" id="calorieUserWeight" placeholder="Enter Weight in kg (e.g. 70)">
 
-            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Workout Time (Minutes) - [Khali chhodein agar Timer ka waqt use karna ho]:</label>
+            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Workout Time (Minutes) - [Khali chhodein agar Timer use karna ho]:</label>
             <input type="number" id="calorieCustomTime" placeholder="Duration in minutes (Optional)">
 
             <button class="btn-main" style="margin-top: 10px; background: var(--accent);" onclick="calculateExerciseCalories()">Calculate Burned Calories 🔥</button>
@@ -276,14 +273,17 @@
         </div>
 
         <div style="margin-top: 20px;">
-            <b style="font-size: 0.85rem; color: var(--blue);">Muscle Map Selector:</b>
+            <b style="font-size: 0.85rem; color: var(--blue);">Muscle & Activity Selector:</b>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 10px;">
+                <div class="muscle-map-btn" style="background: var(--primary);" onclick="filterWorkout('preworkout')">Pre-Workout / Cardio</div>
                 <div class="muscle-map-btn" onclick="filterWorkout('chest')">Chest</div>
                 <div class="muscle-map-btn" onclick="filterWorkout('back')">Back</div>
                 <div class="muscle-map-btn" onclick="filterWorkout('legs')">Legs</div>
                 <div class="muscle-map-btn" onclick="filterWorkout('bicep')">Bicep</div>
                 <div class="muscle-map-btn" onclick="filterWorkout('tricep')">Tricep</div>
                 <div class="muscle-map-btn" onclick="filterWorkout('shoulder')">Shoulder</div>
+                <div class="muscle-map-btn" onclick="filterWorkout('abs')">Abs & Core</div>
+                <div class="muscle-map-btn" onclick="filterWorkout('forearm')">Forearms</div>
             </div>
             <div id="quickView"></div>
         </div>
@@ -349,28 +349,229 @@
 </div>
 
 <script>
+    // COMPLETE WORLD CLASS GYM & PRE-WORKOUT EXERCISE DATABASE
     const db = {
-        chest: [{n:"Incline Bench Press",p:"https://i.ibb.co/MDhpXw7p/incline-bench-press.jpg"},{n:"Decline Bench Press",p:"https://i.ibb.co/CKkWXTr7/decline-bench-press.jpg"},{n:"Flat Bench Press",p:"https://i.ibb.co/G38QLCHG/flate-bench-press.jpg"},{n:"Chest Fly Machine",p:"https://i.ibb.co/3Yz9JHgz/chest-fly-machine.jpg"},{n:"Parallel Bar Dips",p:"https://i.ibb.co/V0j64Qs0/parallel-bar-dips.jpg"},{n:"Heavyweight Lifting",p:"https://i.ibb.co/rfG772z8/heavyweight-lifting.jpg"}],
-        tricep: [{n:"Pulley Pushdown",p:"https://i.ibb.co/nNQjBK24/pulley-push-down.jpg"},{n:"Close Grip Bench",p:"https://i.ibb.co/TxJQzXQf/close-grip-bench.jpg"},{n:"Rope Pushdown",p:"https://i.ibb.co/Zp7ZV37W/cable-pushdown.jpg"},{n:"Reverse Triceps Pushdown",p:"https://i.ibb.co/5hhpqvvw/cable-tricep-pushdown.jpg"}],
-        back: [{n:"Pull Ups",p:"https://i.ibb.co/zT69dCps/pull-ups.jpg"},{n:"Wide Grip Pull Down",p:"https://i.ibb.co/1YQQZxb0/wide-grip-pulldown.jpg"},{n:"T-Bar Row",p:"https://i.ibb.co/KjL9r1jb/t-bar-row.jpg"},{n:"Barbell Rows",p:"https://i.ibb.co/B5Y2XNyc/barbell-row.jpg"},{n:"Cable Row",p:"https://i.ibb.co/LX4PcVZw/cable-row.jpg"},{n:"Deadlifts",p:"https://i.ibb.co/qLZJtnZW/deadlift.jpg"}],
-        bicep: [{n:"Barbell Curl",p:"https://i.ibb.co/jpLwxZv/barbell-curl.jpg"},{n:"Dumbbell Curls",p:"https://i.ibb.co/fYY622pD/dumbbell-curl.jpg"},{n:"Preacher Curl",p:"https://i.ibb.co/2LzRLqs/preacher-curl.jpg"},{n:"Concentration Curl",p:"https://i.ibb.co/Z1VcqnMm/concentration-curl.jpg"},{n:"Hammer Curl",p:"https://i.ibb.co/6cMVfjrR/hammer-curl.jpg"}],
-        legs: [{n:"Barbell Squats",p:"https://i.ibb.co/DHX0YmcF/barbell-squat.jpg"},{n:"Leg Extension",p:"https://i.ibb.co/tw9FcpGx/leg-extension.jpg"},{n:"Hamstring Curls",p:"https://i.ibb.co/bj9gfJj1/humstring-curl.jpg"},{n:"Calf Extension",p:"https://i.ibb.co/rRjnwRfv/calf-extension.jpg"}],
-        shoulder: [{n:"Dumbbell Shoulder Press",p:"https://i.ibb.co/mCBDFFPW/shoulder-press.jpg"},{n:"Lateral Raises",p:"https://i.ibb.co/MyBbktLp/lateral-raise.jpg"},{n:"Bent Over Flys",p:"https://i.ibb.co/m5MDVM19/dumbbell-fly.jpg"},{n:"Shrugs",p:"https://i.ibb.co/N6Mz1SCQ/shrugs.jpg"},{n:"Upright Rows",p:"https://i.ibb.co/5ZJbWMt/upright-row.jpg"}]
+        preworkout: [
+            {n:"Running / Treadmill", p:"https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=300"},
+            {n:"Cycling / Exercise Bike", p:"https://images.unsplash.com/photo-1517649763962-0c623266ddc0?w=300"},
+            {n:"Jumping Jacks", p:"https://images.unsplash.com/photo-1518611012118-696072aa579a?w=300"},
+            {n:"Rope Skipping / Jump Rope", p:"https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?w=300"},
+            {n:"High Knees Running", p:"https://images.unsplash.com/photo-1434596922112-19c563067271?w=300"},
+            {n:"Burpees", p:"https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=300"},
+            {n:"Mountain Climbers", p:"https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=300"},
+            {n:"Stair Master / Stair Climbing", p:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300"},
+            {n:"Rowing Machine", p:"https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=300"},
+            {n:"Cross Trainer / Elliptical", p:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300"}
+        ],
+        chest: [
+            {n:"Flat Bench Press",p:"https://i.ibb.co/G38QLCHG/flate-bench-press.jpg"},
+            {n:"Incline Bench Press",p:"https://i.ibb.co/MDhpXw7p/incline-bench-press.jpg"},
+            {n:"Decline Bench Press",p:"https://i.ibb.co/CKkWXTr7/decline-bench-press.jpg"},
+            {n:"Dumbbell Flat Bench Press",p:"https://i.ibb.co/G38QLCHG/flate-bench-press.jpg"},
+            {n:"Dumbbell Incline Press",p:"https://i.ibb.co/MDhpXw7p/incline-bench-press.jpg"},
+            {n:"Dumbbell Decline Press",p:"https://i.ibb.co/CKkWXTr7/decline-bench-press.jpg"},
+            {n:"Chest Fly Machine (Pec Deck)",p:"https://i.ibb.co/3Yz9JHgz/chest-fly-machine.jpg"},
+            {n:"Dumbbell Chest Fly",p:"https://i.ibb.co/3Yz9JHgz/chest-fly-machine.jpg"},
+            {n:"Cable Crossover (High to Low)",p:"https://i.ibb.co/3Yz9JHgz/chest-fly-machine.jpg"},
+            {n:"Cable Crossover (Low to High)",p:"https://i.ibb.co/3Yz9JHgz/chest-fly-machine.jpg"},
+            {n:"Parallel Bar Dips",p:"https://i.ibb.co/V0j64Qs0/parallel-bar-dips.jpg"},
+            {n:"Push-ups (Standard)",p:"https://i.ibb.co/V0j64Qs0/parallel-bar-dips.jpg"},
+            {n:"Incline Push-ups",p:"https://i.ibb.co/V0j64Qs0/parallel-bar-dips.jpg"},
+            {n:"Decline Push-ups",p:"https://i.ibb.co/V0j64Qs0/parallel-bar-dips.jpg"},
+            {n:"Dumbbell Pullover",p:"https://i.ibb.co/rfG772z8/heavyweight-lifting.jpg"},
+            {n:"Heavyweight Lifting",p:"https://i.ibb.co/rfG772z8/heavyweight-lifting.jpg"}
+        ],
+        back: [
+            {n:"Deadlifts",p:"https://i.ibb.co/qLZJtnZW/deadlift.jpg"},
+            {n:"Pull Ups",p:"https://i.ibb.co/zT69dCps/pull-ups.jpg"},
+            {n:"Chin Ups",p:"https://i.ibb.co/zT69dCps/pull-ups.jpg"},
+            {n:"Wide Grip Lat Pulldown",p:"https://i.ibb.co/1YQQZxb0/wide-grip-pulldown.jpg"},
+            {n:"Close Grip Lat Pulldown",p:"https://i.ibb.co/1YQQZxb0/wide-grip-pulldown.jpg"},
+            {n:"Reverse Grip Lat Pulldown",p:"https://i.ibb.co/1YQQZxb0/wide-grip-pulldown.jpg"},
+            {n:"Barbell Bent-Over Row",p:"https://i.ibb.co/B5Y2XNyc/barbell-row.jpg"},
+            {n:"Single Arm Dumbbell Row",p:"https://i.ibb.co/KjL9r1jb/t-bar-row.jpg"},
+            {n:"T-Bar Row",p:"https://i.ibb.co/KjL9r1jb/t-bar-row.jpg"},
+            {n:"Seated Cable Row",p:"https://i.ibb.co/LX4PcVZw/cable-row.jpg"},
+            {n:"Hyperextension / Back Extension",p:"https://i.ibb.co/qLZJtnZW/deadlift.jpg"},
+            {n:"Lat Pullover (Cable/Dumbbell)",p:"https://i.ibb.co/LX4PcVZw/cable-row.jpg"}
+        ],
+        bicep: [
+            {n:"Barbell Curl",p:"https://i.ibb.co/jpLwxZv/barbell-curl.jpg"},
+            {n:"EZ Bar Curl",p:"https://i.ibb.co/jpLwxZv/barbell-curl.jpg"},
+            {n:"Dumbbell Curls",p:"https://i.ibb.co/fYY622pD/dumbbell-curl.jpg"},
+            {n:"Hammer Curl",p:"https://i.ibb.co/6cMVfjrR/hammer-curl.jpg"},
+            {n:"Preacher Curl (Barbell/Dumbbell)",p:"https://i.ibb.co/2LzRLqs/preacher-curl.jpg"},
+            {n:"Concentration Curl",p:"https://i.ibb.co/Z1VcqnMm/concentration-curl.jpg"},
+            {n:"Incline Dumbbell Curl",p:"https://i.ibb.co/fYY622pD/dumbbell-curl.jpg"},
+            {n:"Cable Bicep Curl",p:"https://i.ibb.co/jpLwxZv/barbell-curl.jpg"},
+            {n:"Spider Curl",p:"https://i.ibb.co/2LzRLqs/preacher-curl.jpg"},
+            {n:"21s Bicep Curl",p:"https://i.ibb.co/jpLwxZv/barbell-curl.jpg"}
+        ],
+        tricep: [
+            {n:"Pulley Pushdown (Straight Bar)",p:"https://i.ibb.co/nNQjBK24/pulley-push-down.jpg"},
+            {n:"Rope Pushdown",p:"https://i.ibb.co/Zp7ZV37W/cable-pushdown.jpg"},
+            {n:"Reverse Triceps Pushdown",p:"https://i.ibb.co/5hhpqvvw/cable-tricep-pushdown.jpg"},
+            {n:"Close Grip Bench Press",p:"https://i.ibb.co/TxJQzXQf/close-grip-bench.jpg"},
+            {n:"Skull Crushers (EZ Bar)",p:"https://i.ibb.co/TxJQzXQf/close-grip-bench.jpg"},
+            {n:"Overhead Dumbbell Extension",p:"https://i.ibb.co/Zp7ZV37W/cable-pushdown.jpg"},
+            {n:"Tricep Dips (Bench Dips)",p:"https://i.ibb.co/V0j64Qs0/parallel-bar-dips.jpg"},
+            {n:"Dumbbell Kickbacks",p:"https://i.ibb.co/5hhpqvvw/cable-tricep-pushdown.jpg"},
+            {n:"Overhead Cable Extension",p:"https://i.ibb.co/Zp7ZV37W/cable-pushdown.jpg"}
+        ],
+        shoulder: [
+            {n:"Dumbbell Shoulder Press",p:"https://i.ibb.co/mCBDFFPW/shoulder-press.jpg"},
+            {n:"Barbell Overhead Press (Military Press)",p:"https://i.ibb.co/mCBDFFPW/shoulder-press.jpg"},
+            {n:"Arnold Press",p:"https://i.ibb.co/mCBDFFPW/shoulder-press.jpg"},
+            {n:"Dumbbell Lateral Raises",p:"https://i.ibb.co/MyBbktLp/lateral-raise.jpg"},
+            {n:"Cable Lateral Raises",p:"https://i.ibb.co/MyBbktLp/lateral-raise.jpg"},
+            {n:"Front Dumbbell Raise",p:"https://i.ibb.co/MyBbktLp/lateral-raise.jpg"},
+            {n:"Bent Over Rear Delt Flys",p:"https://i.ibb.co/m5MDVM19/dumbbell-fly.jpg"},
+            {n:"Face Pulls (Cable)",p:"https://i.ibb.co/m5MDVM19/dumbbell-fly.jpg"},
+            {n:"Barbell / Dumbbell Shrugs",p:"https://i.ibb.co/N6Mz1SCQ/shrugs.jpg"},
+            {n:"Upright Rows",p:"https://i.ibb.co/5ZJbWMt/upright-row.jpg"}
+        ],
+        legs: [
+            {n:"Barbell Squats",p:"https://i.ibb.co/DHX0YmcF/barbell-squat.jpg"},
+            {n:"Front Squats",p:"https://i.ibb.co/DHX0YmcF/barbell-squat.jpg"},
+            {n:"Leg Press Machine",p:"https://i.ibb.co/tw9FcpGx/leg-extension.jpg"},
+            {n:"Leg Extension",p:"https://i.ibb.co/tw9FcpGx/leg-extension.jpg"},
+            {n:"Hamstring Curls (Lying/Seated)",p:"https://i.ibb.co/bj9gfJj1/humstring-curl.jpg"},
+            {n:"Romanian Deadlift (RDL)",p:"https://i.ibb.co/qLZJtnZW/deadlift.jpg"},
+            {n:"Walking Lunges / Dumbbell Lunges",p:"https://i.ibb.co/DHX0YmcF/barbell-squat.jpg"},
+            {n:"Bulgarian Split Squats",p:"https://i.ibb.co/DHX0YmcF/barbell-squat.jpg"},
+            {n:"Calf Extension / Standing Calf Raise",p:"https://i.ibb.co/rRjnwRfv/calf-extension.jpg"},
+            {n:"Seated Calf Raise",p:"https://i.ibb.co/rRjnwRfv/calf-extension.jpg"},
+            {n:"Sumo Squats",p:"https://i.ibb.co/DHX0YmcF/barbell-squat.jpg"}
+        ],
+        abs: [
+            {n:"Crunches",p:"https://i.ibb.co/V0j64Qs0/parallel-bar-dips.jpg"},
+            {n:"Plank (Hold)",p:"https://i.ibb.co/V0j64Qs0/parallel-bar-dips.jpg"},
+            {n:"Leg Raises (Lying / Hanging)",p:"https://i.ibb.co/zT69dCps/pull-ups.jpg"},
+            {n:"Russian Twists",p:"https://i.ibb.co/V0j64Qs0/parallel-bar-dips.jpg"},
+            {n:"Ab Roller / Wheel Rollout",p:"https://i.ibb.co/V0j64Qs0/parallel-bar-dips.jpg"},
+            {n:"Cable Rope Crunch",p:"https://i.ibb.co/Zp7ZV37W/cable-pushdown.jpg"},
+            {n:"Bicycle Crunches",p:"https://i.ibb.co/V0j64Qs0/parallel-bar-dips.jpg"},
+            {n:"Side Plank",p:"https://i.ibb.co/V0j64Qs0/parallel-bar-dips.jpg"}
+        ],
+        forearm: [
+            {n:"Wrist Curls (Barbell/Dumbbell)",p:"https://i.ibb.co/jpLwxZv/barbell-curl.jpg"},
+            {n:"Reverse Wrist Curls",p:"https://i.ibb.co/jpLwxZv/barbell-curl.jpg"},
+            {n:"Reverse Grip Bicep Curls",p:"https://i.ibb.co/6cMVfjrR/hammer-curl.jpg"},
+            {n:"Farmer's Walk",p:"https://i.ibb.co/rfG772z8/heavyweight-lifting.jpg"},
+            {n:"Wrist Roller",p:"https://i.ibb.co/jpLwxZv/barbell-curl.jpg"}
+        ]
     };
 
-    // MET INTENSITY MAP FOR EXERCISES
+    // MET INTENSITY MAP FOR ALL EXERCISES
     const exerciseMETs = {
-        "Parallel Bar Dips": 8.0, "Deadlifts": 8.0, "Pull Ups": 8.0,
-        "Barbell Squats": 7.5, "Heavyweight Lifting": 7.0,
-        "Incline Bench Press": 6.0, "Decline Bench Press": 6.0, "Flat Bench Press": 6.0,
-        "T-Bar Row": 6.0, "Barbell Rows": 6.0, "Dumbbell Shoulder Press": 5.5,
-        "Close Grip Bench": 5.5, "Wide Grip Pull Down": 5.5,
-        "Chest Fly Machine": 5.0, "Cable Row": 5.0, "Leg Extension": 5.0,
-        "Hamstring Curls": 5.0, "Upright Rows": 5.0, "Pulley Pushdown": 4.5,
-        "Rope Pushdown": 4.5, "Reverse Triceps Pushdown": 4.5, "Barbell Curl": 4.5,
-        "Dumbbell Curls": 4.5, "Preacher Curl": 4.5, "Hammer Curl": 4.5,
-        "Bent Over Flys": 4.5, "Shrugs": 4.5, "Concentration Curl": 4.0,
-        "Calf Extension": 4.0, "Lateral Raises": 4.0
+        // Pre-Workout & Cardio
+        "Running / Treadmill": 9.8,
+        "Cycling / Exercise Bike": 8.5,
+        "Rope Skipping / Jump Rope": 11.0,
+        "Burpees": 10.0,
+        "High Knees Running": 9.0,
+        "Mountain Climbers": 8.5,
+        "Jumping Jacks": 8.0,
+        "Stair Master / Stair Climbing": 9.0,
+        "Rowing Machine": 8.5,
+        "Cross Trainer / Elliptical": 7.0,
+
+        // Chest
+        "Parallel Bar Dips": 8.0,
+        "Heavyweight Lifting": 7.0,
+        "Flat Bench Press": 6.0,
+        "Incline Bench Press": 6.0,
+        "Decline Bench Press": 6.0,
+        "Dumbbell Flat Bench Press": 6.0,
+        "Dumbbell Incline Press": 6.0,
+        "Dumbbell Decline Press": 6.0,
+        "Push-ups (Standard)": 8.0,
+        "Incline Push-ups": 6.0,
+        "Decline Push-ups": 8.5,
+        "Chest Fly Machine (Pec Deck)": 5.0,
+        "Dumbbell Chest Fly": 5.0,
+        "Cable Crossover (High to Low)": 5.5,
+        "Cable Crossover (Low to High)": 5.5,
+        "Dumbbell Pullover": 5.5,
+
+        // Back
+        "Deadlifts": 8.0,
+        "Pull Ups": 8.0,
+        "Chin Ups": 8.0,
+        "Wide Grip Lat Pulldown": 5.5,
+        "Close Grip Lat Pulldown": 5.5,
+        "Reverse Grip Lat Pulldown": 5.5,
+        "Barbell Bent-Over Row": 6.0,
+        "Single Arm Dumbbell Row": 6.0,
+        "T-Bar Row": 6.0,
+        "Seated Cable Row": 5.0,
+        "Hyperextension / Back Extension": 5.0,
+        "Lat Pullover (Cable/Dumbbell)": 5.0,
+
+        // Legs
+        "Barbell Squats": 7.5,
+        "Front Squats": 7.5,
+        "Leg Press Machine": 6.5,
+        "Leg Extension": 5.0,
+        "Hamstring Curls (Lying/Seated)": 5.0,
+        "Romanian Deadlift (RDL)": 7.0,
+        "Walking Lunges / Dumbbell Lunges": 6.5,
+        "Bulgarian Split Squats": 7.0,
+        "Calf Extension / Standing Calf Raise": 4.0,
+        "Seated Calf Raise": 4.0,
+        "Sumo Squats": 7.0,
+
+        // Bicep
+        "Barbell Curl": 4.5,
+        "EZ Bar Curl": 4.5,
+        "Dumbbell Curls": 4.5,
+        "Hammer Curl": 4.5,
+        "Preacher Curl (Barbell/Dumbbell)": 4.5,
+        "Concentration Curl": 4.0,
+        "Incline Dumbbell Curl": 4.5,
+        "Cable Bicep Curl": 4.5,
+        "Spider Curl": 4.5,
+        "21s Bicep Curl": 5.0,
+
+        // Tricep
+        "Pulley Pushdown (Straight Bar)": 4.5,
+        "Rope Pushdown": 4.5,
+        "Reverse Triceps Pushdown": 4.5,
+        "Close Grip Bench Press": 5.5,
+        "Skull Crushers (EZ Bar)": 5.5,
+        "Overhead Dumbbell Extension": 5.0,
+        "Tricep Dips (Bench Dips)": 6.0,
+        "Dumbbell Kickbacks": 4.5,
+        "Overhead Cable Extension": 5.0,
+
+        // Shoulder
+        "Dumbbell Shoulder Press": 5.5,
+        "Barbell Overhead Press (Military Press)": 6.0,
+        "Arnold Press": 5.5,
+        "Dumbbell Lateral Raises": 4.0,
+        "Cable Lateral Raises": 4.0,
+        "Front Dumbbell Raise": 4.0,
+        "Bent Over Rear Delt Flys": 4.5,
+        "Face Pulls (Cable)": 4.5,
+        "Barbell / Dumbbell Shrugs": 4.5,
+        "Upright Rows": 5.0,
+
+        // Abs & Core
+        "Crunches": 5.0,
+        "Plank (Hold)": 4.5,
+        "Leg Raises (Lying / Hanging)": 6.0,
+        "Russian Twists": 5.5,
+        "Ab Roller / Wheel Rollout": 7.0,
+        "Cable Rope Crunch": 5.5,
+        "Bicycle Crunches": 6.0,
+        "Side Plank": 4.5,
+
+        // Forearm
+        "Wrist Curls (Barbell/Dumbbell)": 3.5,
+        "Reverse Wrist Curls": 3.5,
+        "Reverse Grip Bicep Curls": 4.0,
+        "Farmer's Walk": 7.5,
+        "Wrist Roller": 4.0
     };
 
     function populateCalorieExercises() {
@@ -398,7 +599,6 @@
         let customTime = parseFloat(document.getElementById('calorieCustomTime').value);
         let resDiv = document.getElementById('calorieResult');
 
-        // Auto fetch weight from BMI if not entered manually
         if (!weightInput) {
             let bmiWeight = parseFloat(document.getElementById('w').value);
             if (bmiWeight) {
@@ -425,14 +625,13 @@
         let met = parseFloat(exSelect.value) || 5.0;
         let selectedExName = exSelect.options[exSelect.selectedIndex].text;
 
-        // Calorie Formula: MET * Weight (kg) * Duration (Hours)
         let durationHours = durationMinutes / 60;
         let caloriesBurned = met * weightInput * durationHours;
 
         resDiv.innerHTML = `
             <div style="background: rgba(46, 204, 113, 0.15); padding: 10px; border-radius: 8px; border: 1px solid var(--accent); margin-top: 5px;">
                 🔥 <b>${caloriesBurned.toFixed(1)} kcal Burned!</b><br>
-                <small style="color: #ccc; font-weight: normal;">Exercise: ${selectedExName} | Duration: ${durationMinutes.toFixed(1)} mins | Weight: ${weightInput} kg</small>
+                <small style="color: #ccc; font-weight: normal;">Activity: ${selectedExName} | Duration: ${durationMinutes.toFixed(1)} mins | Weight: ${weightInput} kg</small>
             </div>
         `;
     }
@@ -589,7 +788,6 @@
         document.getElementById('waterTarget').innerText = `Target: ${targetWater} Glass`;
         document.getElementById('waterVal').innerText = `0 / ${targetWater}`;
         
-        // Auto sync weight to Calorie Calculator
         if(!document.getElementById('calorieUserWeight').value) {
             document.getElementById('calorieUserWeight').value = w;
         }
@@ -633,7 +831,6 @@
         };
         dietArea.innerHTML = `<div class="diet-box">${dietData[goal][currentDiet]}</div>`;
 
-        // DYNAMIC SUPPLEMENT DATA UPDATE INSIDE MORE FEATURES
         const suppData = {
             bulking: `<div style="background: #252525; padding: 12px; border-radius: 8px; border-left: 4px solid var(--accent);">
                 <b style="color: var(--accent); font-size: 0.95rem; display: block; margin-bottom: 5px;">💪 Bulking (Muscle Gain):</b>
