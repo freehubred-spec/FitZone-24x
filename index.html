@@ -38,9 +38,10 @@
         .exercise-item { display: flex; align-items: center; background: #252525; margin-bottom: 8px; padding: 10px; border-radius: 6px; }
         .ex-img { width: 65px; height: 65px; border-radius: 5px; object-fit: cover; background: #333; margin-right: 12px; cursor: pointer; }
         .diet-box { background: rgba(46, 204, 113, 0.05); border: 1px solid #333; padding: 15px; border-radius: 10px; }
-        .meal { margin-bottom: 15px; }
-        .meal b { color: var(--accent); display: block; }
-        .meal p { margin: 0; font-size: 0.9rem; color: #ccc; }
+        .meal { margin-bottom: 15px; background: #252525; padding: 10px; border-radius: 8px; border-left: 3px solid var(--accent); }
+        .meal b { color: var(--accent); display: block; font-size: 0.95rem; margin-bottom: 4px; }
+        .meal p { margin: 0; font-size: 0.85rem; color: #ccc; }
+        .meal-macro { font-size: 0.75rem; color: var(--warning); margin-top: 5px; font-weight: bold; }
         .yoga-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .yoga-card { background: #2d3436; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.8rem; }
         .yoga-card img { width: 100%; border-radius: 5px; height: 90px; object-fit: cover; margin-bottom: 5px; cursor: pointer; }
@@ -48,7 +49,8 @@
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
         .tool-card { background: #252525; padding: 12px; border-radius: 10px; border-top: 2px solid var(--blue); margin-bottom: 15px; }
         #stopwatch { font-family: monospace; font-size: 2.2rem; color: var(--accent); text-align: center; margin: 10px 0; }
-        .muscle-map-btn { padding: 10px; background: #333; border-radius: 5px; cursor: pointer; border: 1px solid #444; font-size: 0.75rem; text-align: center; }
+        .muscle-map-btn { padding: 12px 8px; background: #333; border-radius: 6px; cursor: pointer; border: 1px solid #444; font-size: 0.8rem; text-align: center; font-weight: bold; transition: 0.2s; }
+        .muscle-map-btn:hover { background: var(--primary); }
         .chat-container { height: 180px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; font-size: 0.8rem; border: 1px solid #333; }
         #biometric-btn { background: #6c5ce7; border: none; padding: 15px; border-radius: 8px; color: #fff; cursor: pointer; width: 100%; font-weight: bold; }
 
@@ -163,8 +165,8 @@
     <div class="card">
         <h3>📊 BMI Health Checker</h3>
         <div style="display:flex; gap:10px;">
-            <input type="number" id="w" placeholder="Weight (kg)">
-            <input type="number" id="h" placeholder="Height (cm)">
+            <input type="number" id="w" placeholder="Weight (kg)" oninput="syncInputs('w', this.value)">
+            <input type="number" id="h" placeholder="Height (cm)" oninput="syncInputs('h', this.value)">
         </div>
         <button class="btn-main" onclick="calcHealth()">Check Status</button>
         <div id="res" style="text-align:center; margin-top:15px; font-weight:bold; font-size: 1.1rem;"></div>
@@ -174,7 +176,7 @@
     <div class="card">
         <h3>📈 Weight & Progress Logger</h3>
         <div style="display:flex; gap:10px;">
-            <input type="number" id="weightInput" placeholder="Enter Weight (kg)" step="0.1">
+            <input type="number" id="weightInput" placeholder="Enter Weight (kg)" step="0.1" oninput="syncInputs('w', this.value)">
             <button class="btn-main" style="width: 120px;" onclick="addWeightLog()">Save</button>
         </div>
         <canvas id="weightChart" width="500" height="180" style="width:100%; height:180px; background:#111; border-radius:8px; margin-top:15px; border:1px solid #333;"></canvas>
@@ -185,7 +187,7 @@
     <div class="card">
         <h3>🔥 BMR & Daily Calories</h3>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <input type="number" id="age" placeholder="Age (Umar)">
+            <input type="number" id="age" placeholder="Age (Umar)" oninput="syncInputs('age', this.value)">
             <select id="sex">
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -201,7 +203,7 @@
         <div id="bmrRes" style="margin-top:15px; text-align:center;"></div>
     </div>
 
-    <!-- GOAL & DIET PREFERENCE -->
+    <!-- GOAL SECTION -->
     <div class="card">
         <h3>🎯 Select Workout Goal</h3>
         <select id="goal" onchange="updateAll()">
@@ -209,11 +211,25 @@
             <option value="weightloss">Weight Loss (Fat Burn)</option>
             <option value="cutting">Cutting Body (Max Cardio)</option>
         </select>
-        <h3 style="margin-top: 15px;">🥗 Diet Preference</h3>
-        <div style="display: flex; gap: 10px;">
-            <button id="btn-veg" class="btn-main" style="background:#2ecc71;" onclick="setDietType('veg')">Pure Veg</button>
-            <button id="btn-nonveg" class="btn-main" style="background:#e67e22;" onclick="setDietType('nonveg')">Non-Veg</button>
+    </div>
+
+    <!-- WORKOUT SCHEDULE AREA (Moved directly under Workout Goal) -->
+    <div class="card">
+        <h3>📅 Weekly Workout Schedule</h3>
+        <div id="workoutArea"></div>
+    </div>
+
+    <!-- DIET PLAN AREA (Diet Preference included here) -->
+    <div class="card">
+        <h3>📅 Extra Power Diet Plan</h3>
+        <div style="margin-bottom: 15px;">
+            <b style="font-size: 0.85rem; color: #aaa; display:block; margin-bottom: 6px;">Diet Preference Select Karein:</b>
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-veg" class="btn-main" style="background:#2ecc71;" onclick="setDietType('veg')">🟢 Pure Veg</button>
+                <button id="btn-nonveg" class="btn-main" style="background:#e67e22;" onclick="setDietType('nonveg')">🔴 Non-Veg</button>
+            </div>
         </div>
+        <div id="dietArea"></div>
     </div>
 
     <!-- 30 DAY FITNESS CHALLENGE -->
@@ -262,7 +278,7 @@
             <select id="calorieExSelect"></select>
 
             <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Aapka Weight (kg):</label>
-            <input type="number" id="calorieUserWeight" placeholder="Enter Weight in kg (e.g. 70)">
+            <input type="number" id="calorieUserWeight" placeholder="Enter Weight in kg (e.g. 70)" oninput="syncInputs('w', this.value)">
 
             <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Workout Time (Minutes) - [Khali chhodein agar Timer use karna ho]:</label>
             <input type="number" id="calorieCustomTime" placeholder="Duration in minutes (Optional)">
@@ -272,18 +288,13 @@
             <div id="calorieResult" style="margin-top: 10px; font-weight: bold; font-size: 0.95rem; text-align: center;"></div>
         </div>
 
+        <!-- EXTRA EXERCISE (Modified to only 3 options) -->
         <div style="margin-top: 20px;">
-            <b style="font-size: 0.85rem; color: var(--blue);">Muscle & Activity Selector:</b>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 10px;">
-                <div class="muscle-map-btn" style="background: var(--primary);" onclick="filterWorkout('preworkout')">Pre-Workout / Cardio</div>
-                <div class="muscle-map-btn" onclick="filterWorkout('chest')">Chest</div>
-                <div class="muscle-map-btn" onclick="filterWorkout('back')">Back</div>
-                <div class="muscle-map-btn" onclick="filterWorkout('legs')">Legs</div>
-                <div class="muscle-map-btn" onclick="filterWorkout('bicep')">Bicep</div>
-                <div class="muscle-map-btn" onclick="filterWorkout('tricep')">Tricep</div>
-                <div class="muscle-map-btn" onclick="filterWorkout('shoulder')">Shoulder</div>
-                <div class="muscle-map-btn" onclick="filterWorkout('abs')">Abs & Core</div>
-                <div class="muscle-map-btn" onclick="filterWorkout('forearm')">Forearms</div>
+            <b style="font-size: 0.9rem; color: var(--blue);">⚡ Extra Exercise:</b>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;">
+                <div class="muscle-map-btn" style="background: #2d3436; border-color: var(--primary);" onclick="filterWorkout('preworkout')">Pre-Workout / Cardio</div>
+                <div class="muscle-map-btn" style="background: #2d3436; border-color: var(--accent);" onclick="filterWorkout('abs')">Abs & Core</div>
+                <div class="muscle-map-btn" style="background: #2d3436; border-color: var(--blue);" onclick="filterWorkout('forearm')">Forearms</div>
             </div>
             <div id="quickView"></div>
         </div>
@@ -301,18 +312,6 @@
             <button class="btn-main" style="padding: 8px;" onclick="calcORM()">Calculate</button>
             <div id="orm-res" style="margin-top:5px; color:var(--accent); font-weight:bold;"></div>
         </div>
-    </div>
-
-    <!-- WORKOUT SCHEDULE AREA -->
-    <div class="card">
-        <h3>📅 Weekly Workout Schedule</h3>
-        <div id="workoutArea"></div>
-    </div>
-
-    <!-- DIET PLAN AREA -->
-    <div class="card">
-        <h3>📅 Extra Power Diet Plan</h3>
-        <div id="dietArea"></div>
     </div>
 
     <!-- COMMUNITY SECTION -->
@@ -349,6 +348,25 @@
 </div>
 
 <script>
+    // AUTO SYNC INPUTS FUNCTION (WEIGHT, HEIGHT, AGE)
+    function syncInputs(type, val) {
+        if (!val) return;
+        if (type === 'w') {
+            let w1 = document.getElementById('w');
+            let w2 = document.getElementById('weightInput');
+            let w3 = document.getElementById('calorieUserWeight');
+            if (w1 && w1.value !== val) w1.value = val;
+            if (w2 && w2.value !== val) w2.value = val;
+            if (w3 && w3.value !== val) w3.value = val;
+        } else if (type === 'h') {
+            let h1 = document.getElementById('h');
+            if (h1 && h1.value !== val) h1.value = val;
+        } else if (type === 'age') {
+            let age1 = document.getElementById('age');
+            if (age1 && age1.value !== val) age1.value = val;
+        }
+    }
+
     // COMPLETE WORLD CLASS GYM & PRE-WORKOUT EXERCISE DATABASE
     const db = {
         preworkout: [
@@ -464,114 +482,28 @@
 
     // MET INTENSITY MAP FOR ALL EXERCISES
     const exerciseMETs = {
-        // Pre-Workout & Cardio
-        "Running / Treadmill": 9.8,
-        "Cycling / Exercise Bike": 8.5,
-        "Rope Skipping / Jump Rope": 11.0,
-        "Burpees": 10.0,
-        "High Knees Running": 9.0,
-        "Mountain Climbers": 8.5,
-        "Jumping Jacks": 8.0,
-        "Stair Master / Stair Climbing": 9.0,
-        "Rowing Machine": 8.5,
-        "Cross Trainer / Elliptical": 7.0,
-
-        // Chest
-        "Parallel Bar Dips": 8.0,
-        "Heavyweight Lifting": 7.0,
-        "Flat Bench Press": 6.0,
-        "Incline Bench Press": 6.0,
-        "Decline Bench Press": 6.0,
-        "Dumbbell Flat Bench Press": 6.0,
-        "Dumbbell Incline Press": 6.0,
-        "Dumbbell Decline Press": 6.0,
-        "Push-ups (Standard)": 8.0,
-        "Incline Push-ups": 6.0,
-        "Decline Push-ups": 8.5,
-        "Chest Fly Machine (Pec Deck)": 5.0,
-        "Dumbbell Chest Fly": 5.0,
-        "Cable Crossover (High to Low)": 5.5,
-        "Cable Crossover (Low to High)": 5.5,
-        "Dumbbell Pullover": 5.5,
-
-        // Back
-        "Deadlifts": 8.0,
-        "Pull Ups": 8.0,
-        "Chin Ups": 8.0,
-        "Wide Grip Lat Pulldown": 5.5,
-        "Close Grip Lat Pulldown": 5.5,
-        "Reverse Grip Lat Pulldown": 5.5,
-        "Barbell Bent-Over Row": 6.0,
-        "Single Arm Dumbbell Row": 6.0,
-        "T-Bar Row": 6.0,
-        "Seated Cable Row": 5.0,
-        "Hyperextension / Back Extension": 5.0,
-        "Lat Pullover (Cable/Dumbbell)": 5.0,
-
-        // Legs
-        "Barbell Squats": 7.5,
-        "Front Squats": 7.5,
-        "Leg Press Machine": 6.5,
-        "Leg Extension": 5.0,
-        "Hamstring Curls (Lying/Seated)": 5.0,
-        "Romanian Deadlift (RDL)": 7.0,
-        "Walking Lunges / Dumbbell Lunges": 6.5,
-        "Bulgarian Split Squats": 7.0,
-        "Calf Extension / Standing Calf Raise": 4.0,
-        "Seated Calf Raise": 4.0,
-        "Sumo Squats": 7.0,
-
-        // Bicep
-        "Barbell Curl": 4.5,
-        "EZ Bar Curl": 4.5,
-        "Dumbbell Curls": 4.5,
-        "Hammer Curl": 4.5,
-        "Preacher Curl (Barbell/Dumbbell)": 4.5,
-        "Concentration Curl": 4.0,
-        "Incline Dumbbell Curl": 4.5,
-        "Cable Bicep Curl": 4.5,
-        "Spider Curl": 4.5,
-        "21s Bicep Curl": 5.0,
-
-        // Tricep
-        "Pulley Pushdown (Straight Bar)": 4.5,
-        "Rope Pushdown": 4.5,
-        "Reverse Triceps Pushdown": 4.5,
-        "Close Grip Bench Press": 5.5,
-        "Skull Crushers (EZ Bar)": 5.5,
-        "Overhead Dumbbell Extension": 5.0,
-        "Tricep Dips (Bench Dips)": 6.0,
-        "Dumbbell Kickbacks": 4.5,
-        "Overhead Cable Extension": 5.0,
-
-        // Shoulder
-        "Dumbbell Shoulder Press": 5.5,
-        "Barbell Overhead Press (Military Press)": 6.0,
-        "Arnold Press": 5.5,
-        "Dumbbell Lateral Raises": 4.0,
-        "Cable Lateral Raises": 4.0,
-        "Front Dumbbell Raise": 4.0,
-        "Bent Over Rear Delt Flys": 4.5,
-        "Face Pulls (Cable)": 4.5,
-        "Barbell / Dumbbell Shrugs": 4.5,
-        "Upright Rows": 5.0,
-
-        // Abs & Core
-        "Crunches": 5.0,
-        "Plank (Hold)": 4.5,
-        "Leg Raises (Lying / Hanging)": 6.0,
-        "Russian Twists": 5.5,
-        "Ab Roller / Wheel Rollout": 7.0,
-        "Cable Rope Crunch": 5.5,
-        "Bicycle Crunches": 6.0,
-        "Side Plank": 4.5,
-
-        // Forearm
-        "Wrist Curls (Barbell/Dumbbell)": 3.5,
-        "Reverse Wrist Curls": 3.5,
-        "Reverse Grip Bicep Curls": 4.0,
-        "Farmer's Walk": 7.5,
-        "Wrist Roller": 4.0
+        "Running / Treadmill": 9.8, "Cycling / Exercise Bike": 8.5, "Rope Skipping / Jump Rope": 11.0, "Burpees": 10.0,
+        "High Knees Running": 9.0, "Mountain Climbers": 8.5, "Jumping Jacks": 8.0, "Stair Master / Stair Climbing": 9.0,
+        "Rowing Machine": 8.5, "Cross Trainer / Elliptical": 7.0, "Parallel Bar Dips": 8.0, "Heavyweight Lifting": 7.0,
+        "Flat Bench Press": 6.0, "Incline Bench Press": 6.0, "Decline Bench Press": 6.0, "Dumbbell Flat Bench Press": 6.0,
+        "Dumbbell Incline Press": 6.0, "Dumbbell Decline Press": 6.0, "Push-ups (Standard)": 8.0, "Incline Push-ups": 6.0,
+        "Decline Push-ups": 8.5, "Chest Fly Machine (Pec Deck)": 5.0, "Dumbbell Chest Fly": 5.0, "Cable Crossover (High to Low)": 5.5,
+        "Cable Crossover (Low to High)": 5.5, "Dumbbell Pullover": 5.5, "Deadlifts": 8.0, "Pull Ups": 8.0, "Chin Ups": 8.0,
+        "Wide Grip Lat Pulldown": 5.5, "Close Grip Lat Pulldown": 5.5, "Reverse Grip Lat Pulldown": 5.5, "Barbell Bent-Over Row": 6.0,
+        "Single Arm Dumbbell Row": 6.0, "T-Bar Row": 6.0, "Seated Cable Row": 5.0, "Hyperextension / Back Extension": 5.0,
+        "Lat Pullover (Cable/Dumbbell)": 5.0, "Barbell Squats": 7.5, "Front Squats": 7.5, "Leg Press Machine": 6.5,
+        "Leg Extension": 5.0, "Hamstring Curls (Lying/Seated)": 5.0, "Romanian Deadlift (RDL)": 7.0, "Walking Lunges / Dumbbell Lunges": 6.5,
+        "Bulgarian Split Squats": 7.0, "Calf Extension / Standing Calf Raise": 4.0, "Seated Calf Raise": 4.0, "Sumo Squats": 7.0,
+        "Barbell Curl": 4.5, "EZ Bar Curl": 4.5, "Dumbbell Curls": 4.5, "Hammer Curl": 4.5, "Preacher Curl (Barbell/Dumbbell)": 4.5,
+        "Concentration Curl": 4.0, "Incline Dumbbell Curl": 4.5, "Cable Bicep Curl": 4.5, "Spider Curl": 4.5, "21s Bicep Curl": 5.0,
+        "Pulley Pushdown (Straight Bar)": 4.5, "Rope Pushdown": 4.5, "Reverse Triceps Pushdown": 4.5, "Close Grip Bench Press": 5.5,
+        "Skull Crushers (EZ Bar)": 5.5, "Overhead Dumbbell Extension": 5.0, "Tricep Dips (Bench Dips)": 6.0, "Dumbbell Kickbacks": 4.5,
+        "Overhead Cable Extension": 5.0, "Dumbbell Shoulder Press": 5.5, "Barbell Overhead Press (Military Press)": 6.0, "Arnold Press": 5.5,
+        "Dumbbell Lateral Raises": 4.0, "Cable Lateral Raises": 4.0, "Front Dumbbell Raise": 4.0, "Bent Over Rear Delt Flys": 4.5,
+        "Face Pulls (Cable)": 4.5, "Barbell / Dumbbell Shrugs": 4.5, "Upright Rows": 5.0, "Crunches": 5.0, "Plank (Hold)": 4.5,
+        "Leg Raises (Lying / Hanging)": 6.0, "Russian Twists": 5.5, "Ab Roller / Wheel Rollout": 7.0, "Cable Rope Crunch": 5.5,
+        "Bicycle Crunches": 6.0, "Side Plank": 4.5, "Wrist Curls (Barbell/Dumbbell)": 3.5, "Reverse Wrist Curls": 3.5,
+        "Reverse Grip Bicep Curls": 4.0, "Farmer's Walk": 7.5, "Wrist Roller": 4.0
     };
 
     function populateCalorieExercises() {
@@ -815,18 +747,120 @@
             workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
         });
 
+        // DIET DATA WITH AUTO NUTRITION CALCULATIONS (REQ 5)
         const dietData = {
             bulking: {
-                veg: `<div class="meal"><b>🍳 Breakfast:</b><p>Paneer Bhurji, 100g Oats, 3 Bananas.</p></div><div class="meal"><b>🍛 Lunch:</b><p>Tofu/Paneer, 2 Cups Rice, Dal, Salad.</p></div><div class="meal"><b>🥛 Dinner:</b><p>Soya Chunks, 4 Roti, Ashwagandha Milk.</p></div>`,
-                nonveg: `<div class="meal"><b>🍳 Breakfast:</b><p>10 Egg Whites, 100g Oats, 3 Bananas.</p></div><div class="meal"><b>🍛 Lunch:</b><p>Chicken, 2 Cups Rice, Dal, Salad.</p></div><div class="meal"><b>🍗 Dinner:</b><p>Fish/Chicken, 4 Roti, Milk.</p></div>`
+                veg: `
+                <div class="meal">
+                    <b>🍳 Breakfast: Paneer Bhurji (150g), Oats (100g), 3 Bananas</b>
+                    <p>High protein & dense carbs start.</p>
+                    <div class="meal-macro">🔥 890 kcal | 💪 48g Protein | 🥑 28g Fat | 💊 Vit A, Vit B12, Calcium, Potassium</div>
+                </div>
+                <div class="meal">
+                    <b>🍛 Lunch: Tofu/Paneer (150g), 2 Cups Rice, Dal, Salad</b>
+                    <p>Clean bulk meal with essential amino acids.</p>
+                    <div class="meal-macro">🔥 780 kcal | 💪 42g Protein | 🥑 22g Fat | 💊 Vit B6, Iron, Magnesium</div>
+                </div>
+                <div class="meal">
+                    <b>🥛 Dinner: Soya Chunks (80g), 4 Roti, Ashwagandha Milk</b>
+                    <p>Muscle recovery and growth before sleep.</p>
+                    <div class="meal-macro">🔥 720 kcal | 💪 55g Protein | 🥑 14g Fat | 💊 Vit D, B-Complex, Calcium</div>
+                </div>
+                <div style="background: rgba(46, 204, 113, 0.2); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--accent); margin-top: 10px;">
+                    🏆 <b>TOTAL BULKING VEG DIET:</b> ~2390 kcal | 145g Protein | 64g Fat
+                </div>`,
+
+                nonveg: `
+                <div class="meal">
+                    <b>🍳 Breakfast: 10 Egg Whites, 100g Oats, 3 Bananas</b>
+                    <p>Lean protein & energy rich breakfast.</p>
+                    <div class="meal-macro">🔥 750 kcal | 💪 52g Protein | 🥑 8g Fat | 💊 Vit B2, Vit B12, Choline, Potassium</div>
+                </div>
+                <div class="meal">
+                    <b>🍛 Lunch: Chicken Breast (200g), 2 Cups Rice, Dal, Salad</b>
+                    <p>Max muscle synthesis lunch.</p>
+                    <div class="meal-macro">🔥 820 kcal | 💪 68g Protein | 🥑 12g Fat | 💊 Vit B3, Niacin, Zinc, Iron</div>
+                </div>
+                <div class="meal">
+                    <b>🍗 Dinner: Fish/Chicken (200g), 4 Roti, Milk</b>
+                    <p>Fast digesting protein and healthy fats.</p>
+                    <div class="meal-macro">🔥 790 kcal | 💪 62g Protein | 🥑 18g Fat | 💊 Vit D, Omega-3, Calcium</div>
+                </div>
+                <div style="background: rgba(46, 204, 113, 0.2); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--accent); margin-top: 10px;">
+                    🏆 <b>TOTAL BULKING NON-VEG DIET:</b> ~2360 kcal | 182g Protein | 38g Fat
+                </div>`
             },
             weightloss: {
-                veg: `<div class="meal"><b>☕ Morning:</b><p>Green Tea & Roasted Makhana.</p></div><div class="meal"><b>🥗 Lunch:</b><p>1 Roti, Mix Veg, Curd.</p></div><div class="meal"><b>🥒 Dinner:</b><p>Boiled Dal / Paneer Salad.</p></div>`,
-                nonveg: `<div class="meal"><b>☕ Morning:</b><p>Warm Lemon Water.</p></div><div class="meal"><b>🥗 Lunch:</b><p>Grilled Chicken Salad / 4 Eggs.</p></div><div class="meal"><b>🥒 Dinner:</b><p>Clear Chicken Soup.</p></div>`
+                veg: `
+                <div class="meal">
+                    <b>☕ Morning: Green Tea & Roasted Makhana (50g)</b>
+                    <p>Metabolism booster & light snack.</p>
+                    <div class="meal-macro">🔥 180 kcal | 💪 5g Protein | 🥑 1g Fat | 💊 Antioxidants, Calcium, Magnesium</div>
+                </div>
+                <div class="meal">
+                    <b>🥗 Lunch: 1 Roti, Mix Veg, Curd (200g)</b>
+                    <p>Balanced low calorie fiber rich lunch.</p>
+                    <div class="meal-macro">🔥 380 kcal | 💪 18g Protein | 🥑 10g Fat | 💊 Vit C, Vit B12, Probiotics</div>
+                </div>
+                <div class="meal">
+                    <b>🥒 Dinner: Boiled Moong Dal / Paneer Salad (100g)</b>
+                    <p>Light night protein for fat burn.</p>
+                    <div class="meal-macro">🔥 320 kcal | 💪 22g Protein | 🥑 12g Fat | 💊 Vit A, Iron, Fiber</div>
+                </div>
+                <div style="background: rgba(255, 165, 2, 0.2); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--warning); margin-top: 10px;">
+                    🔥 <b>TOTAL FAT LOSS VEG DIET:</b> ~880 kcal | 45g Protein | 23g Fat
+                </div>`,
+
+                nonveg: `
+                <div class="meal">
+                    <b>☕ Morning: Warm Lemon Water & 2 Boiled Eggs</b>
+                    <p>Detox & satiating breakfast.</p>
+                    <div class="meal-macro">🔥 155 kcal | 💪 13g Protein | 🥑 10g Fat | 💊 Vit A, Vit D, Iron</div>
+                </div>
+                <div class="meal">
+                    <b>🥗 Lunch: Grilled Chicken Salad (200g) / 4 Eggs</b>
+                    <p>Pure protein fat loss lunch.</p>
+                    <div class="meal-macro">🔥 350 kcal | 💪 55g Protein | 🥑 8g Fat | 💊 Vit B3, Vit B6, Selenium</div>
+                </div>
+                <div class="meal">
+                    <b>🥒 Dinner: Clear Chicken Soup (200g) & Veggies</b>
+                    <p>Hydrating low carb dinner.</p>
+                    <div class="meal-macro">🔥 240 kcal | 💪 35g Protein | 🥑 5g Fat | 💊 Vit C, Potassium, Zinc</div>
+                </div>
+                <div style="background: rgba(255, 165, 2, 0.2); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--warning); margin-top: 10px;">
+                    🔥 <b>TOTAL FAT LOSS NON-VEG DIET:</b> ~745 kcal | 103g Protein | 23g Fat
+                </div>`
             },
             cutting: {
-                veg: `<div class="meal"><b>🍳 Breakfast:</b><p>Sprouts & Black Coffee.</p></div><div class="meal"><b>🥗 Lunch:</b><p>Soya Chunks & Broccoli.</p></div>`,
-                nonveg: `<div class="meal"><b>🍳 Breakfast:</b><p>8 Egg Whites.</p></div><div class="meal"><b>🍗 Lunch:</b><p>Grilled Chicken & Spinach.</p></div>`
+                veg: `
+                <div class="meal">
+                    <b>🍳 Breakfast: Sprouts (150g) & Black Coffee</b>
+                    <p>High fiber energy booster.</p>
+                    <div class="meal-macro">🔥 210 kcal | 💪 18g Protein | 🥑 2g Fat | 💊 Vit C, Vit K, Iron</div>
+                </div>
+                <div class="meal">
+                    <b>🥗 Lunch: Soya Chunks (100g) & Broccoli</b>
+                    <p>Maximum protein density meal.</p>
+                    <div class="meal-macro">🔥 380 kcal | 💪 54g Protein | 🥑 2g Fat | 💊 Vit C, Calcium, B-Vitamins</div>
+                </div>
+                <div style="background: rgba(9, 132, 227, 0.2); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--blue); margin-top: 10px;">
+                    ✂️ <b>TOTAL CUTTING VEG DIET:</b> ~590 kcal | 72g Protein | 4g Fat
+                </div>`,
+
+                nonveg: `
+                <div class="meal">
+                    <b>🍳 Breakfast: 8 Egg Whites & Green Tea</b>
+                    <p>Zero fat, pure protein start.</p>
+                    <div class="meal-macro">🔥 140 kcal | 💪 30g Protein | 🥑 0.5g Fat | 💊 Vit B2, Vit B12, Potassium</div>
+                </div>
+                <div class="meal">
+                    <b>🍗 Lunch: Grilled Chicken (250g) & Spinach</b>
+                    <p>Lean muscle preservation meal.</p>
+                    <div class="meal-macro">🔥 420 kcal | 💪 75g Protein | 🥑 9g Fat | 💊 Vit A, Niacin, Iron, Zinc</div>
+                </div>
+                <div style="background: rgba(9, 132, 227, 0.2); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--blue); margin-top: 10px;">
+                    ✂️ <b>TOTAL CUTTING NON-VEG DIET:</b> ~560 kcal | 105g Protein | 9.5g Fat
+                </div>`
             }
         };
         dietArea.innerHTML = `<div class="diet-box">${dietData[goal][currentDiet]}</div>`;
@@ -875,7 +909,7 @@
         const age = parseInt(document.getElementById('age').value);
         const gender = document.getElementById('sex').value;
         const activity = parseFloat(document.getElementById('act').value);
-        if (!weight || !height || !age) { alert("Pehle BMI check karein ya Weight/Height bhariye!"); return; }
+        if (!weight || !height || !age) { alert("Pehle BMI check karein ya Weight/Height/Age bhariye!"); return; }
         let bmr = (gender === "male") ? (10 * weight) + (6.25 * height) - (5 * age) + 5 : (10 * weight) + (6.25 * height) - (5 * age) - 161;
         document.getElementById('bmrRes').innerHTML = `<div style="background:rgba(255,255,255,0.1); padding:10px; border-radius:5px; border-left:4px solid #2ecc71; margin-top:10px;"><p>BMR: <b>${Math.round(bmr)} kcal</b></p><p style="color:#2ecc71;">Daily Target: <b>${Math.round(bmr * activity)} kcal</b></p></div>`;
     }
@@ -1164,7 +1198,7 @@
     // INITIALIZATION
     populateCalorieExercises();
     filterFoodCategory('veg');
-    updateAll();
+    setDietType('nonveg');
     initStreakAndAttendance();
     renderWeightChart();
     renderChallengeGrid();
