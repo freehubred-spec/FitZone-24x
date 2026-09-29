@@ -8,14 +8,6 @@
         :root { --primary: #ff4757; --dark: #0f0f0f; --card-bg: #1e1e1e; --accent: #2ecc71; --blue: #0984e3; --warning: #ffa502; --purple: #8e44ad; }
         body { font-family: 'Poppins', sans-serif; background: var(--dark); color: #fff; margin: 0; padding-bottom: 50px; }
         
-        .hidden { display: none !important; }
-
-        /* AUTH SCREEN STYLES */
-        .auth-overlay { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
-        .auth-card { background: var(--card-bg); border-radius: 12px; padding: 25px; border: 1px solid var(--primary); box-shadow: 0 8px 20px rgba(0,0,0,0.6); width: 100%; max-width: 350px; text-align: center; }
-        .auth-card h2 { margin-top: 10px; margin-bottom: 5px; font-size: 1.5rem; text-transform: uppercase; }
-        .auth-card h2 span { color: var(--primary); }
-
         .header { 
             text-align: center; 
             padding: 15px 10px; 
@@ -77,401 +69,286 @@
 </head>
 <body>
 
-<!-- FIREBASE AUTH LOGIN/REGISTER OVERLAY -->
-<div id="authScreen" class="auth-overlay">
-    <div class="auth-card">
-        <img src="https://i.ibb.co/PGZ19M1V/smart-gym-logo.jpg" alt="Smart Gym Logo" style="height: 55px; border-radius: 6px;">
-        <h2>Smart Gym-<span>24x</span></h2>
-        <p style="font-size:0.85rem; color:#aaa; margin-top: -5px; margin-bottom: 15px;">Single Active Device Session</p>
-        
-        <input type="text" id="phoneInput" placeholder="Mobile Number (e.g. 9876543210)">
-        <input type="password" id="passInput" placeholder="Password">
-        
-        <button id="loginBtn" class="btn-main" style="margin-top: 10px;">Login</button>
-        <button id="registerBtn" class="btn-main" style="background: var(--accent); margin-top: 8px;">Register Account</button>
+<div class="header" style="justify-content: space-between; padding: 15px 15px;">
+    <div style="width: 35px;"></div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <img src="https://i.ibb.co/PGZ19M1V/smart-gym-logo.jpg" alt="Smart Gym Logo" class="nav-logo">
+        <div class="logo-text">Smart Gym-<span>24x</span></div>
     </div>
-</div>
-
-<!-- MAIN APP CONTENT (Hidden until logged in) -->
-<div id="mainAppWrapper" class="hidden">
-
-    <div class="header" style="justify-content: space-between; padding: 15px 15px;">
-        <div style="width: 35px;"></div>
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <img src="https://i.ibb.co/PGZ19M1V/smart-gym-logo.jpg" alt="Smart Gym Logo" class="nav-logo">
-            <div class="logo-text">Smart Gym-<span>24x</span></div>
-        </div>
-        
-        <div style="position: relative;">
-            <div class="three-dots-btn" onclick="toggleOverflowMenu(event)">⋮</div>
-            <div id="overflowMenu" class="overflow-menu-box">
-                <div class="overflow-menu-item" onclick="openMoreFeaturesModal()">⚡ More Features & Calculator</div>
-                <div class="overflow-menu-item" onclick="openAlarmModal()">⏰ Diet & Medicine Reminder</div>
-                <div class="overflow-menu-item" style="color: var(--primary);" onclick="window.forceLogout()">🚪 Logout Account</div>
-            </div>
-        </div>
-    </div>
-
-    <div id="viewer" class="image-viewer">
-        <span class="close-viewer" onclick="closeImage()">&times;</span>
-        <img id="big-img" src="">
-    </div>
-
-    <!-- MORE FEATURES MODAL -->
-    <div id="moreFeaturesModal" class="image-viewer">
-        <div class="alarm-modal-body" style="max-height: 85vh; overflow-y: auto;">
-            <span class="close-viewer" style="top: 10px; right: 15px; font-size: 28px;" onclick="closeMoreFeaturesModal()">&times;</span>
-            <h3 style="margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 5px; color: var(--purple);">⚡ More Features</h3>
-            
-            <!-- FOOD NUTRITION CALCULATOR SECTION -->
-            <div style="background: #181818; padding: 12px; border-radius: 8px; border: 1px solid var(--blue); margin-bottom: 15px;">
-                <h4 style="color: var(--blue); margin: 0 0 10px 0; font-size: 1rem;">🥗 Food Nutrition & Calorie Calculator</h4>
-                
-                <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                    <button type="button" id="foodCatVeg" class="btn-main" style="background: #2ecc71; padding: 8px; font-size: 0.85rem; outline: 2px solid #fff;" onclick="filterFoodCategory('veg')">🟢 Veg Foods</button>
-                    <button type="button" id="foodCatNonVeg" class="btn-main" style="background: #e67e22; padding: 8px; font-size: 0.85rem;" onclick="filterFoodCategory('nonveg')">🔴 Non-Veg Foods</button>
-                </div>
-
-                <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Select Food Item (In English):</label>
-                <select id="foodSelect" onchange="calculateFoodNutrition()"></select>
-
-                <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Enter Weight / Quantity (Grams):</label>
-                <input type="number" id="foodWeight" value="100" placeholder="Weight in grams (e.g. 100)" oninput="calculateFoodNutrition()">
-
-                <div id="foodNutritionResult" style="margin-top: 12px; background: #252525; padding: 10px; border-radius: 6px; font-size: 0.85rem; border-left: 4px solid var(--accent);">
-                </div>
-            </div>
-
-            <!-- SUPPLEMENTS SECTION -->
-            <div style="background: #181818; padding: 12px; border-radius: 8px; border: 1px solid var(--accent); margin-bottom: 15px;">
-                <h4 style="color: var(--accent); margin: 0 0 10px 0; font-size: 1rem;">💊 Recommended Supplements</h4>
-                <div id="supplementArea"></div>
-            </div>
-
-            <button class="btn-main" style="background: #333;" onclick="closeMoreFeaturesModal()">Close</button>
-        </div>
-    </div>
-
-    <!-- ALARM POPUP MODAL -->
-    <div id="alarmModal" class="image-viewer">
-        <div class="alarm-modal-body">
-            <span class="close-viewer" style="top: 10px; right: 15px; font-size: 28px;" onclick="closeAlarmModal()">&times;</span>
-            <h3 style="margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 5px; color: var(--primary);">⏰ Diet & Medicine Reminder</h3>
-            
-            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Remind Time Set Karein:</label>
-            <input type="time" id="alarmTime">
-            
-            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 10px; margin-bottom: 2px;">Kya Khana/Lena He? (Naam Likhein):</label>
-            <input type="text" id="alarmText" placeholder="E.g., 4 Ande Oats / Multi-Vitamin Dawai">
-            
-            <button class="btn-main" style="margin-top: 12px;" onclick="addCustomAlarm()">Set Voice Reminder</button>
-            
-            <b style="margin-top: 15px; display:block; font-size: 0.85rem; color: var(--accent);">Aapke Active Alarms:</b>
-            <div id="alarmListContainer" class="alarm-list-box"></div>
-        </div>
-    </div>
-
-    <div class="container">
-
-        <button class="btn-main" style="background: var(--purple); margin-bottom: 15px; font-size: 1rem;" onclick="openMoreFeaturesModal()">⚡ More Features (Food Calculator & Supplements)</button>
-
-        <!-- STREAK & GYM ATTENDANCE CARD -->
-        <div class="card" style="border: 1px solid var(--primary);">
-            <h3>🔥 Daily Streak & Gym Attendance</h3>
-            <div style="display:flex; justify-style:space-around; align-items:center; margin-bottom:15px;">
-                <div style="text-align:center;">
-                    <span style="font-size: 2.2rem; font-weight: bold; color: var(--primary);" id="streakDisplay">0</span>
-                    <div style="color: #aaa; font-size: 0.8rem;">Days Active Streak</div>
-                </div>
-            </div>
-            <button id="checkInBtn" class="btn-main" style="background: var(--accent);" onclick="markAttendance()">📍 Daily Gym Check-In</button>
-            <div id="checkInMsg" style="text-align:center; margin-top:8px; font-size:0.85rem; font-weight:bold; color:var(--accent);"></div>
-        </div>
-
-        <!-- BMI SECTION -->
-        <div class="card">
-            <h3>📊 BMI Health Checker</h3>
-            <div style="display:flex; gap:10px;">
-                <input type="number" id="w" placeholder="Weight (kg)" oninput="syncInputs('w', this.value)">
-                <input type="number" id="h" placeholder="Height (cm)" oninput="syncInputs('h', this.value)">
-            </div>
-            <button class="btn-main" onclick="calcHealth()">Check Status</button>
-            <div id="res" style="text-align:center; margin-top:15px; font-weight:bold; font-size: 1.1rem;"></div>
-        </div>
-
-        <!-- WEIGHT LOGGER -->
-        <div class="card">
-            <h3>📈 Weight & Progress Logger</h3>
-            <div style="display:flex; gap:10px;">
-                <input type="number" id="weightInput" placeholder="Enter Weight (kg)" step="0.1" oninput="syncInputs('w', this.value)">
-                <button class="btn-main" style="width: 120px;" onclick="addWeightLog()">Save</button>
-            </div>
-            <canvas id="weightChart" width="500" height="180" style="width:100%; height:180px; background:#111; border-radius:8px; margin-top:15px; border:1px solid #333;"></canvas>
-            <div id="weightHistory" style="margin-top:10px; max-height:90px; overflow-y:auto; font-size:0.85rem; color:#ccc;"></div>
-        </div>
-
-        <!-- BMR SECTION -->
-        <div class="card">
-            <h3>🔥 BMR & Daily Calories</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <input type="number" id="age" placeholder="Age (Umar)" oninput="syncInputs('age', this.value)">
-                <select id="sex">
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                </select>
-            </div>
-            <select id="act" style="margin-top:10px;">
-                <option value="1.2">No Exercise (Sust)</option>
-                <option value="1.375">Light (1-2 din workout)</option>
-                <option value="1.55">Moderate (3-5 din workout)</option>
-                <option value="1.725">Hard (Daily Heavy Training)</option>
-            </select>
-            <button class="btn-main" style="background:#0984e3; margin-top:10px;" onclick="calculateCalories()">Get Results</button>
-            <div id="bmrRes" style="margin-top:15px; text-align:center;"></div>
-        </div>
-
-        <!-- GOAL SECTION -->
-        <div class="card">
-            <h3>🎯 Select Workout Goal</h3>
-            <select id="goal" onchange="updateAll()">
-                <option value="bulking">Bulking (Muscle Gain)</option>
-                <option value="weightloss">Weight Loss (Fat Burn)</option>
-                <option value="cutting">Cutting Body (Max Cardio)</option>
-            </select>
-        </div>
-
-        <!-- WORKOUT SCHEDULE AREA -->
-        <div class="card">
-            <h3>📅 Weekly Workout Schedule</h3>
-            <div id="workoutArea"></div>
-        </div>
-
-        <!-- DIET PLAN AREA -->
-        <div class="card">
-            <h3>📅 Extra Power Diet Plan</h3>
-            <div style="margin-bottom: 15px;">
-                <b style="font-size: 0.85rem; color: #aaa; display:block; margin-bottom: 6px;">Diet Preference Select Karein:</b>
-                <div style="display: flex; gap: 10px;">
-                    <button id="btn-veg" class="btn-main" style="background:#2ecc71;" onclick="setDietType('veg')">🟢 Pure Veg</button>
-                    <button id="btn-nonveg" class="btn-main" style="background:#e67e22;" onclick="setDietType('nonveg')">🔴 Non-Veg</button>
-                </div>
-            </div>
-            <div id="dietArea"></div>
-        </div>
-
-        <!-- 30 DAY FITNESS CHALLENGE -->
-        <div class="card">
-            <h3>🏆 30-Day Fitness Challenge</h3>
-            <div style="margin-bottom: 8px; font-size: 0.85rem; display:flex; justify-content:space-between;">
-                <span>Overall Progress:</span>
-                <b id="challengeProgressText" style="color:var(--accent);">0/30 Days</b>
-            </div>
-            <div style="background:#333; height:8px; border-radius:4px; overflow:hidden; margin-bottom:15px;">
-                <div id="challengeProgressBar" style="width:0%; background:var(--accent); height:100%; transition:0.3s;"></div>
-            </div>
-            <div id="challengeGrid" style="display:grid; grid-template-columns: repeat(6, 1fr); gap:6px;"></div>
-            <div id="challengeTaskBox" style="margin-top:15px; background:#111; padding:12px; border-radius:8px; border:1px solid var(--primary); display:none;">
-                <h4 id="taskTitle" style="margin:0 0 5px 0; color:var(--primary); font-size:0.95rem;"></h4>
-                <p id="taskDesc" style="margin:0 0 10px 0; font-size:0.85rem; color:#eee;"></p>
-                <button id="completeTaskBtn" class="btn-main" style="padding:8px; background:var(--accent);" onclick="toggleChallengeDay()">Mark as Done ✅</button>
-            </div>
-        </div>
-
-        <!-- PROTEIN CALCULATOR -->
-        <div class="card">
-            <h3>🍗 Protein Requirement</h3>
-            <select id="fitnessGoal" style="margin-bottom:10px;">
-                <option value="1.2">Sedentary (Normal Activity)</option>
-                <option value="1.6">Muscle Building (Beginner)</option>
-                <option value="2.0">Heavy Bodybuilding (Pro)</option>
-                <option value="1.4">Weight Loss (Maintain Muscle)</option>
-            </select>
-            <button class="btn-main" style="background:#2ecc71;" onclick="calculateProtein()">Calculate Protein</button>
-            <div id="protRes" style="margin-top:15px; text-align:center;"></div>
-        </div>
-
-        <!-- CALORIE BURN CALCULATOR -->
-        <div class="card">
-            <h3>🔥 Calorie Burn Calculator</h3>
-            <div id="stopwatch">00:00:00</div>
-            <div class="grid-3">
-                <button class="btn-main" style="background:var(--accent); padding: 8px;" onclick="startTimer()">Start</button>
-                <button class="btn-main" style="background:var(--warning); padding: 8px;" onclick="pauseTimer()">Pause</button>
-                <button class="btn-main" style="background:var(--primary); padding: 8px;" onclick="resetTimer()">Reset</button>
-            </div>
-
-            <div style="margin-top: 15px; background: #181818; padding: 12px; border-radius: 8px; border: 1px solid var(--primary);">
-                <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Exercise / Pre-Workout Select Karein:</label>
-                <select id="calorieExSelect"></select>
-
-                <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Aapka Weight (kg):</label>
-                <input type="number" id="calorieUserWeight" placeholder="Enter Weight in kg (e.g. 70)" oninput="syncInputs('w', this.value)">
-
-                <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Workout Time (Minutes) - [Khali chhodein agar Timer use karna ho]:</label>
-                <input type="number" id="calorieCustomTime" placeholder="Duration in minutes (Optional)">
-
-                <button class="btn-main" style="margin-top: 10px; background: var(--accent);" onclick="calculateExerciseCalories()">Calculate Burned Calories 🔥</button>
-
-                <div id="calorieResult" style="margin-top: 10px; font-weight: bold; font-size: 0.95rem; text-align: center;"></div>
-            </div>
-
-            <!-- EXTRA EXERCISE -->
-            <div style="margin-top: 20px;">
-                <b style="font-size: 0.9rem; color: var(--blue);">⚡ Extra Exercise:</b>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;">
-                    <div class="muscle-map-btn" style="background: #2d3436; border-color: var(--primary);" onclick="filterWorkout('preworkout')">Pre-Workout / Cardio</div>
-                    <div class="muscle-map-btn" style="background: #2d3436; border-color: var(--accent);" onclick="filterWorkout('abs')">Abs & Core</div>
-                    <div class="muscle-map-btn" style="background: #2d3436; border-color: var(--blue);" onclick="filterWorkout('forearm')">Forearms</div>
-                </div>
-                <div id="quickView"></div>
-            </div>
-        </div>
-
-        <!-- POWER CALCULATOR -->
-        <div class="card">
-            <h3>🚀 Power Calculator</h3>
-            <div class="tool-card">
-                <b>1-Rep Max:</b>
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" id="orm-w" placeholder="Wt">
-                    <input type="number" id="orm-r" placeholder="Reps">
-                </div>
-                <button class="btn-main" style="padding: 8px;" onclick="calcORM()">Calculate</button>
-                <div id="orm-res" style="margin-top:5px; color:var(--accent); font-weight:bold;"></div>
-            </div>
-        </div>
-
-        <!-- COMMUNITY SECTION -->
-        <div class="card" style="border: 1px solid var(--blue);">
-            <h3>🔐 SmartGym Community</h3>
-            <button id="biometric-btn" onclick="simBiometric()">🖐️ Scan Fingerprint to Enter</button>
-            <div id="chat-section" style="display:none; margin-top:10px;">
-                <div class="chat-container" id="chatbox"></div>
-                <div style="display:flex; gap:5px; margin-top:10px;">
-                    <input type="text" id="msg" placeholder="Ask here...">
-                    <button onclick="sendMsg()" style="background:var(--blue); border:none; padding:10px; border-radius:5px; color:#fff;">Send</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- WATER TRACKER -->
-        <div class="card">
-            <h3>💧 Water Tracker</h3>
-            <div id="waterTarget" style="text-align:center; color:var(--blue); font-size:0.8rem;">BMI check karein</div>
-            <div id="waterVal" style="text-align:center; font-size:1.8rem; color:var(--blue); font-weight:bold; margin:10px 0;">0 / --</div>
-            <button class="btn-main" style="background:var(--blue);" onclick="drink()">Drink 1 Glass 🥤</button>
-        </div>
-
-        <!-- YOGA SECTION -->
-        <div class="card">
-            <h3>🌿 Ayurveda & Yoga Power</h3>
-            <div class="yoga-grid">
-                <div class="yoga-card"><img src="https://i.ibb.co/67zw8PFN/surya-namaskar.jpg" onclick="viewImage(this.src)">Surya Namaskar</div>
-                <div class="yoga-card"><img src="https://i.ibb.co/zWV3M6c6/bhujangasana.jpg" onclick="viewImage(this.src)">Bhujangasana</div>
-                <div class="yoga-card"><img src="https://i.ibb.co/PGzb0BRh/vrikshasana.jpg" onclick="viewImage(this.src)">Vrikshasana</div>
-                <div class="yoga-card"><img src="https://i.ibb.co/cc9kGB1q/padmasana.jpg" onclick="viewImage(this.src)">Padmasana</div>
-            </div>
+    
+    <div style="position: relative;">
+        <div class="three-dots-btn" onclick="toggleOverflowMenu(event)">⋮</div>
+        <div id="overflowMenu" class="overflow-menu-box">
+            <div class="overflow-menu-item" onclick="openMoreFeaturesModal()">⚡ More Features & Calculator</div>
+            <div class="overflow-menu-item" onclick="openAlarmModal()">⏰ Diet & Medicine Reminder</div>
         </div>
     </div>
 </div>
 
-<!-- FIREBASE INTEGRATION SCRIPT -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, get, onValue, off } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+<div id="viewer" class="image-viewer">
+    <span class="close-viewer" onclick="closeImage()">&times;</span>
+    <img id="big-img" src="">
+</div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAn198BrIafB4FPBc084WB4j_OEX4JD5Y8",
-      authDomain: "loginapp-909c4.firebaseapp.com",
-      databaseURL: "https://loginapp-909c4-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "loginapp-909c4",
-      storageBucket: "loginapp-909c4.firebasestorage.app",
-      messagingSenderId: "66952286783",
-      appId: "1:66952286783:web:5ae2abdf005de48ff29e8a"
-    };
+<!-- MORE FEATURES MODAL -->
+<div id="moreFeaturesModal" class="image-viewer">
+    <div class="alarm-modal-body" style="max-height: 85vh; overflow-y: auto;">
+        <span class="close-viewer" style="top: 10px; right: 15px; font-size: 28px;" onclick="closeMoreFeaturesModal()">&times;</span>
+        <h3 style="margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 5px; color: var(--purple);">⚡ More Features</h3>
+        
+        <!-- FOOD NUTRITION CALCULATOR SECTION -->
+        <div style="background: #181818; padding: 12px; border-radius: 8px; border: 1px solid var(--blue); margin-bottom: 15px;">
+            <h4 style="color: var(--blue); margin: 0 0 10px 0; font-size: 1rem;">🥗 Food Nutrition & Calorie Calculator</h4>
+            
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <button type="button" id="foodCatVeg" class="btn-main" style="background: #2ecc71; padding: 8px; font-size: 0.85rem; outline: 2px solid #fff;" onclick="filterFoodCategory('veg')">🟢 Veg Foods</button>
+                <button type="button" id="foodCatNonVeg" class="btn-main" style="background: #e67e22; padding: 8px; font-size: 0.85rem;" onclick="filterFoodCategory('nonveg')">🔴 Non-Veg Foods</button>
+            </div>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    let sessionListener = null;
+            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Select Food Item (In English):</label>
+            <select id="foodSelect" onchange="calculateFoodNutrition()"></select>
 
-    // Register Handler
-    document.getElementById('registerBtn').addEventListener('click', async () => {
-      const phone = document.getElementById('phoneInput').value.trim();
-      const password = document.getElementById('passInput').value.trim();
+            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Enter Weight / Quantity (Grams):</label>
+            <input type="number" id="foodWeight" value="100" placeholder="Weight in grams (e.g. 100)" oninput="calculateFoodNutrition()">
 
-      if(!phone || !password) return alert("Mobile number aur Password dono bharein!");
+            <div id="foodNutritionResult" style="margin-top: 12px; background: #252525; padding: 10px; border-radius: 6px; font-size: 0.85rem; border-left: 4px solid var(--accent);">
+            </div>
+        </div>
 
-      const userRef = ref(db, 'users/' + phone);
-      const snapshot = await get(userRef);
+        <!-- SUPPLEMENTS SECTION -->
+        <div style="background: #181818; padding: 12px; border-radius: 8px; border: 1px solid var(--accent); margin-bottom: 15px;">
+            <h4 style="color: var(--accent); margin: 0 0 10px 0; font-size: 1rem;">💊 Recommended Supplements</h4>
+            <div id="supplementArea"></div>
+        </div>
 
-      if(snapshot.exists()) {
-        alert("Yeh mobile number pehle se registered hai! Login karein.");
-      } else {
-        await set(userRef, { password: password, sessionToken: "" });
-        alert("Registration Successful! Ab Login karein.");
-      }
-    });
+        <button class="btn-main" style="background: #333;" onclick="closeMoreFeaturesModal()">Close</button>
+    </div>
+</div>
 
-    // Login Handler
-    document.getElementById('loginBtn').addEventListener('click', async () => {
-      const phone = document.getElementById('phoneInput').value.trim();
-      const password = document.getElementById('passInput').value.trim();
+<!-- ALARM POPUP MODAL -->
+<div id="alarmModal" class="image-viewer">
+    <div class="alarm-modal-body">
+        <span class="close-viewer" style="top: 10px; right: 15px; font-size: 28px;" onclick="closeAlarmModal()">&times;</span>
+        <h3 style="margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 5px; color: var(--primary);">⏰ Diet & Medicine Reminder</h3>
+        
+        <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Remind Time Set Karein:</label>
+        <input type="time" id="alarmTime">
+        
+        <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 10px; margin-bottom: 2px;">Kya Khana/Lena He? (Naam Likhein):</label>
+        <input type="text" id="alarmText" placeholder="E.g., 4 Ande Oats / Multi-Vitamin Dawai">
+        
+        <button class="btn-main" style="margin-top: 12px;" onclick="addCustomAlarm()">Set Voice Reminder</button>
+        
+        <b style="margin-top: 15px; display:block; font-size: 0.85rem; color: var(--accent);">Aapke Active Alarms:</b>
+        <div id="alarmListContainer" class="alarm-list-box"></div>
+    </div>
+</div>
 
-      if(!phone || !password) return alert("Dono details bharein!");
+<div class="container">
 
-      const userRef = ref(db, 'users/' + phone);
-      const snapshot = await get(userRef);
+    <button class="btn-main" style="background: var(--purple); margin-bottom: 15px; font-size: 1rem;" onclick="openMoreFeaturesModal()">⚡ More Features (Food Calculator & Supplements)</button>
 
-      if(snapshot.exists() && snapshot.val().password === password) {
-        const newToken = "TOKEN_" + Date.now() + "_" + Math.random().toString(36).substring(2);
-        await set(ref(db, 'users/' + phone + '/sessionToken'), newToken);
+    <!-- STREAK & GYM ATTENDANCE CARD -->
+    <div class="card" style="border: 1px solid var(--primary);">
+        <h3>🔥 Daily Streak & Gym Attendance</h3>
+        <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:15px;">
+            <div style="text-align:center;">
+                <span style="font-size: 2.2rem; font-weight: bold; color: var(--primary);" id="streakDisplay">0</span>
+                <div style="color: #aaa; font-size: 0.8rem;">Days Active Streak</div>
+            </div>
+        </div>
+        <button id="checkInBtn" class="btn-main" style="background: var(--accent);" onclick="markAttendance()">📍 Daily Gym Check-In</button>
+        <div id="checkInMsg" style="text-align:center; margin-top:8px; font-size:0.85rem; font-weight:bold; color:var(--accent);"></div>
+    </div>
 
-        localStorage.setItem('userPhone', phone);
-        localStorage.setItem('sessionToken', newToken);
+    <!-- BMI SECTION -->
+    <div class="card">
+        <h3>📊 BMI Health Checker</h3>
+        <div style="display:flex; gap:10px;">
+            <input type="number" id="w" placeholder="Weight (kg)" oninput="syncInputs('w', this.value)">
+            <input type="number" id="h" placeholder="Height (cm)" oninput="syncInputs('h', this.value)">
+        </div>
+        <button class="btn-main" onclick="calcHealth()">Check Status</button>
+        <div id="res" style="text-align:center; margin-top:15px; font-weight:bold; font-size: 1.1rem;"></div>
+    </div>
 
-        openApp(phone, newToken);
-      } else {
-        alert("Galat Mobile Number ya Password!");
-      }
-    });
+    <!-- WEIGHT LOGGER -->
+    <div class="card">
+        <h3>📈 Weight & Progress Logger</h3>
+        <div style="display:flex; gap:10px;">
+            <input type="number" id="weightInput" placeholder="Enter Weight (kg)" step="0.1" oninput="syncInputs('w', this.value)">
+            <button class="btn-main" style="width: 120px;" onclick="addWeightLog()">Save</button>
+        </div>
+        <canvas id="weightChart" width="500" height="180" style="width:100%; height:180px; background:#111; border-radius:8px; margin-top:15px; border:1px solid #333;"></canvas>
+        <div id="weightHistory" style="margin-top:10px; max-height:90px; overflow-y:auto; font-size:0.85rem; color:#ccc;"></div>
+    </div>
 
-    function openApp(phone, myToken) {
-      document.getElementById('authScreen').classList.add('hidden');
-      document.getElementById('mainAppWrapper').classList.remove('hidden');
+    <!-- BMR SECTION -->
+    <div class="card">
+        <h3>🔥 BMR & Daily Calories</h3>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <input type="number" id="age" placeholder="Age (Umar)" oninput="syncInputs('age', this.value)">
+            <select id="sex">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+        </div>
+        <select id="act" style="margin-top:10px;">
+            <option value="1.2">No Exercise (Sust)</option>
+            <option value="1.375">Light (1-2 din workout)</option>
+            <option value="1.55">Moderate (3-5 din workout)</option>
+            <option value="1.725">Hard (Daily Heavy Training)</option>
+        </select>
+        <button class="btn-main" style="background:#0984e3; margin-top:10px;" onclick="calculateCalories()">Get Results</button>
+        <div id="bmrRes" style="margin-top:15px; text-align:center;"></div>
+    </div>
 
-      const tokenRef = ref(db, 'users/' + phone + '/sessionToken');
-      sessionListener = onValue(tokenRef, (snapshot) => {
-        const dbToken = snapshot.val();
-        if (dbToken !== myToken) {
-          alert("Aapka account kisi dusre device me login hua hai. Aapko logout kiya ja raha hai!");
-          window.forceLogout();
-        }
-      });
-    }
+    <!-- GOAL SECTION -->
+    <div class="card">
+        <h3>🎯 Select Workout Goal</h3>
+        <select id="goal" onchange="updateAll()">
+            <option value="bulking">Bulking (Muscle Gain)</option>
+            <option value="weightloss">Weight Loss (Fat Burn)</option>
+            <option value="cutting">Cutting Body (Max Cardio)</option>
+        </select>
+    </div>
 
-    window.forceLogout = function() {
-      const phone = localStorage.getItem('userPhone');
-      if (sessionListener && phone) {
-        off(ref(db, 'users/' + phone + '/sessionToken'));
-      }
-      localStorage.removeItem('userPhone');
-      localStorage.removeItem('sessionToken');
-      document.getElementById('authScreen').classList.remove('hidden');
-      document.getElementById('mainAppWrapper').classList.add('hidden');
-    };
+    <!-- WORKOUT SCHEDULE AREA (Moved directly under Workout Goal) -->
+    <div class="card">
+        <h3>📅 Weekly Workout Schedule</h3>
+        <div id="workoutArea"></div>
+    </div>
 
-    // Auto Login Check
-    window.addEventListener('load', () => {
-      const savedPhone = localStorage.getItem('userPhone');
-      const savedToken = localStorage.getItem('sessionToken');
-      if(savedPhone && savedToken) {
-        openApp(savedPhone, savedToken);
-      }
-    });
-</script>
+    <!-- DIET PLAN AREA (Diet Preference included here) -->
+    <div class="card">
+        <h3>📅 Extra Power Diet Plan</h3>
+        <div style="margin-bottom: 15px;">
+            <b style="font-size: 0.85rem; color: #aaa; display:block; margin-bottom: 6px;">Diet Preference Select Karein:</b>
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-veg" class="btn-main" style="background:#2ecc71;" onclick="setDietType('veg')">🟢 Pure Veg</button>
+                <button id="btn-nonveg" class="btn-main" style="background:#e67e22;" onclick="setDietType('nonveg')">🔴 Non-Veg</button>
+            </div>
+        </div>
+        <div id="dietArea"></div>
+    </div>
 
-<!-- APP LOGIC SCRIPT -->
+    <!-- 30 DAY FITNESS CHALLENGE -->
+    <div class="card">
+        <h3>🏆 30-Day Fitness Challenge</h3>
+        <div style="margin-bottom: 8px; font-size: 0.85rem; display:flex; justify-content:space-between;">
+            <span>Overall Progress:</span>
+            <b id="challengeProgressText" style="color:var(--accent);">0/30 Days</b>
+        </div>
+        <div style="background:#333; height:8px; border-radius:4px; overflow:hidden; margin-bottom:15px;">
+            <div id="challengeProgressBar" style="width:0%; background:var(--accent); height:100%; transition:0.3s;"></div>
+        </div>
+        <div id="challengeGrid" style="display:grid; grid-template-columns: repeat(6, 1fr); gap:6px;"></div>
+        <div id="challengeTaskBox" style="margin-top:15px; background:#111; padding:12px; border-radius:8px; border:1px solid var(--primary); display:none;">
+            <h4 id="taskTitle" style="margin:0 0 5px 0; color:var(--primary); font-size:0.95rem;"></h4>
+            <p id="taskDesc" style="margin:0 0 10px 0; font-size:0.85rem; color:#eee;"></p>
+            <button id="completeTaskBtn" class="btn-main" style="padding:8px; background:var(--accent);" onclick="toggleChallengeDay()">Mark as Done ✅</button>
+        </div>
+    </div>
+
+    <!-- PROTEIN CALCULATOR -->
+    <div class="card">
+        <h3>🍗 Protein Requirement</h3>
+        <select id="fitnessGoal" style="margin-bottom:10px;">
+            <option value="1.2">Sedentary (Normal Activity)</option>
+            <option value="1.6">Muscle Building (Beginner)</option>
+            <option value="2.0">Heavy Bodybuilding (Pro)</option>
+            <option value="1.4">Weight Loss (Maintain Muscle)</option>
+        </select>
+        <button class="btn-main" style="background:#2ecc71;" onclick="calculateProtein()">Calculate Protein</button>
+        <div id="protRes" style="margin-top:15px; text-align:center;"></div>
+    </div>
+
+    <!-- CALORIE BURN CALCULATOR -->
+    <div class="card">
+        <h3>🔥 Calorie Burn Calculator</h3>
+        <div id="stopwatch">00:00:00</div>
+        <div class="grid-3">
+            <button class="btn-main" style="background:var(--accent); padding: 8px;" onclick="startTimer()">Start</button>
+            <button class="btn-main" style="background:var(--warning); padding: 8px;" onclick="pauseTimer()">Pause</button>
+            <button class="btn-main" style="background:var(--primary); padding: 8px;" onclick="resetTimer()">Reset</button>
+        </div>
+
+        <div style="margin-top: 15px; background: #181818; padding: 12px; border-radius: 8px; border: 1px solid var(--primary);">
+            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Exercise / Pre-Workout Select Karein:</label>
+            <select id="calorieExSelect"></select>
+
+            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Aapka Weight (kg):</label>
+            <input type="number" id="calorieUserWeight" placeholder="Enter Weight in kg (e.g. 70)" oninput="syncInputs('w', this.value)">
+
+            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Workout Time (Minutes) - [Khali chhodein agar Timer use karna ho]:</label>
+            <input type="number" id="calorieCustomTime" placeholder="Duration in minutes (Optional)">
+
+            <button class="btn-main" style="margin-top: 10px; background: var(--accent);" onclick="calculateExerciseCalories()">Calculate Burned Calories 🔥</button>
+
+            <div id="calorieResult" style="margin-top: 10px; font-weight: bold; font-size: 0.95rem; text-align: center;"></div>
+        </div>
+
+        <!-- EXTRA EXERCISE (Modified to only 3 options) -->
+        <div style="margin-top: 20px;">
+            <b style="font-size: 0.9rem; color: var(--blue);">⚡ Extra Exercise:</b>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;">
+                <div class="muscle-map-btn" style="background: #2d3436; border-color: var(--primary);" onclick="filterWorkout('preworkout')">Pre-Workout / Cardio</div>
+                <div class="muscle-map-btn" style="background: #2d3436; border-color: var(--accent);" onclick="filterWorkout('abs')">Abs & Core</div>
+                <div class="muscle-map-btn" style="background: #2d3436; border-color: var(--blue);" onclick="filterWorkout('forearm')">Forearms</div>
+            </div>
+            <div id="quickView"></div>
+        </div>
+    </div>
+
+    <!-- POWER CALCULATOR -->
+    <div class="card">
+        <h3>🚀 Power Calculator</h3>
+        <div class="tool-card">
+            <b>1-Rep Max:</b>
+            <div style="display: flex; gap: 5px;">
+                <input type="number" id="orm-w" placeholder="Wt">
+                <input type="number" id="orm-r" placeholder="Reps">
+            </div>
+            <button class="btn-main" style="padding: 8px;" onclick="calcORM()">Calculate</button>
+            <div id="orm-res" style="margin-top:5px; color:var(--accent); font-weight:bold;"></div>
+        </div>
+    </div>
+
+    <!-- COMMUNITY SECTION -->
+    <div class="card" style="border: 1px solid var(--blue);">
+        <h3>🔐 SmartGym Community</h3>
+        <button id="biometric-btn" onclick="simBiometric()">🖐️ Scan Fingerprint to Enter</button>
+        <div id="chat-section" style="display:none; margin-top:10px;">
+            <div class="chat-container" id="chatbox"></div>
+            <div style="display:flex; gap:5px; margin-top:10px;">
+                <input type="text" id="msg" placeholder="Ask here...">
+                <button onclick="sendMsg()" style="background:var(--blue); border:none; padding:10px; border-radius:5px; color:#fff;">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WATER TRACKER -->
+    <div class="card">
+        <h3>💧 Water Tracker</h3>
+        <div id="waterTarget" style="text-align:center; color:var(--blue); font-size:0.8rem;">BMI check karein</div>
+        <div id="waterVal" style="text-align:center; font-size:1.8rem; color:var(--blue); font-weight:bold; margin:10px 0;">0 / --</div>
+        <button class="btn-main" style="background:var(--blue);" onclick="drink()">Drink 1 Glass 🥤</button>
+    </div>
+
+    <!-- YOGA SECTION -->
+    <div class="card">
+        <h3>🌿 Ayurveda & Yoga Power</h3>
+        <div class="yoga-grid">
+            <div class="yoga-card"><img src="https://i.ibb.co/67zw8PFN/surya-namaskar.jpg" onclick="viewImage(this.src)">Surya Namaskar</div>
+            <div class="yoga-card"><img src="https://i.ibb.co/zWV3M6c6/bhujangasana.jpg" onclick="viewImage(this.src)">Bhujangasana</div>
+            <div class="yoga-card"><img src="https://i.ibb.co/PGzb0BRh/vrikshasana.jpg" onclick="viewImage(this.src)">Vrikshasana</div>
+            <div class="yoga-card"><img src="https://i.ibb.co/cc9kGB1q/padmasana.jpg" onclick="viewImage(this.src)">Padmasana</div>
+        </div>
+    </div>
+</div>
+
 <script>
+    // AUTO SYNC INPUTS FUNCTION (WEIGHT, HEIGHT, AGE)
     function syncInputs(type, val) {
         if (!val) return;
         if (type === 'w') {
@@ -490,6 +367,7 @@
         }
     }
 
+    // COMPLETE WORLD CLASS GYM & PRE-WORKOUT EXERCISE DATABASE
     const db = {
         preworkout: [
             {n:"Running / Treadmill", p:"https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=300"},
@@ -602,6 +480,7 @@
         ]
     };
 
+    // MET INTENSITY MAP FOR ALL EXERCISES
     const exerciseMETs = {
         "Running / Treadmill": 9.8, "Cycling / Exercise Bike": 8.5, "Rope Skipping / Jump Rope": 11.0, "Burpees": 10.0,
         "High Knees Running": 9.0, "Mountain Climbers": 8.5, "Jumping Jacks": 8.0, "Stair Master / Stair Climbing": 9.0,
@@ -689,6 +568,7 @@
         `;
     }
 
+    // EXTENSIVE FOOD NUTRITION DATABASE (PER 100G)
     const foodDb = {
         veg: [
             { name: "Black Chickpeas (Kala Chana)", cal: 364, prot: 19, carbs: 61, fat: 6, vit: "Vitamin A, Vitamin C, Iron, Calcium, Fiber" },
@@ -867,6 +747,7 @@
             workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
         });
 
+        // DIET DATA WITH AUTO NUTRITION CALCULATIONS (REQ 5)
         const dietData = {
             bulking: {
                 veg: `
@@ -1040,6 +921,7 @@
         document.getElementById('protRes').innerHTML = `<div style="background:rgba(46, 204, 113, 0.1); padding:10px; border-radius:5px; border-left:4px solid #2ecc71;"><p>Target: <b style="font-size:1.2rem; color:#2ecc71;">${(weight * multiplier).toFixed(1)}g</b>/day</p></div>`;
     }
 
+    // ALARM & THREE DOTS SYSTEM LOGIC
     let gymAlarms = JSON.parse(localStorage.getItem('smartGymAlarms')) || [];
 
     function toggleOverflowMenu(e) {
@@ -1131,6 +1013,7 @@
         }
     }, 1000);
 
+    // STREAK & ATTENDANCE LOGIC
     function initStreakAndAttendance() {
         let streakData = JSON.parse(localStorage.getItem('smartGymStreak')) || { streak: 0, lastCheckIn: null };
         let today = new Date().toISOString().split('T')[0];
@@ -1167,6 +1050,7 @@
         initStreakAndAttendance();
     }
 
+    // WEIGHT LOG GRAPH
     let weightLogs = JSON.parse(localStorage.getItem('smartGymWeightLogs')) || [];
 
     function addWeightLog() {
@@ -1231,6 +1115,7 @@
         });
     }
 
+    // 30 DAY CHALLENGE LOGIC
     const challengeTasks = [
         "20 Push-ups + 30 sec Plank",
         "30 Squats + 20 Jumping Jacks",
@@ -1310,6 +1195,7 @@
         selectChallengeDay(selectedDayIndex);
     }
 
+    // INITIALIZATION
     populateCalorieExercises();
     filterFoodCategory('veg');
     setDietType('nonveg');
