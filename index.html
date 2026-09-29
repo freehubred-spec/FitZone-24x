@@ -69,24 +69,32 @@
 </head>
 <body>
 
-<!-- FIREBASE AUTHENTICATION SCREEN OVERLAY -->
-<div id="authModal" class="image-viewer" style="display: flex;">
+<!-- AUTHENTICATION MODAL (MOBILE NUMBER + PASSWORD) -->
+<div id="authModal" class="image-viewer" style="display: flex; z-index: 20000;">
     <div class="alarm-modal-body" style="text-align: center;">
-        <h3 id="authTitle" style="color: var(--primary); margin-bottom: 15px;">SmartGym-24x Login</h3>
+        <h3 id="authTitle" style="color: var(--primary); border-bottom: 1px solid #333; padding-bottom: 10px;">📱 Mobile Login</h3>
         
-        <div id="authError" style="color: #ff4757; font-size: 0.85rem; margin-bottom: 10px; display: none; background: rgba(255,71,87,0.1); padding: 8px; border-radius: 5px;"></div>
-        <div id="authSuccess" style="color: var(--accent); font-size: 0.85rem; margin-bottom: 10px; display: none; background: rgba(46,204,113,0.1); padding: 8px; border-radius: 5px;"></div>
-
-        <input type="email" id="authEmail" placeholder="Email Address" required>
-        <input type="password" id="authPassword" placeholder="Password (min 6 digits)" required>
-
-        <button id="authPrimaryBtn" class="btn-main" style="margin-top: 10px; background: var(--primary);" onclick="handleAuthSubmit()">Login</button>
+        <div id="authError" style="color: var(--primary); font-size: 0.85rem; margin-bottom: 10px; display: none; background: rgba(255,71,87,0.1); padding: 8px; border-radius: 5px;"></div>
         
-        <div style="margin-top: 15px; font-size: 0.85rem; color: #aaa;">
-            <span id="authToggleText">Account nahi hai?</span> 
-            <a href="javascript:void(0)" id="authToggleBtn" style="color: var(--accent); font-weight: bold; text-decoration: none; margin-left: 5px;" onclick="toggleAuthMode()">Register Karein</a>
+        <label style="font-size: 0.8rem; color: #aaa; text-align: left; display: block; margin-bottom: 2px;">Mobile Number:</label>
+        <input type="tel" id="userMobile" placeholder="10 Digit Mobile Number" maxlength="10">
+        
+        <label style="font-size: 0.8rem; color: #aaa; text-align: left; display: block; margin-top: 8px; margin-bottom: 2px;">Password:</label>
+        <input type="password" id="userPassword" placeholder="Enter Password">
+        
+        <button id="authPrimaryBtn" class="btn-main" style="margin-top: 15px;" onclick="handleAuth()">Login</button>
+        
+        <div style="margin-top: 15px; font-size: 0.85rem; color: #ccc;">
+            <span id="authToggleText">Account nahi hai?</span>
+            <b id="authToggleBtn" style="color: var(--accent); cursor: pointer; text-decoration: underline;" onclick="toggleAuthMode()"> Sign Up Karein</b>
         </div>
     </div>
+</div>
+
+<!-- USER LOGGED-IN BAR -->
+<div id="userInfoHeader" style="display: none; align-items: center; justify-content: space-between; background: #181818; padding: 10px 15px; border-bottom: 1px solid #333; font-size: 0.85rem;">
+    <div>📱 Logged in: <b id="loggedInMobile" style="color: var(--accent);">--</b></div>
+    <button onclick="handleLogout()" style="background: var(--primary); border: none; color: white; padding: 6px 12px; border-radius: 5px; font-weight: bold; cursor: pointer;">Logout 🚪</button>
 </div>
 
 <div class="header" style="justify-content: space-between; padding: 15px 15px;">
@@ -101,7 +109,6 @@
         <div id="overflowMenu" class="overflow-menu-box">
             <div class="overflow-menu-item" onclick="openMoreFeaturesModal()">⚡ More Features & Calculator</div>
             <div class="overflow-menu-item" onclick="openAlarmModal()">⏰ Diet & Medicine Reminder</div>
-            <div id="logoutMenuItem" class="overflow-menu-item" style="display: none; color: #ff4757;" onclick="handleLogout()">🚪 Logout (<span id="userEmailNav"></span>)</div>
         </div>
     </div>
 </div>
@@ -309,7 +316,6 @@
             <div id="calorieResult" style="margin-top: 10px; font-weight: bold; font-size: 0.95rem; text-align: center;"></div>
         </div>
 
-        <!-- EXTRA EXERCISE -->
         <div style="margin-top: 20px;">
             <b style="font-size: 0.9rem; color: var(--blue);">⚡ Extra Exercise:</b>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;">
@@ -368,10 +374,11 @@
     </div>
 </div>
 
-<!-- FIREBASE SDK & AUTH LOGIC MODULE -->
+<!-- FIREBASE SDK & MOBILE LOGIN + SINGLE DEVICE LOGIC -->
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDXDzC6LQfJH5dizlgh8Vtq1s5EjHhHX_4",
@@ -385,99 +392,108 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getDatabase(app);
 
     let isSignUpMode = false;
+    let activeSessionUnsubscribe = null;
 
     window.toggleAuthMode = function() {
         isSignUpMode = !isSignUpMode;
-        const title = document.getElementById('authTitle');
-        const btn = document.getElementById('authPrimaryBtn');
-        const toggleText = document.getElementById('authToggleText');
-        const toggleBtn = document.getElementById('authToggleBtn');
-        const errDiv = document.getElementById('authError');
-        const successDiv = document.getElementById('authSuccess');
-        
-        errDiv.style.display = 'none';
-        successDiv.style.display = 'none';
-
-        if (isSignUpMode) {
-            title.innerText = "SmartGym-24x Register";
-            btn.innerText = "Sign Up";
-            toggleText.innerText = "Pehle se account hai?";
-            toggleBtn.innerText = "Login Karein";
-        } else {
-            title.innerText = "SmartGym-24x Login";
-            btn.innerText = "Login";
-            toggleText.innerText = "Account nahi hai?";
-            toggleBtn.innerText = "Register Karein";
-        }
+        document.getElementById('authTitle').innerText = isSignUpMode ? '📝 Register Account' : '📱 Mobile Login';
+        document.getElementById('authPrimaryBtn').innerText = isSignUpMode ? 'Register' : 'Login';
+        document.getElementById('authToggleText').innerText = isSignUpMode ? 'Pehle se account hai?' : 'Account nahi hai?';
+        document.getElementById('authToggleBtn').innerText = isSignUpMode ? ' Login Karein' : ' Sign Up Karein';
+        document.getElementById('authError').style.display = 'none';
     };
 
-    window.handleAuthSubmit = async function() {
-        const email = document.getElementById('authEmail').value.trim();
-        const password = document.getElementById('authPassword').value;
+    window.handleAuth = async function() {
+        const mobile = document.getElementById('userMobile').value.trim();
+        const password = document.getElementById('userPassword').value.trim();
         const errDiv = document.getElementById('authError');
-        const successDiv = document.getElementById('authSuccess');
-        
         errDiv.style.display = 'none';
-        successDiv.style.display = 'none';
 
-        if (!email || !password) {
-            errDiv.innerText = "Kripya Email aur Password dono bhariye!";
+        if (!mobile || mobile.length < 10) {
+            errDiv.innerText = "Kripya sahi 10-digit mobile number daalein!";
+            errDiv.style.display = 'block';
+            return;
+        }
+        if (!password || password.length < 6) {
+            errDiv.innerText = "Password kam se kam 6 characters ka hona chahiye!";
             errDiv.style.display = 'block';
             return;
         }
 
+        const syntheticEmail = `${mobile}@smartgym24x.app`;
+        const newSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
+
         try {
             if (isSignUpMode) {
-                await createUserWithEmailAndPassword(auth, email, password);
-                successDiv.innerText = "Account safaltapoorvak ban gaya! Logging in...";
-                successDiv.style.display = 'block';
+                const userCredential = await createUserWithEmailAndPassword(auth, syntheticEmail, password);
+                const uid = userCredential.user.uid;
+                localStorage.setItem('smartGymSessionId', newSessionId);
+                await set(ref(db, `users/${uid}`), {
+                    mobile: mobile,
+                    sessionId: newSessionId,
+                    createdAt: Date.now()
+                });
             } else {
-                await signInWithEmailAndPassword(auth, email, password);
-                successDiv.innerText = "Login successful!";
-                successDiv.style.display = 'block';
+                const userCredential = await signInWithEmailAndPassword(auth, syntheticEmail, password);
+                const uid = userCredential.user.uid;
+                localStorage.setItem('smartGymSessionId', newSessionId);
+                await set(ref(db, `users/${uid}/sessionId`), newSessionId);
+                await set(ref(db, `users/${uid}/mobile`), mobile);
             }
         } catch (error) {
-            let msg = error.message;
+            let msg = "Error: " + error.message;
             if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                msg = "Sahi Email ya Password dalein!";
+                msg = "Mobile number ya password galat hai!";
             } else if (error.code === 'auth/email-already-in-use') {
-                msg = "Ye Email pehle se registered hai! Login karein.";
-            } else if (error.code === 'auth/weak-password') {
-                msg = "Password kam se kam 6 digits ka hona chahiye!";
-            } else if (error.code === 'auth/operation-not-allowed') {
-                msg = "Firebase Console mein Email/Password Sign-in provider enable nahi hai!";
+                msg = "Yeh mobile number pehle se registered hai. Login karein!";
             }
             errDiv.innerText = msg;
             errDiv.style.display = 'block';
         }
     };
 
-    window.handleLogout = async function() {
-        try {
-            await signOut(auth);
-            alert("Aap Logout ho chuke hain.");
-        } catch (error) {
-            alert("Logout error: " + error.message);
-        }
-    };
-
+    // REALTIME LISTENER FOR SINGLE DEVICE LOGOUT
     onAuthStateChanged(auth, (user) => {
         const authModal = document.getElementById('authModal');
-        const logoutItem = document.getElementById('logoutMenuItem');
-        const userEmailNav = document.getElementById('userEmailNav');
+        const userInfoHeader = document.getElementById('userInfoHeader');
+        const loggedInMobile = document.getElementById('loggedInMobile');
+
+        if (activeSessionUnsubscribe) {
+            activeSessionUnsubscribe();
+            activeSessionUnsubscribe = null;
+        }
 
         if (user) {
             authModal.style.display = 'none';
-            if (logoutItem) logoutItem.style.display = 'block';
-            if (userEmailNav) userEmailNav.innerText = user.email;
+            userInfoHeader.style.display = 'flex';
+            const mobileNum = user.email ? user.email.split('@')[0] : 'User';
+            loggedInMobile.innerText = mobileNum;
+
+            const localSessionId = localStorage.getItem('smartGymSessionId');
+
+            const sessionRef = ref(db, `users/${user.uid}/sessionId`);
+            activeSessionUnsubscribe = onValue(sessionRef, (snapshot) => {
+                const remoteSessionId = snapshot.val();
+                if (remoteSessionId && localSessionId && remoteSessionId !== localSessionId) {
+                    alert("⚠️ Aapka account kisi dusre device par login ho gaya hai! Aap yahan se automatic logout ho rahe hain.");
+                    signOut(auth);
+                    localStorage.removeItem('smartGymSessionId');
+                }
+            });
         } else {
             authModal.style.display = 'flex';
-            if (logoutItem) logoutItem.style.display = 'none';
-            if (userEmailNav) userEmailNav.innerText = '';
+            userInfoHeader.style.display = 'none';
         }
     });
+
+    window.handleLogout = function() {
+        signOut(auth).then(() => {
+            localStorage.removeItem('smartGymSessionId');
+        });
+    };
 </script>
 
 <script>
@@ -500,7 +516,6 @@
         }
     }
 
-    // COMPLETE WORLD CLASS GYM & PRE-WORKOUT EXERCISE DATABASE
     const db = {
         preworkout: [
             {n:"Running / Treadmill", p:"https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=300"},
@@ -613,7 +628,6 @@
         ]
     };
 
-    // MET INTENSITY MAP FOR ALL EXERCISES
     const exerciseMETs = {
         "Running / Treadmill": 9.8, "Cycling / Exercise Bike": 8.5, "Rope Skipping / Jump Rope": 11.0, "Burpees": 10.0,
         "High Knees Running": 9.0, "Mountain Climbers": 8.5, "Jumping Jacks": 8.0, "Stair Master / Stair Climbing": 9.0,
@@ -701,7 +715,6 @@
         `;
     }
 
-    // EXTENSIVE FOOD NUTRITION DATABASE (PER 100G)
     const foodDb = {
         veg: [
             { name: "Black Chickpeas (Kala Chana)", cal: 364, prot: 19, carbs: 61, fat: 6, vit: "Vitamin A, Vitamin C, Iron, Calcium, Fiber" },
@@ -880,7 +893,6 @@
             workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
         });
 
-        // DIET DATA WITH AUTO NUTRITION CALCULATIONS
         const dietData = {
             bulking: {
                 veg: `
@@ -1054,7 +1066,6 @@
         document.getElementById('protRes').innerHTML = `<div style="background:rgba(46, 204, 113, 0.1); padding:10px; border-radius:5px; border-left:4px solid #2ecc71;"><p>Target: <b style="font-size:1.2rem; color:#2ecc71;">${(weight * multiplier).toFixed(1)}g</b>/day</p></div>`;
     }
 
-    // ALARM & THREE DOTS SYSTEM LOGIC
     let gymAlarms = JSON.parse(localStorage.getItem('smartGymAlarms')) || [];
 
     function toggleOverflowMenu(e) {
@@ -1146,7 +1157,6 @@
         }
     }, 1000);
 
-    // STREAK & ATTENDANCE LOGIC
     function initStreakAndAttendance() {
         let streakData = JSON.parse(localStorage.getItem('smartGymStreak')) || { streak: 0, lastCheckIn: null };
         let today = new Date().toISOString().split('T')[0];
@@ -1183,7 +1193,6 @@
         initStreakAndAttendance();
     }
 
-    // WEIGHT LOG GRAPH
     let weightLogs = JSON.parse(localStorage.getItem('smartGymWeightLogs')) || [];
 
     function addWeightLog() {
@@ -1248,7 +1257,6 @@
         });
     }
 
-    // 30 DAY CHALLENGE LOGIC
     const challengeTasks = [
         "20 Push-ups + 30 sec Plank",
         "30 Squats + 20 Jumping Jacks",
