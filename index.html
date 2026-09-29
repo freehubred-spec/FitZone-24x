@@ -69,6 +69,26 @@
 </head>
 <body>
 
+<!-- FIREBASE AUTHENTICATION SCREEN OVERLAY -->
+<div id="authModal" class="image-viewer" style="display: flex;">
+    <div class="alarm-modal-body" style="text-align: center;">
+        <h3 id="authTitle" style="color: var(--primary); margin-bottom: 15px;">SmartGym-24x Login</h3>
+        
+        <div id="authError" style="color: #ff4757; font-size: 0.85rem; margin-bottom: 10px; display: none; background: rgba(255,71,87,0.1); padding: 8px; border-radius: 5px;"></div>
+        <div id="authSuccess" style="color: var(--accent); font-size: 0.85rem; margin-bottom: 10px; display: none; background: rgba(46,204,113,0.1); padding: 8px; border-radius: 5px;"></div>
+
+        <input type="email" id="authEmail" placeholder="Email Address" required>
+        <input type="password" id="authPassword" placeholder="Password (min 6 digits)" required>
+
+        <button id="authPrimaryBtn" class="btn-main" style="margin-top: 10px; background: var(--primary);" onclick="handleAuthSubmit()">Login</button>
+        
+        <div style="margin-top: 15px; font-size: 0.85rem; color: #aaa;">
+            <span id="authToggleText">Account nahi hai?</span> 
+            <a href="javascript:void(0)" id="authToggleBtn" style="color: var(--accent); font-weight: bold; text-decoration: none; margin-left: 5px;" onclick="toggleAuthMode()">Register Karein</a>
+        </div>
+    </div>
+</div>
+
 <div class="header" style="justify-content: space-between; padding: 15px 15px;">
     <div style="width: 35px;"></div>
     <div style="display: flex; align-items: center; gap: 12px;">
@@ -81,6 +101,7 @@
         <div id="overflowMenu" class="overflow-menu-box">
             <div class="overflow-menu-item" onclick="openMoreFeaturesModal()">⚡ More Features & Calculator</div>
             <div class="overflow-menu-item" onclick="openAlarmModal()">⏰ Diet & Medicine Reminder</div>
+            <div id="logoutMenuItem" class="overflow-menu-item" style="display: none; color: #ff4757;" onclick="handleLogout()">🚪 Logout (<span id="userEmailNav"></span>)</div>
         </div>
     </div>
 </div>
@@ -213,13 +234,13 @@
         </select>
     </div>
 
-    <!-- WORKOUT SCHEDULE AREA (Moved directly under Workout Goal) -->
+    <!-- WORKOUT SCHEDULE AREA -->
     <div class="card">
         <h3>📅 Weekly Workout Schedule</h3>
         <div id="workoutArea"></div>
     </div>
 
-    <!-- DIET PLAN AREA (Diet Preference included here) -->
+    <!-- DIET PLAN AREA -->
     <div class="card">
         <h3>📅 Extra Power Diet Plan</h3>
         <div style="margin-bottom: 15px;">
@@ -288,7 +309,7 @@
             <div id="calorieResult" style="margin-top: 10px; font-weight: bold; font-size: 0.95rem; text-align: center;"></div>
         </div>
 
-        <!-- EXTRA EXERCISE (Modified to only 3 options) -->
+        <!-- EXTRA EXERCISE -->
         <div style="margin-top: 20px;">
             <b style="font-size: 0.9rem; color: var(--blue);">⚡ Extra Exercise:</b>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;">
@@ -346,6 +367,118 @@
         </div>
     </div>
 </div>
+
+<!-- FIREBASE SDK & AUTH LOGIC MODULE -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDXDzC6LQfJH5dizlgh8Vtq1s5EjHhHX_4",
+        authDomain: "smartgym24x.firebaseapp.com",
+        databaseURL: "https://smartgym24x-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "smartgym24x",
+        storageBucket: "smartgym24x.firebasestorage.app",
+        messagingSenderId: "274929335976",
+        appId: "1:274929335976:web:5a38f50fb35405c5270c9d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    let isSignUpMode = false;
+
+    window.toggleAuthMode = function() {
+        isSignUpMode = !isSignUpMode;
+        const title = document.getElementById('authTitle');
+        const btn = document.getElementById('authPrimaryBtn');
+        const toggleText = document.getElementById('authToggleText');
+        const toggleBtn = document.getElementById('authToggleBtn');
+        const errDiv = document.getElementById('authError');
+        const successDiv = document.getElementById('authSuccess');
+        
+        errDiv.style.display = 'none';
+        successDiv.style.display = 'none';
+
+        if (isSignUpMode) {
+            title.innerText = "SmartGym-24x Register";
+            btn.innerText = "Sign Up";
+            toggleText.innerText = "Pehle se account hai?";
+            toggleBtn.innerText = "Login Karein";
+        } else {
+            title.innerText = "SmartGym-24x Login";
+            btn.innerText = "Login";
+            toggleText.innerText = "Account nahi hai?";
+            toggleBtn.innerText = "Register Karein";
+        }
+    };
+
+    window.handleAuthSubmit = async function() {
+        const email = document.getElementById('authEmail').value.trim();
+        const password = document.getElementById('authPassword').value;
+        const errDiv = document.getElementById('authError');
+        const successDiv = document.getElementById('authSuccess');
+        
+        errDiv.style.display = 'none';
+        successDiv.style.display = 'none';
+
+        if (!email || !password) {
+            errDiv.innerText = "Kripya Email aur Password dono bhariye!";
+            errDiv.style.display = 'block';
+            return;
+        }
+
+        try {
+            if (isSignUpMode) {
+                await createUserWithEmailAndPassword(auth, email, password);
+                successDiv.innerText = "Account safaltapoorvak ban gaya! Logging in...";
+                successDiv.style.display = 'block';
+            } else {
+                await signInWithEmailAndPassword(auth, email, password);
+                successDiv.innerText = "Login successful!";
+                successDiv.style.display = 'block';
+            }
+        } catch (error) {
+            let msg = error.message;
+            if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                msg = "Sahi Email ya Password dalein!";
+            } else if (error.code === 'auth/email-already-in-use') {
+                msg = "Ye Email pehle se registered hai! Login karein.";
+            } else if (error.code === 'auth/weak-password') {
+                msg = "Password kam se kam 6 digits ka hona chahiye!";
+            } else if (error.code === 'auth/operation-not-allowed') {
+                msg = "Firebase Console mein Email/Password Sign-in provider enable nahi hai!";
+            }
+            errDiv.innerText = msg;
+            errDiv.style.display = 'block';
+        }
+    };
+
+    window.handleLogout = async function() {
+        try {
+            await signOut(auth);
+            alert("Aap Logout ho chuke hain.");
+        } catch (error) {
+            alert("Logout error: " + error.message);
+        }
+    };
+
+    onAuthStateChanged(auth, (user) => {
+        const authModal = document.getElementById('authModal');
+        const logoutItem = document.getElementById('logoutMenuItem');
+        const userEmailNav = document.getElementById('userEmailNav');
+
+        if (user) {
+            authModal.style.display = 'none';
+            if (logoutItem) logoutItem.style.display = 'block';
+            if (userEmailNav) userEmailNav.innerText = user.email;
+        } else {
+            authModal.style.display = 'flex';
+            if (logoutItem) logoutItem.style.display = 'none';
+            if (userEmailNav) userEmailNav.innerText = '';
+        }
+    });
+</script>
 
 <script>
     // AUTO SYNC INPUTS FUNCTION (WEIGHT, HEIGHT, AGE)
@@ -747,7 +880,7 @@
             workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
         });
 
-        // DIET DATA WITH AUTO NUTRITION CALCULATIONS (REQ 5)
+        // DIET DATA WITH AUTO NUTRITION CALCULATIONS
         const dietData = {
             bulking: {
                 veg: `
