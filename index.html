@@ -200,6 +200,22 @@
         <div id="res" style="text-align:center; margin-top:15px; font-weight:bold; font-size: 1.1rem;"></div>
     </div>
 
+    <!-- DAILY STEPS & CALORIES TRACKER -->
+    <div class="card" style="border: 1px solid var(--accent);">
+        <h3>👟 Daily Steps & Calorie Burn</h3>
+        <div style="text-align: center; margin-bottom: 10px;">
+            <div style="font-size: 0.8rem; color: #aaa;">Total Steps</div>
+            <div id="stepCountDisplay" style="font-size: 2.2rem; font-weight: bold; color: var(--accent);">0</div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+            <button class="btn-main" style="background: var(--accent); padding: 10px;" onclick="startStepsTracker()">Start Steps</button>
+            <button class="btn-main" style="background: var(--primary); padding: 10px;" onclick="stopStepsTracker()">Stop Steps</button>
+        </div>
+        <div id="stepsCaloriesResult" style="background: #181818; padding: 10px; border-radius: 6px; font-size: 0.85rem; text-align: center; border: 1px solid #444;">
+            🔥 Calories Burned: <b>0.0 kcal</b>
+        </div>
+    </div>
+
     <!-- WEIGHT LOGGER -->
     <div class="card">
         <h3>📈 Weight & Progress Logger</h3>
@@ -514,6 +530,39 @@
             let age1 = document.getElementById('age');
             if (age1 && age1.value !== val) age1.value = val;
         }
+    }
+
+    // --- DAILY STEPS & CALORIES TRACKER LOGIC ---
+    let stepCount = 0;
+    let stepInterval = null;
+
+    function startStepsTracker() {
+        if (stepInterval) return;
+        stepInterval = setInterval(() => {
+            // Simulated increment (~2 steps every second or motion-based simulation)
+            stepCount += 2;
+            updateStepDisplay();
+        }, 1000);
+    }
+
+    function stopStepsTracker() {
+        if (stepInterval) {
+            clearInterval(stepInterval);
+            stepInterval = null;
+        }
+    }
+
+    function updateStepDisplay() {
+        document.getElementById('stepCountDisplay').innerText = stepCount;
+        
+        // Weight ke hisab se calories calculation (Average: ~0.04 kcal per step for 70kg person)
+        let weight = parseFloat(document.getElementById('w').value) || parseFloat(document.getElementById('calorieUserWeight').value) || 70;
+        let caloriesBurnedPerStep = 0.00057 * weight; // standard scientific approximation based on weight
+        let totalCalories = stepCount * caloriesBurnedPerStep;
+
+        document.getElementById('stepsCaloriesResult').innerHTML = `
+            🔥 Calories Burned: <b>${totalCalories.toFixed(1)} kcal</b> <small style="color:#aaa;">(Weight: ${weight} kg)</small>
+        `;
     }
 
     const db = {
@@ -989,7 +1038,7 @@
                     <div class="meal-macro">🔥 380 kcal | 💪 54g Protein | 🥑 2g Fat | 💊 Vit C, Calcium, B-Vitamins</div>
                 </div>
                 <div style="background: rgba(9, 132, 227, 0.2); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--blue); margin-top: 10px;">
-                    ✂️ <b>TOTAL CUTTING VEG DIET:</b> ~590 kcal | 72g Protein | 4g Fat
+                    ✂️️ <b>TOTAL CUTTING VEG DIET:</b> ~590 kcal | 72g Protein | 4g Fat
                 </div>`,
 
                 nonveg: `
@@ -1336,13 +1385,14 @@
         selectChallengeDay(selectedDayIndex);
     }
 
-    // INITIALIZATION
-    populateCalorieExercises();
-    filterFoodCategory('veg');
-    setDietType('nonveg');
-    initStreakAndAttendance();
-    renderWeightChart();
-    renderChallengeGrid();
+    window.onload = function() {
+        initStreakAndAttendance();
+        renderWeightChart();
+        renderChallengeGrid();
+        populateCalorieExercises();
+        updateAll();
+    };
 </script>
+
 </body>
 </html>
