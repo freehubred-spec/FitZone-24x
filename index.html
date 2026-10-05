@@ -69,11 +69,10 @@
 </head>
 <body>
 
-<!-- AUTHENTICATION MODAL (MOBILE NUMBER + PASSWORD) -->
+<!-- AUTHENTICATION MODAL -->
 <div id="authModal" class="image-viewer" style="display: flex; z-index: 20000;">
     <div class="alarm-modal-body" style="text-align: center;">
         <h3 id="authTitle" style="color: var(--primary); border-bottom: 1px solid #333; padding-bottom: 10px;">📱 Mobile Login</h3>
-        
         <div id="authError" style="color: var(--primary); font-size: 0.85rem; margin-bottom: 10px; display: none; background: rgba(255,71,87,0.1); padding: 8px; border-radius: 5px;"></div>
         
         <label style="font-size: 0.8rem; color: #aaa; text-align: left; display: block; margin-bottom: 2px;">Mobile Number:</label>
@@ -124,7 +123,6 @@
         <span class="close-viewer" style="top: 10px; right: 15px; font-size: 28px;" onclick="closeMoreFeaturesModal()">&times;</span>
         <h3 style="margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 5px; color: var(--purple);">⚡ More Features</h3>
         
-        <!-- FOOD NUTRITION CALCULATOR SECTION -->
         <div style="background: #181818; padding: 12px; border-radius: 8px; border: 1px solid var(--blue); margin-bottom: 15px;">
             <h4 style="color: var(--blue); margin: 0 0 10px 0; font-size: 1rem;">🥗 Food Nutrition & Calorie Calculator</h4>
             
@@ -133,17 +131,15 @@
                 <button type="button" id="foodCatNonVeg" class="btn-main" style="background: #e67e22; padding: 8px; font-size: 0.85rem;" onclick="filterFoodCategory('nonveg')">🔴 Non-Veg Foods</button>
             </div>
 
-            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Select Food Item (In English):</label>
+            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Select Food Item:</label>
             <select id="foodSelect" onchange="calculateFoodNutrition()"></select>
 
-            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Enter Weight / Quantity (Grams):</label>
-            <input type="number" id="foodWeight" value="100" placeholder="Weight in grams (e.g. 100)" oninput="calculateFoodNutrition()">
+            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Enter Weight (Grams):</label>
+            <input type="number" id="foodWeight" value="100" placeholder="Weight in grams" oninput="calculateFoodNutrition()">
 
-            <div id="foodNutritionResult" style="margin-top: 12px; background: #252525; padding: 10px; border-radius: 6px; font-size: 0.85rem; border-left: 4px solid var(--accent);">
-            </div>
+            <div id="foodNutritionResult" style="margin-top: 12px; background: #252525; padding: 10px; border-radius: 6px; font-size: 0.85rem; border-left: 4px solid var(--accent);"></div>
         </div>
 
-        <!-- SUPPLEMENTS SECTION -->
         <div style="background: #181818; padding: 12px; border-radius: 8px; border: 1px solid var(--accent); margin-bottom: 15px;">
             <h4 style="color: var(--accent); margin: 0 0 10px 0; font-size: 1rem;">💊 Recommended Supplements</h4>
             <div id="supplementArea"></div>
@@ -162,8 +158,8 @@
         <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Remind Time Set Karein:</label>
         <input type="time" id="alarmTime">
         
-        <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 10px; margin-bottom: 2px;">Kya Khana/Lena He? (Naam Likhein):</label>
-        <input type="text" id="alarmText" placeholder="E.g., 4 Ande Oats / Multi-Vitamin Dawai">
+        <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 10px; margin-bottom: 2px;">Kya Khana/Lena He?:</label>
+        <input type="text" id="alarmText" placeholder="E.g., 4 Ande Oats / Multi-Vitamin">
         
         <button class="btn-main" style="margin-top: 12px;" onclick="addCustomAlarm()">Set Voice Reminder</button>
         
@@ -175,6 +171,22 @@
 <div class="container">
 
     <button class="btn-main" style="background: var(--purple); margin-bottom: 15px; font-size: 1rem;" onclick="openMoreFeaturesModal()">⚡ More Features (Food Calculator & Supplements)</button>
+
+    <!-- REAL MOTION SENSOR STEP COUNTER -->
+    <div class="card" style="border: 1px solid var(--accent);">
+        <h3>🚶 Daily Step Counter (Real Motion Sensor)</h3>
+        <div style="text-align: center; margin-bottom: 12px;">
+            <span style="font-size: 2.5rem; font-weight: 900; color: var(--accent);" id="stepDisplay">0</span>
+            <div style="color: #aaa; font-size: 0.85rem; margin-top: 2px;" id="stepStats">0.00 km | 🔥 0.0 kcal</div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button id="stepTrackerBtn" class="btn-main" style="background: var(--accent);" onclick="toggleStepTracking()">▶️ Start Step Counter</button>
+            <button class="btn-main" style="width: 90px; background: #333;" onclick="resetSteps()">Reset</button>
+        </div>
+        <div id="stepStatusMsg" style="text-align: center; margin-top: 8px; font-size: 0.8rem; color: #888;">
+            Button dabakar start karein. Phone lekar chalne par hi steps count honge.
+        </div>
+    </div>
 
     <!-- STREAK & GYM ATTENDANCE CARD -->
     <div class="card" style="border: 1px solid var(--primary);">
@@ -198,22 +210,6 @@
         </div>
         <button class="btn-main" onclick="calcHealth()">Check Status</button>
         <div id="res" style="text-align:center; margin-top:15px; font-weight:bold; font-size: 1.1rem;"></div>
-    </div>
-
-    <!-- DAILY STEPS & CALORIES TRACKER -->
-    <div class="card" style="border: 1px solid var(--accent);">
-        <h3>👟 Daily Steps & Calorie Burn</h3>
-        <div style="text-align: center; margin-bottom: 10px;">
-            <div style="font-size: 0.8rem; color: #aaa;">Total Steps</div>
-            <div id="stepCountDisplay" style="font-size: 2.2rem; font-weight: bold; color: var(--accent);">0</div>
-        </div>
-        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
-            <button class="btn-main" style="background: var(--accent); padding: 10px;" onclick="startStepsTracker()">Start Steps</button>
-            <button class="btn-main" style="background: var(--primary); padding: 10px;" onclick="stopStepsTracker()">Stop Steps</button>
-        </div>
-        <div id="stepsCaloriesResult" style="background: #181818; padding: 10px; border-radius: 6px; font-size: 0.85rem; text-align: center; border: 1px solid #444;">
-            🔥 Calories Burned: <b>0.0 kcal</b>
-        </div>
     </div>
 
     <!-- WEIGHT LOGGER -->
@@ -318,13 +314,13 @@
         </div>
 
         <div style="margin-top: 15px; background: #181818; padding: 12px; border-radius: 8px; border: 1px solid var(--primary);">
-            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Exercise / Pre-Workout Select Karein:</label>
+            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Exercise Select Karein:</label>
             <select id="calorieExSelect"></select>
 
             <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Aapka Weight (kg):</label>
-            <input type="number" id="calorieUserWeight" placeholder="Enter Weight in kg (e.g. 70)" oninput="syncInputs('w', this.value)">
+            <input type="number" id="calorieUserWeight" placeholder="Enter Weight in kg" oninput="syncInputs('w', this.value)">
 
-            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Workout Time (Minutes) - [Khali chhodein agar Timer use karna ho]:</label>
+            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Workout Time (Minutes):</label>
             <input type="number" id="calorieCustomTime" placeholder="Duration in minutes (Optional)">
 
             <button class="btn-main" style="margin-top: 10px; background: var(--accent);" onclick="calculateExerciseCalories()">Calculate Burned Calories 🔥</button>
@@ -360,7 +356,7 @@
     <!-- COMMUNITY SECTION -->
     <div class="card" style="border: 1px solid var(--blue);">
         <h3>🔐 SmartGym Community</h3>
-        <button id="biometric-btn" onclick="simBiometric()">🖐️ Scan Fingerprint to Enter</button>
+        <button id="biometric-btn" onclick="simBiometric()">🖐️️ Scan Fingerprint to Enter</button>
         <div id="chat-section" style="display:none; margin-top:10px;">
             <div class="chat-container" id="chatbox"></div>
             <div style="display:flex; gap:5px; margin-top:10px;">
@@ -390,7 +386,7 @@
     </div>
 </div>
 
-<!-- FIREBASE SDK & MOBILE LOGIN + SINGLE DEVICE LOGIC -->
+<!-- FIREBASE SDK & AUTHENTICATION -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
@@ -447,11 +443,7 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, syntheticEmail, password);
                 const uid = userCredential.user.uid;
                 localStorage.setItem('smartGymSessionId', newSessionId);
-                await set(ref(db, `users/${uid}`), {
-                    mobile: mobile,
-                    sessionId: newSessionId,
-                    createdAt: Date.now()
-                });
+                await set(ref(db, `users/${uid}`), { mobile: mobile, sessionId: newSessionId, createdAt: Date.now() });
             } else {
                 const userCredential = await signInWithEmailAndPassword(auth, syntheticEmail, password);
                 const uid = userCredential.user.uid;
@@ -471,7 +463,6 @@
         }
     };
 
-    // REALTIME LISTENER FOR SINGLE DEVICE LOGOUT
     onAuthStateChanged(auth, (user) => {
         const authModal = document.getElementById('authModal');
         const userInfoHeader = document.getElementById('userInfoHeader');
@@ -489,7 +480,6 @@
             loggedInMobile.innerText = mobileNum;
 
             const localSessionId = localStorage.getItem('smartGymSessionId');
-
             const sessionRef = ref(db, `users/${user.uid}/sessionId`);
             activeSessionUnsubscribe = onValue(sessionRef, (snapshot) => {
                 const remoteSessionId = snapshot.val();
@@ -506,14 +496,104 @@
     });
 
     window.handleLogout = function() {
-        signOut(auth).then(() => {
-            localStorage.removeItem('smartGymSessionId');
-        });
+        signOut(auth).then(() => { localStorage.removeItem('smartGymSessionId'); });
     };
 </script>
 
 <script>
-    // AUTO SYNC INPUTS FUNCTION (WEIGHT, HEIGHT, AGE)
+    // ACCELEROMETER REAL STEP COUNTER SCRIPT
+    let stepCount = parseInt(localStorage.getItem('smartGymSteps')) || 0;
+    let isTrackingSteps = false;
+    let lastStepTime = 0;
+    let lastAccelMagnitude = 0;
+
+    // Daily Step Reset check
+    let todayStr = new Date().toISOString().split('T')[0];
+    let stepLastDate = localStorage.getItem('smartGymStepDate');
+    if (stepLastDate !== todayStr) {
+        stepCount = 0;
+        localStorage.setItem('smartGymStepDate', todayStr);
+        localStorage.setItem('smartGymSteps', 0);
+    }
+
+    function updateStepUI() {
+        document.getElementById('stepDisplay').innerText = stepCount;
+        let km = (stepCount * 0.00075).toFixed(2);
+        let cal = (stepCount * 0.04).toFixed(1);
+        document.getElementById('stepStats').innerText = `${km} km | 🔥 ${cal} kcal`;
+    }
+
+    function toggleStepTracking() {
+        if (!isTrackingSteps) {
+            // Request motion permission for iOS 13+ devices
+            if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
+                            startMotionSensor();
+                        } else {
+                            alert("Step counter ke liye Motion Sensor permission zaruri hai!");
+                        }
+                    })
+                    .catch(console.error);
+            } else if (window.DeviceMotionEvent) {
+                startMotionSensor();
+            } else {
+                alert("Aapke device ya browser me Motion Sensor API available nahi hai!");
+            }
+        } else {
+            stopMotionSensor();
+        }
+    }
+
+    function startMotionSensor() {
+        window.addEventListener('devicemotion', handleMotion, true);
+        isTrackingSteps = true;
+        let btn = document.getElementById('stepTrackerBtn');
+        btn.innerText = "⏸️ Stop Step Counter";
+        btn.style.background = "var(--primary)";
+        document.getElementById('stepStatusMsg').innerText = "🟢 Sensor Active: Aapke chalne par real-time steps count ho rahe hain.";
+    }
+
+    function stopMotionSensor() {
+        window.removeEventListener('devicemotion', handleMotion, true);
+        isTrackingSteps = false;
+        let btn = document.getElementById('stepTrackerBtn');
+        btn.innerText = "▶️ Start Step Counter";
+        btn.style.background = "var(--accent)";
+        document.getElementById('stepStatusMsg').innerText = "🔴 Sensor Paused: Step counter abhi ruka hua hai.";
+    }
+
+    function handleMotion(event) {
+        let acc = event.accelerationIncludingGravity || event.acceleration;
+        if (!acc || acc.x === null) return;
+
+        let x = acc.x || 0;
+        let y = acc.y || 0;
+        let z = acc.z || 0;
+
+        // Vector magnitude calculation for movement detection
+        let magnitude = Math.sqrt(x * x + y * y + z * z);
+        let delta = Math.abs(magnitude - lastAccelMagnitude);
+        lastAccelMagnitude = magnitude;
+
+        let now = Date.now();
+        // Detect footstep jerk/acceleration threshold with 320ms minimum interval delay
+        if ((magnitude > 12.3 || delta > 3.8) && (now - lastStepTime > 320)) {
+            stepCount++;
+            lastStepTime = now;
+            localStorage.setItem('smartGymSteps', stepCount);
+            updateStepUI();
+        }
+    }
+
+    function resetSteps() {
+        stepCount = 0;
+        localStorage.setItem('smartGymSteps', 0);
+        updateStepUI();
+    }
+
+    // AUTO SYNC INPUTS FUNCTION
     function syncInputs(type, val) {
         if (!val) return;
         if (type === 'w') {
@@ -530,39 +610,6 @@
             let age1 = document.getElementById('age');
             if (age1 && age1.value !== val) age1.value = val;
         }
-    }
-
-    // --- DAILY STEPS & CALORIES TRACKER LOGIC ---
-    let stepCount = 0;
-    let stepInterval = null;
-
-    function startStepsTracker() {
-        if (stepInterval) return;
-        stepInterval = setInterval(() => {
-            // Simulated increment (~2 steps every second or motion-based simulation)
-            stepCount += 2;
-            updateStepDisplay();
-        }, 1000);
-    }
-
-    function stopStepsTracker() {
-        if (stepInterval) {
-            clearInterval(stepInterval);
-            stepInterval = null;
-        }
-    }
-
-    function updateStepDisplay() {
-        document.getElementById('stepCountDisplay').innerText = stepCount;
-        
-        // Weight ke hisab se calories calculation (Average: ~0.04 kcal per step for 70kg person)
-        let weight = parseFloat(document.getElementById('w').value) || parseFloat(document.getElementById('calorieUserWeight').value) || 70;
-        let caloriesBurnedPerStep = 0.00057 * weight; // standard scientific approximation based on weight
-        let totalCalories = stepCount * caloriesBurnedPerStep;
-
-        document.getElementById('stepsCaloriesResult').innerHTML = `
-            🔥 Calories Burned: <b>${totalCalories.toFixed(1)} kcal</b> <small style="color:#aaa;">(Weight: ${weight} kg)</small>
-        `;
     }
 
     const db = {
@@ -814,7 +861,6 @@
         currentFoodCategory = cat;
         let btnVeg = document.getElementById('foodCatVeg');
         let btnNonVeg = document.getElementById('foodCatNonVeg');
-        
         if (cat === 'veg') {
             btnVeg.style.outline = '2px solid #fff';
             btnNonVeg.style.outline = 'none';
@@ -948,40 +994,33 @@
                 <div class="meal">
                     <b>🍳 Breakfast: Paneer Bhurji (150g), Oats (100g), 3 Bananas</b>
                     <p>High protein & dense carbs start.</p>
-                    <div class="meal-macro">🔥 890 kcal | 💪 48g Protein | 🥑 28g Fat | 💊 Vit A, Vit B12, Calcium, Potassium</div>
+                    <div class="meal-macro">🔥 890 kcal | 💪 48g Protein | 🥑 28g Fat</div>
                 </div>
                 <div class="meal">
                     <b>🍛 Lunch: Tofu/Paneer (150g), 2 Cups Rice, Dal, Salad</b>
                     <p>Clean bulk meal with essential amino acids.</p>
-                    <div class="meal-macro">🔥 780 kcal | 💪 42g Protein | 🥑 22g Fat | 💊 Vit B6, Iron, Magnesium</div>
+                    <div class="meal-macro">🔥 780 kcal | 💪 42g Protein | 🥑 22g Fat</div>
                 </div>
                 <div class="meal">
                     <b>🥛 Dinner: Soya Chunks (80g), 4 Roti, Ashwagandha Milk</b>
                     <p>Muscle recovery and growth before sleep.</p>
-                    <div class="meal-macro">🔥 720 kcal | 💪 55g Protein | 🥑 14g Fat | 💊 Vit D, B-Complex, Calcium</div>
-                </div>
-                <div style="background: rgba(46, 204, 113, 0.2); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--accent); margin-top: 10px;">
-                    🏆 <b>TOTAL BULKING VEG DIET:</b> ~2390 kcal | 145g Protein | 64g Fat
+                    <div class="meal-macro">🔥 720 kcal | 💪 55g Protein | 🥑 14g Fat</div>
                 </div>`,
-
                 nonveg: `
                 <div class="meal">
                     <b>🍳 Breakfast: 10 Egg Whites, 100g Oats, 3 Bananas</b>
                     <p>Lean protein & energy rich breakfast.</p>
-                    <div class="meal-macro">🔥 750 kcal | 💪 52g Protein | 🥑 8g Fat | 💊 Vit B2, Vit B12, Choline, Potassium</div>
+                    <div class="meal-macro">🔥 750 kcal | 💪 52g Protein | 🥑 8g Fat</div>
                 </div>
                 <div class="meal">
                     <b>🍛 Lunch: Chicken Breast (200g), 2 Cups Rice, Dal, Salad</b>
                     <p>Max muscle synthesis lunch.</p>
-                    <div class="meal-macro">🔥 820 kcal | 💪 68g Protein | 🥑 12g Fat | 💊 Vit B3, Niacin, Zinc, Iron</div>
+                    <div class="meal-macro">🔥 820 kcal | 💪 68g Protein | 🥑 12g Fat</div>
                 </div>
                 <div class="meal">
                     <b>🍗 Dinner: Fish/Chicken (200g), 4 Roti, Milk</b>
                     <p>Fast digesting protein and healthy fats.</p>
-                    <div class="meal-macro">🔥 790 kcal | 💪 62g Protein | 🥑 18g Fat | 💊 Vit D, Omega-3, Calcium</div>
-                </div>
-                <div style="background: rgba(46, 204, 113, 0.2); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--accent); margin-top: 10px;">
-                    🏆 <b>TOTAL BULKING NON-VEG DIET:</b> ~2360 kcal | 182g Protein | 38g Fat
+                    <div class="meal-macro">🔥 790 kcal | 💪 62g Protein | 🥑 18g Fat</div>
                 </div>`
             },
             weightloss: {
@@ -989,40 +1028,23 @@
                 <div class="meal">
                     <b>☕ Morning: Green Tea & Roasted Makhana (50g)</b>
                     <p>Metabolism booster & light snack.</p>
-                    <div class="meal-macro">🔥 180 kcal | 💪 5g Protein | 🥑 1g Fat | 💊 Antioxidants, Calcium, Magnesium</div>
+                    <div class="meal-macro">🔥 180 kcal | 💪 5g Protein | 🥑 1g Fat</div>
                 </div>
                 <div class="meal">
                     <b>🥗 Lunch: 1 Roti, Mix Veg, Curd (200g)</b>
                     <p>Balanced low calorie fiber rich lunch.</p>
-                    <div class="meal-macro">🔥 380 kcal | 💪 18g Protein | 🥑 10g Fat | 💊 Vit C, Vit B12, Probiotics</div>
-                </div>
-                <div class="meal">
-                    <b>🥒 Dinner: Boiled Moong Dal / Paneer Salad (100g)</b>
-                    <p>Light night protein for fat burn.</p>
-                    <div class="meal-macro">🔥 320 kcal | 💪 22g Protein | 🥑 12g Fat | 💊 Vit A, Iron, Fiber</div>
-                </div>
-                <div style="background: rgba(255, 165, 2, 0.2); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--warning); margin-top: 10px;">
-                    🔥 <b>TOTAL FAT LOSS VEG DIET:</b> ~880 kcal | 45g Protein | 23g Fat
+                    <div class="meal-macro">🔥 380 kcal | 💪 18g Protein | 🥑 10g Fat</div>
                 </div>`,
-
                 nonveg: `
                 <div class="meal">
                     <b>☕ Morning: Warm Lemon Water & 2 Boiled Eggs</b>
                     <p>Detox & satiating breakfast.</p>
-                    <div class="meal-macro">🔥 155 kcal | 💪 13g Protein | 🥑 10g Fat | 💊 Vit A, Vit D, Iron</div>
+                    <div class="meal-macro">🔥 155 kcal | 💪 13g Protein | 🥑 10g Fat</div>
                 </div>
                 <div class="meal">
                     <b>🥗 Lunch: Grilled Chicken Salad (200g) / 4 Eggs</b>
                     <p>Pure protein fat loss lunch.</p>
-                    <div class="meal-macro">🔥 350 kcal | 💪 55g Protein | 🥑 8g Fat | 💊 Vit B3, Vit B6, Selenium</div>
-                </div>
-                <div class="meal">
-                    <b>🥒 Dinner: Clear Chicken Soup (200g) & Veggies</b>
-                    <p>Hydrating low carb dinner.</p>
-                    <div class="meal-macro">🔥 240 kcal | 💪 35g Protein | 🥑 5g Fat | 💊 Vit C, Potassium, Zinc</div>
-                </div>
-                <div style="background: rgba(255, 165, 2, 0.2); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--warning); margin-top: 10px;">
-                    🔥 <b>TOTAL FAT LOSS NON-VEG DIET:</b> ~745 kcal | 103g Protein | 23g Fat
+                    <div class="meal-macro">🔥 350 kcal | 💪 55g Protein | 🥑 8g Fat</div>
                 </div>`
             },
             cutting: {
@@ -1030,30 +1052,13 @@
                 <div class="meal">
                     <b>🍳 Breakfast: Sprouts (150g) & Black Coffee</b>
                     <p>High fiber energy booster.</p>
-                    <div class="meal-macro">🔥 210 kcal | 💪 18g Protein | 🥑 2g Fat | 💊 Vit C, Vit K, Iron</div>
-                </div>
-                <div class="meal">
-                    <b>🥗 Lunch: Soya Chunks (100g) & Broccoli</b>
-                    <p>Maximum protein density meal.</p>
-                    <div class="meal-macro">🔥 380 kcal | 💪 54g Protein | 🥑 2g Fat | 💊 Vit C, Calcium, B-Vitamins</div>
-                </div>
-                <div style="background: rgba(9, 132, 227, 0.2); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--blue); margin-top: 10px;">
-                    ✂️️ <b>TOTAL CUTTING VEG DIET:</b> ~590 kcal | 72g Protein | 4g Fat
+                    <div class="meal-macro">🔥 210 kcal | 💪 18g Protein | 🥑 2g Fat</div>
                 </div>`,
-
                 nonveg: `
                 <div class="meal">
                     <b>🍳 Breakfast: 8 Egg Whites & Green Tea</b>
                     <p>Zero fat, pure protein start.</p>
-                    <div class="meal-macro">🔥 140 kcal | 💪 30g Protein | 🥑 0.5g Fat | 💊 Vit B2, Vit B12, Potassium</div>
-                </div>
-                <div class="meal">
-                    <b>🍗 Lunch: Grilled Chicken (250g) & Spinach</b>
-                    <p>Lean muscle preservation meal.</p>
-                    <div class="meal-macro">🔥 420 kcal | 💪 75g Protein | 🥑 9g Fat | 💊 Vit A, Niacin, Iron, Zinc</div>
-                </div>
-                <div style="background: rgba(9, 132, 227, 0.2); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--blue); margin-top: 10px;">
-                    ✂️ <b>TOTAL CUTTING NON-VEG DIET:</b> ~560 kcal | 105g Protein | 9.5g Fat
+                    <div class="meal-macro">🔥 140 kcal | 💪 30g Protein | 🥑 0.5g Fat</div>
                 </div>`
             }
         };
@@ -1063,25 +1068,25 @@
             bulking: `<div style="background: #252525; padding: 12px; border-radius: 8px; border-left: 4px solid var(--accent);">
                 <b style="color: var(--accent); font-size: 0.95rem; display: block; margin-bottom: 5px;">💪 Bulking (Muscle Gain):</b>
                 <ul style="margin: 0; padding-left: 18px; font-size: 0.85rem; color: #ccc;">
-                    <li><b>Whey Protein / Weight Gainer:</b> Protein requirement poora karne ke liye.</li>
-                    <li><b>Creatine Monohydrate:</b> Muscle strength aur sizing badhane ke liye (3-5g daily).</li>
-                    <li><b>Multivitamin & Fish Oil:</b> Overall recovery aur joint health ke liye.</li>
+                    <li><b>Whey Protein / Weight Gainer</b></li>
+                    <li><b>Creatine Monohydrate</b> (3-5g daily)</li>
+                    <li><b>Multivitamin & Fish Oil</b></li>
                 </ul>
             </div>`,
             weightloss: `<div style="background: #252525; padding: 12px; border-radius: 8px; border-left: 4px solid var(--warning);">
                 <b style="color: var(--warning); font-size: 0.95rem; display: block; margin-bottom: 5px;">🔥 Weight Loss (Fat Burn):</b>
                 <ul style="margin: 0; padding-left: 18px; font-size: 0.85rem; color: #ccc;">
-                    <li><b>L-Carnitine:</b> Stored fat ko energy me convert karne ke liye.</li>
-                    <li><b>Green Tea Extract / Fat Burner:</b> Metabolism fast karne ke liye.</li>
-                    <li><b>Whey Isolate Protein:</b> Low carb ke saath lean muscle bachaaye rakhne ke liye.</li>
+                    <li><b>L-Carnitine</b></li>
+                    <li><b>Green Tea Extract</b></li>
+                    <li><b>Whey Isolate Protein</b></li>
                 </ul>
             </div>`,
             cutting: `<div style="background: #252525; padding: 12px; border-radius: 8px; border-left: 4px solid var(--blue);">
                 <b style="color: var(--blue); font-size: 0.95rem; display: block; margin-bottom: 5px;">✂️ Cutting Body:</b>
                 <ul style="margin: 0; padding-left: 18px; font-size: 0.85rem; color: #ccc;">
-                    <li><b>Whey Isolate:</b> Pure protein, zero fat & carbs.</li>
-                    <li><b>BCAA / EAA:</b> Workout ke time muscle loss rokne ke liye.</li>
-                    <li><b>Pre-Workout / Caffeine:</b> Heavy training ke liye intense focus aur energy.</li>
+                    <li><b>Whey Isolate</b></li>
+                    <li><b>BCAA / EAA</b></li>
+                    <li><b>Pre-Workout / Caffeine</b></li>
                 </ul>
             </div>`
         };
@@ -1145,12 +1150,7 @@
             return;
         }
         
-        gymAlarms.push({
-            time: tVal,
-            text: txtVal,
-            lastFiredDate: ""
-        });
-        
+        gymAlarms.push({ time: tVal, text: txtVal, lastFiredDate: "" });
         localStorage.setItem('smartGymAlarms', JSON.stringify(gymAlarms));
         document.getElementById('alarmText').value = "";
         showAlarmsList();
@@ -1266,7 +1266,7 @@
         if (weightLogs.length === 0) {
             ctx.fillStyle = '#777';
             ctx.font = '14px sans-serif';
-            ctx.fillText('Koi weight record nahi he. Weight daal kar save karein!', 70, 95);
+            ctx.fillText('Koi weight record nahi he.', 70, 95);
             return;
         }
 
@@ -1307,36 +1307,16 @@
     }
 
     const challengeTasks = [
-        "20 Push-ups + 30 sec Plank",
-        "30 Squats + 20 Jumping Jacks",
-        "15 Burpees + 30 sec Wall Sit",
-        "25 Mountain Climbers + 20 Lunges",
-        "Rest & Stretching Day 🧘",
-        "30 Crunches + 1 min Plank",
-        "25 Push-ups + 30 Squats",
-        "35 Jumping Jacks + 20 High Knees",
-        "15 Leg Raises + 30 sec Side Plank",
-        "Rest Day / Light Walk 🚶",
-        "30 Push-ups + 40 Squats",
-        "20 Burpees + 1 min Plank",
-        "35 Crunches + 25 Lunges",
-        "40 Mountain Climbers + 30 sec Wall Sit",
-        "Rest & Recovery Day 🧘",
-        "35 Push-ups + 45 Squats",
-        "25 Burpees + 1.5 min Plank",
-        "40 Crunches + 30 High Knees",
-        "50 Jumping Jacks + 30 Lunges",
-        "Rest Day 😴",
-        "40 Push-ups + 50 Squats",
-        "30 Burpees + 2 min Plank",
-        "45 Crunches + 40 Mountain Climbers",
-        "1 Hour Full Power Gym / Cardio",
-        "Rest Day 🧘",
-        "45 Push-ups + 60 Squats",
-        "35 Burpees + 2 min Plank",
-        "50 Crunches + 50 High Knees",
-        "Max Push-ups Challenge + Full Body Stretch",
-        "🎉 30 Days Completed! You are a Champion!"
+        "20 Push-ups + 30 sec Plank", "30 Squats + 20 Jumping Jacks", "15 Burpees + 30 sec Wall Sit",
+        "25 Mountain Climbers + 20 Lunges", "Rest & Stretching Day 🧘", "30 Crunches + 1 min Plank",
+        "25 Push-ups + 30 Squats", "35 Jumping Jacks + 20 High Knees", "15 Leg Raises + 30 sec Side Plank",
+        "Rest Day / Light Walk 🚶", "30 Push-ups + 40 Squats", "20 Burpees + 1 min Plank",
+        "35 Crunches + 25 Lunges", "40 Mountain Climbers + 30 sec Wall Sit", "Rest & Recovery Day 🧘",
+        "35 Push-ups + 45 Squats", "25 Burpees + 1.5 min Plank", "40 Crunches + 30 High Knees",
+        "50 Jumping Jacks + 30 Lunges", "Rest Day 😴", "40 Push-ups + 50 Squats",
+        "30 Burpees + 2 min Plank", "45 Crunches + 40 Mountain Climbers", "1 Hour Full Power Gym / Cardio",
+        "Rest Day 🧘", "45 Push-ups + 60 Squats", "35 Burpees + 2 min Plank",
+        "50 Crunches + 50 High Knees", "Max Push-ups Challenge + Full Body Stretch", "🎉 30 Days Completed!"
     ];
 
     let challengeCompleted = JSON.parse(localStorage.getItem('smartGymChallenge')) || [];
@@ -1385,14 +1365,14 @@
         selectChallengeDay(selectedDayIndex);
     }
 
-    window.onload = function() {
-        initStreakAndAttendance();
-        renderWeightChart();
-        renderChallengeGrid();
-        populateCalorieExercises();
-        updateAll();
-    };
+    // INITIALIZATION
+    updateStepUI();
+    populateCalorieExercises();
+    filterFoodCategory('veg');
+    setDietType('nonveg');
+    initStreakAndAttendance();
+    renderWeightChart();
+    renderChallengeGrid();
 </script>
-
 </body>
 </html>
