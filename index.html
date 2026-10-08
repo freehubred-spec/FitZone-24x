@@ -51,7 +51,7 @@
         #stopwatch { font-family: monospace; font-size: 2.2rem; color: var(--accent); text-align: center; margin: 10px 0; }
         .muscle-map-btn { padding: 12px 8px; background: #333; border-radius: 6px; cursor: pointer; border: 1px solid #444; font-size: 0.8rem; text-align: center; font-weight: bold; transition: 0.2s; }
         .muscle-map-btn:hover { background: var(--primary); }
-        .chat-container { height: 220px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; font-size: 0.85rem; border: 1px solid #333; }
+        .chat-container { height: 180px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; font-size: 0.8rem; border: 1px solid #333; }
         #biometric-btn { background: #6c5ce7; border: none; padding: 15px; border-radius: 8px; color: #fff; cursor: pointer; width: 100%; font-weight: bold; }
 
         .image-viewer { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); align-items: center; justify-content: center; }
@@ -75,12 +75,7 @@
         <h3 id="authTitle" style="color: var(--primary); border-bottom: 1px solid #333; padding-bottom: 10px;">📱 Mobile Login</h3>
         <div id="authError" style="color: var(--primary); font-size: 0.85rem; margin-bottom: 10px; display: none; background: rgba(255,71,87,0.1); padding: 8px; border-radius: 5px;"></div>
         
-        <div id="authNameBox" style="display: none; text-align: left;">
-            <label style="font-size: 0.8rem; color: #aaa; display: block; margin-bottom: 2px;">Apna Poora Naam (Name):</label>
-            <input type="text" id="userNameInput" placeholder="Enter Full Name">
-        </div>
-
-        <label style="font-size: 0.8rem; color: #aaa; text-align: left; display: block; margin-top: 4px; margin-bottom: 2px;">Mobile Number:</label>
+        <label style="font-size: 0.8rem; color: #aaa; text-align: left; display: block; margin-bottom: 2px;">Mobile Number:</label>
         <input type="tel" id="userMobile" placeholder="10 Digit Mobile Number" maxlength="10">
         
         <label style="font-size: 0.8rem; color: #aaa; text-align: left; display: block; margin-top: 8px; margin-bottom: 2px;">Password:</label>
@@ -97,7 +92,7 @@
 
 <!-- USER LOGGED-IN BAR -->
 <div id="userInfoHeader" style="display: none; align-items: center; justify-content: space-between; background: #181818; padding: 10px 15px; border-bottom: 1px solid #333; font-size: 0.85rem;">
-    <div>📱 Logged in: <b id="loggedInName" style="color: var(--accent);">--</b> (<span id="loggedInMobile" style="color: #aaa;">--</span>)</div>
+    <div>📱 Logged in: <b id="loggedInMobile" style="color: var(--accent);">--</b></div>
     <button onclick="handleLogout()" style="background: var(--primary); border: none; color: white; padding: 6px 12px; border-radius: 5px; font-weight: bold; cursor: pointer;">Logout 🚪</button>
 </div>
 
@@ -358,17 +353,15 @@
         </div>
     </div>
 
-    <!-- COMMUNITY SECTION WITH FIREBASE REALTIME CHAT -->
+    <!-- COMMUNITY SECTION -->
     <div class="card" style="border: 1px solid var(--blue);">
-        <h3>💬 SmartGym Community Live Chat</h3>
-        <button id="biometric-btn" onclick="simBiometric()">🖐 Scan Fingerprint to Enter Chat</button>
+        <h3>🔐 SmartGym Community</h3>
+        <button id="biometric-btn" onclick="simBiometric()">🖐️️ Scan Fingerprint to Enter</button>
         <div id="chat-section" style="display:none; margin-top:10px;">
-            <div class="chat-container" id="chatbox">
-                <div style="color: #666; text-align: center; margin-top: 80px;">Messages load ho rahe hain...</div>
-            </div>
+            <div class="chat-container" id="chatbox"></div>
             <div style="display:flex; gap:5px; margin-top:10px;">
-                <input type="text" id="msg" placeholder="Write a message..." onkeypress="handleChatKeyPress(event)">
-                <button onclick="sendMsg()" style="background:var(--blue); border:none; padding:10px 18px; border-radius:5px; color:#fff; font-weight:bold; cursor:pointer;">Send 🚀</button>
+                <input type="text" id="msg" placeholder="Ask here...">
+                <button onclick="sendMsg()" style="background:var(--blue); border:none; padding:10px; border-radius:5px; color:#fff;">Send</button>
             </div>
         </div>
     </div>
@@ -393,11 +386,11 @@
     </div>
 </div>
 
-<!-- FIREBASE SDK & AUTHENTICATION & LIVE CHAT MODULE -->
+<!-- FIREBASE SDK & AUTHENTICATION -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-    import { getDatabase, ref, set, push, onValue, get, child } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDXDzC6LQfJH5dizlgh8Vtq1s5EjHhHX_4",
@@ -415,7 +408,6 @@
 
     let isSignUpMode = false;
     let activeSessionUnsubscribe = null;
-    let currentUserProfile = { name: "Member", mobile: "" };
 
     window.toggleAuthMode = function() {
         isSignUpMode = !isSignUpMode;
@@ -423,22 +415,15 @@
         document.getElementById('authPrimaryBtn').innerText = isSignUpMode ? 'Register' : 'Login';
         document.getElementById('authToggleText').innerText = isSignUpMode ? 'Pehle se account hai?' : 'Account nahi hai?';
         document.getElementById('authToggleBtn').innerText = isSignUpMode ? ' Login Karein' : ' Sign Up Karein';
-        document.getElementById('authNameBox').style.display = isSignUpMode ? 'block' : 'none';
         document.getElementById('authError').style.display = 'none';
     };
 
     window.handleAuth = async function() {
         const mobile = document.getElementById('userMobile').value.trim();
         const password = document.getElementById('userPassword').value.trim();
-        const nameInput = document.getElementById('userNameInput').value.trim();
         const errDiv = document.getElementById('authError');
         errDiv.style.display = 'none';
 
-        if (isSignUpMode && !nameInput) {
-            errDiv.innerText = "Kripya apna poora naam bhariye!";
-            errDiv.style.display = 'block';
-            return;
-        }
         if (!mobile || mobile.length < 10) {
             errDiv.innerText = "Kripya sahi 10-digit mobile number daalein!";
             errDiv.style.display = 'block';
@@ -458,7 +443,7 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, syntheticEmail, password);
                 const uid = userCredential.user.uid;
                 localStorage.setItem('smartGymSessionId', newSessionId);
-                await set(ref(db, `users/${uid}`), { name: nameInput, mobile: mobile, sessionId: newSessionId, createdAt: Date.now() });
+                await set(ref(db, `users/${uid}`), { mobile: mobile, sessionId: newSessionId, createdAt: Date.now() });
             } else {
                 const userCredential = await signInWithEmailAndPassword(auth, syntheticEmail, password);
                 const uid = userCredential.user.uid;
@@ -478,10 +463,9 @@
         }
     };
 
-    onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, (user) => {
         const authModal = document.getElementById('authModal');
         const userInfoHeader = document.getElementById('userInfoHeader');
-        const loggedInName = document.getElementById('loggedInName');
         const loggedInMobile = document.getElementById('loggedInMobile');
 
         if (activeSessionUnsubscribe) {
@@ -494,21 +478,6 @@
             userInfoHeader.style.display = 'flex';
             const mobileNum = user.email ? user.email.split('@')[0] : 'User';
             loggedInMobile.innerText = mobileNum;
-
-            // Fetch Name from Database
-            try {
-                const userDbSnap = await get(child(ref(db), `users/${user.uid}`));
-                if (userDbSnap.exists() && userDbSnap.val().name) {
-                    currentUserProfile.name = userDbSnap.val().name;
-                } else {
-                    currentUserProfile.name = "Member " + mobileNum.substring(6);
-                }
-            } catch (e) {
-                currentUserProfile.name = "Member " + mobileNum.substring(6);
-            }
-
-            currentUserProfile.mobile = mobileNum;
-            loggedInName.innerText = currentUserProfile.name;
 
             const localSessionId = localStorage.getItem('smartGymSessionId');
             const sessionRef = ref(db, `users/${user.uid}/sessionId`);
@@ -529,75 +498,6 @@
     window.handleLogout = function() {
         signOut(auth).then(() => { localStorage.removeItem('smartGymSessionId'); });
     };
-
-    // REAL-TIME COMMUNITY CHAT LOGIC
-    window.sendMsg = function() {
-        const msgInput = document.getElementById('msg');
-        const text = msgInput.value.trim();
-        const currentUser = auth.currentUser;
-
-        if (!currentUser) {
-            alert("Chat karne ke liye pehle Login karein!");
-            return;
-        }
-
-        if (text !== "") {
-            const messagesRef = ref(db, 'messages');
-            push(messagesRef, {
-                senderUid: currentUser.uid,
-                senderName: currentUserProfile.name,
-                senderMobile: currentUserProfile.mobile,
-                text: text,
-                timestamp: Date.now()
-            }).then(() => {
-                msgInput.value = "";
-            }).catch((err) => {
-                alert("Message bhejne me error aayi: " + err.message);
-            });
-        }
-    };
-
-    window.handleChatKeyPress = function(e) {
-        if (e.key === 'Enter') {
-            window.sendMsg();
-        }
-    };
-
-    // Listen to Messages in Real-Time
-    const chatbox = document.getElementById('chatbox');
-    const messagesRef = ref(db, 'messages');
-    onValue(messagesRef, (snapshot) => {
-        chatbox.innerHTML = "";
-        if (!snapshot.exists()) {
-            chatbox.innerHTML = `<div style="color:#666; text-align:center; padding-top:80px;">Sare members yahan baat kar sakte hain. Pehla message likhein! 👋</div>`;
-            return;
-        }
-
-        const data = snapshot.val();
-        const currentUser = auth.currentUser;
-
-        Object.keys(data).forEach((key) => {
-            const msg = data[key];
-            const isMe = currentUser && msg.senderUid === currentUser.uid;
-            
-            const msgTime = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-
-            const msgDiv = document.createElement('div');
-            msgDiv.style.cssText = `margin-bottom: 8px; padding: 8px 12px; border-radius: 8px; max-width: 85%; word-break: break-word; font-size: 0.82rem; ${isMe ? 'margin-left: auto; background: #0084ff; color: #fff; border-bottom-right-radius: 2px;' : 'margin-right: auto; background: #252525; color: #eee; border-left: 3px solid var(--accent); border-bottom-left-radius: 2px;'}`;
-
-            msgDiv.innerHTML = `
-                <div style="font-weight: bold; font-size: 0.75rem; color: ${isMe ? '#e3f2fd' : 'var(--accent)'}; margin-bottom: 2px;">
-                    ${isMe ? 'You (' + msg.senderName + ')' : msg.senderName} <span style="font-weight: normal; opacity: 0.7; font-size: 0.65rem;">(${msg.senderMobile ? msg.senderMobile.substring(0, 5) + '***' : ''})</span>
-                </div>
-                <div>${msg.text}</div>
-                <div style="text-align: right; font-size: 0.65rem; opacity: 0.7; margin-top: 3px;">${msgTime}</div>
-            `;
-            chatbox.appendChild(msgDiv);
-        });
-
-        // Auto Scroll to Bottom
-        chatbox.scrollTop = chatbox.scrollHeight;
-    });
 </script>
 
 <script>
@@ -625,6 +525,7 @@
 
     function toggleStepTracking() {
         if (!isTrackingSteps) {
+            // Request motion permission for iOS 13+ devices
             if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
                 DeviceMotionEvent.requestPermission()
                     .then(permissionState => {
@@ -671,11 +572,13 @@
         let y = acc.y || 0;
         let z = acc.z || 0;
 
+        // Vector magnitude calculation for movement detection
         let magnitude = Math.sqrt(x * x + y * y + z * z);
         let delta = Math.abs(magnitude - lastAccelMagnitude);
         lastAccelMagnitude = magnitude;
 
         let now = Date.now();
+        // Detect footstep jerk/acceleration threshold with 320ms minimum interval delay
         if ((magnitude > 12.3 || delta > 3.8) && (now - lastStepTime > 320)) {
             stepCount++;
             lastStepTime = now;
@@ -1196,6 +1099,7 @@
     function filterWorkout(m) { let h = `<div style="background:#111; padding:10px; border-radius:8px; margin-top:10px; border:1px solid var(--primary);">`; db[m].forEach(ex => { h += `<div>🔥 ${ex.n}</div>`; }); h += `</div>`; document.getElementById('quickView').innerHTML = h; }
     function calcORM() { let w = parseFloat(document.getElementById('orm-w').value), r = parseFloat(document.getElementById('orm-r').value); if(w && r) document.getElementById('orm-res').innerText = `1RM: ${Math.round(w*(1+r/30))} kg`; }
     function simBiometric() { let b = document.getElementById('biometric-btn'); b.innerText = "Scanning..."; setTimeout(() => { b.style.display="none"; document.getElementById('chat-section').style.display="block"; }, 1000); }
+    function sendMsg() { let m = document.getElementById('msg').value; if(m) { document.getElementById('chatbox').innerHTML += `<div><b>You:</b> ${m}</div>`; document.getElementById('msg').value=""; } }
     function drink() { if(currentWater < targetWater) { currentWater++; document.getElementById('waterVal').innerText = `${currentWater} / ${targetWater}`; } }
 
     function calculateCalories() {
