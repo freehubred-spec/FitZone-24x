@@ -51,7 +51,7 @@
         #stopwatch { font-family: monospace; font-size: 2.2rem; color: var(--accent); text-align: center; margin: 10px 0; }
         .muscle-map-btn { padding: 12px 8px; background: #333; border-radius: 6px; cursor: pointer; border: 1px solid #444; font-size: 0.8rem; text-align: center; font-weight: bold; transition: 0.2s; }
         .muscle-map-btn:hover { background: var(--primary); }
-        .chat-container { height: 180px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; font-size: 0.8rem; border: 1px solid #333; }
+        .chat-container { height: 220px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; font-size: 0.85rem; border: 1px solid #333; }
         #biometric-btn { background: #6c5ce7; border: none; padding: 15px; border-radius: 8px; color: #fff; cursor: pointer; width: 100%; font-weight: bold; }
 
         .image-viewer { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); align-items: center; justify-content: center; }
@@ -356,12 +356,12 @@
     <!-- COMMUNITY SECTION -->
     <div class="card" style="border: 1px solid var(--blue);">
         <h3>🔐 SmartGym Community</h3>
-        <button id="biometric-btn" onclick="simBiometric()">🖐️️ Scan Fingerprint to Enter</button>
+        <button id="biometric-btn" onclick="simBiometric()">💬 Enter to Community Message</button>
         <div id="chat-section" style="display:none; margin-top:10px;">
             <div class="chat-container" id="chatbox"></div>
             <div style="display:flex; gap:5px; margin-top:10px;">
-                <input type="text" id="msg" placeholder="Ask here...">
-                <button onclick="sendMsg()" style="background:var(--blue); border:none; padding:10px; border-radius:5px; color:#fff;">Send</button>
+                <input type="text" id="msg" placeholder="Ask here..." onkeypress="handleChatKeyPress(event)">
+                <button onclick="sendMsg()" style="background:var(--blue); border:none; padding:10px; border-radius:5px; color:#fff; cursor:pointer;">Send</button>
             </div>
         </div>
     </div>
@@ -386,11 +386,11 @@
     </div>
 </div>
 
-<!-- FIREBASE SDK & AUTHENTICATION -->
+<!-- FIREBASE SDK & AUTHENTICATION & LIVE COMMUNITY CHAT -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+    import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDXDzC6LQfJH5dizlgh8Vtq1s5EjHhHX_4",
@@ -498,6 +498,74 @@
     window.handleLogout = function() {
         signOut(auth).then(() => { localStorage.removeItem('smartGymSessionId'); });
     };
+
+    // REAL-TIME COMMUNITY CHAT IMPLEMENTATION
+    window.sendMsg = function() {
+        const msgInput = document.getElementById('msg');
+        const text = msgInput.value.trim();
+        const currentUser = auth.currentUser;
+
+        if (!currentUser) {
+            alert("Chat karne ke liye pehle Login karein!");
+            return;
+        }
+
+        if (text !== "") {
+            const mobileNum = currentUser.email ? currentUser.email.split('@')[0] : 'User';
+            const messagesRef = ref(db, 'community_messages');
+            push(messagesRef, {
+                senderUid: currentUser.uid,
+                senderMobile: mobileNum,
+                text: text,
+                timestamp: Date.now()
+            }).then(() => {
+                msgInput.value = "";
+            }).catch((err) => {
+                alert("Message bhejane me error aayi: " + err.message);
+            });
+        }
+    };
+
+    window.handleChatKeyPress = function(e) {
+        if (e.key === 'Enter') {
+            window.sendMsg();
+        }
+    };
+
+    // Live Real-Time Listener for Community Messages
+    const chatbox = document.getElementById('chatbox');
+    const messagesRef = ref(db, 'community_messages');
+    onValue(messagesRef, (snapshot) => {
+        chatbox.innerHTML = "";
+        if (!snapshot.exists()) {
+            chatbox.innerHTML = `<div style="color:#666; text-align:center; padding-top:70px;">Koi message nahi hai. Pehla message likhein! 👋</div>`;
+            return;
+        }
+
+        const data = snapshot.val();
+        const currentUser = auth.currentUser;
+
+        Object.keys(data).forEach((key) => {
+            const msg = data[key];
+            const isMe = currentUser && msg.senderUid === currentUser.uid;
+            const msgTime = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+
+            const msgDiv = document.createElement('div');
+            msgDiv.style.cssText = `margin-bottom: 8px; padding: 8px 12px; border-radius: 8px; max-width: 85%; word-break: break-word; font-size: 0.82rem; ${isMe ? 'margin-left: auto; background: #0084ff; color: #fff; border-bottom-right-radius: 2px;' : 'margin-right: auto; background: #252525; color: #eee; border-left: 3px solid var(--accent); border-bottom-left-radius: 2px;'}`;
+
+            msgDiv.innerHTML = `
+                <div style="font-weight: bold; font-size: 0.75rem; color: ${isMe ? '#e3f2fd' : 'var(--accent)'}; margin-bottom: 2px;">
+                    ${isMe ? 'You' : 'User (' + (msg.senderMobile ? msg.senderMobile.substring(0, 5) + '***' : 'Member') + ')'}
+                </div>
+                <div>${msg.text}</div>
+                <div style="text-align: right; font-size: 0.65rem; opacity: 0.7; margin-top: 3px;">${msgTime}</div>
+            `;
+            chatbox.appendChild(msgDiv);
+        });
+
+        // Auto-scroll to bottom on new message
+        chatbox.scrollTop = chatbox.scrollHeight;
+    });
 </script>
 
 <script>
@@ -818,561 +886,4 @@
             { name: "Green Gram / Whole Moong", cal: 347, prot: 24, carbs: 63, fat: 1.2, vit: "Vitamin A, Vitamin C, Vitamin B6, Iron, Potassium" },
             { name: "Moong Dal (Yellow Lentils)", cal: 348, prot: 24, carbs: 60, fat: 1.5, vit: "Vitamin B9 (Folate), Iron, Potassium, Calcium" },
             { name: "Sprouted Moong / Sprouts", cal: 30, prot: 3, carbs: 6, fat: 0.2, vit: "High Vitamin C, Vitamin K, Vitamin A, Iron" },
-            { name: "Soya Chunks", cal: 345, prot: 52, carbs: 33, fat: 0.5, vit: "Calcium, Iron, B-Vitamins, Isoflavones" },
-            { name: "Paneer (Cottage Cheese)", cal: 265, prot: 18, carbs: 1.2, fat: 20, vit: "Vitamin A, Calcium, Phosphorus, Vitamin B12" },
-            { name: "Tofu (Soy Paneer)", cal: 76, prot: 8, carbs: 1.9, fat: 4.8, vit: "Calcium, Iron, Manganese, Selenium" },
-            { name: "Kidney Beans (Rajma)", cal: 333, prot: 24, carbs: 60, fat: 0.8, vit: "Vitamin C, Vitamin K, Iron, Potassium" },
-            { name: "Black Gram (Urad Dal)", cal: 341, prot: 25, carbs: 59, fat: 1.6, vit: "Vitamin B Complex, Iron, Calcium, Zinc" },
-            { name: "Lentils (Masoor Dal)", cal: 352, prot: 25, carbs: 60, fat: 1, vit: "Vitamin B6, Folate, Iron, Magnesium" },
-            { name: "Rolled Oats", cal: 389, prot: 16.9, carbs: 66, fat: 6.9, vit: "Vitamin B1 (Thiamine), Iron, Magnesium, Zinc" },
-            { name: "Cooked White Rice", cal: 130, prot: 2.7, carbs: 28, fat: 0.3, vit: "Vitamin B1, Vitamin B3, Iron, Manganese" },
-            { name: "Cooked Brown Rice", cal: 111, prot: 2.6, carbs: 23, fat: 0.9, vit: "Vitamin B1, Vitamin B6, Magnesium, Phosphorus" },
-            { name: "Whole Wheat Chapati / Roti", cal: 297, prot: 11, carbs: 51, fat: 3.8, vit: "Vitamin B1, Vitamin B3, Vitamin B6, Iron" },
-            { name: "Roasted Peanuts", cal: 567, prot: 25.8, carbs: 16, fat: 49, vit: "Vitamin E, Vitamin B3 (Niacin), Folate, Magnesium" },
-            { name: "Almonds", cal: 579, prot: 21, carbs: 22, fat: 50, vit: "Vitamin E, Calcium, Magnesium, Riboflavin" },
-            { name: "Walnuts", cal: 654, prot: 15, carbs: 14, fat: 65, vit: "Vitamin B6, Folate, Copper, Omega-3 Fatty Acids" },
-            { name: "Full Cream Milk", cal: 61, prot: 3.2, carbs: 4.8, fat: 3.3, vit: "Vitamin A, Vitamin D, Vitamin B12, Calcium" },
-            { name: "Skimmed Milk", cal: 34, prot: 3.4, carbs: 5, fat: 0.1, vit: "Vitamin D, Vitamin B12, Calcium, Phosphorus" },
-            { name: "Curd / Yogurt", cal: 98, prot: 11, carbs: 3.4, fat: 4.3, vit: "Vitamin B12, Vitamin B2, Calcium, Phosphorus" },
-            { name: "Banana", cal: 89, prot: 1.1, carbs: 23, fat: 0.3, vit: "Vitamin C, Vitamin B6, Potassium, Manganese" },
-            { name: "Apple", cal: 52, prot: 0.3, carbs: 14, fat: 0.2, vit: "Vitamin C, Potassium, Antioxidants, Fiber" },
-            { name: "Broccoli", cal: 34, prot: 2.8, carbs: 7, fat: 0.4, vit: "Vitamin C, Vitamin K, Vitamin A, Folate, Iron" },
-            { name: "Spinach (Palak)", cal: 23, prot: 2.9, carbs: 3.6, fat: 0.4, vit: "Vitamin A, Vitamin C, Vitamin K1, Iron, Calcium" },
-            { name: "Boiled Potato", cal: 87, prot: 1.9, carbs: 20, fat: 0.1, vit: "Vitamin C, Vitamin B6, Potassium" },
-            { name: "Sweet Potato (Shakarkandi)", cal: 86, prot: 1.6, carbs: 20, fat: 0.1, vit: "Vitamin A (Beta-carotene), Vitamin C, Manganese" },
-            { name: "Roasted Makhana (Fox Nuts)", cal: 347, prot: 9.7, carbs: 76, fat: 0.1, vit: "Calcium, Magnesium, Potassium, Phosphorus" }
-        ],
-        nonveg: [
-            { name: "Boiled Whole Egg (100g ~ 2 Eggs)", cal: 155, prot: 13, carbs: 1.1, fat: 11, vit: "Vitamin A, Vitamin D, Vitamin B12, Iron, Choline" },
-            { name: "Egg Whites (100g ~ 3 Egg Whites)", cal: 52, prot: 11, carbs: 0.7, fat: 0.2, vit: "Vitamin B2 (Riboflavin), Vitamin B12, Potassium" },
-            { name: "Chicken Breast (Raw/Cooked Boneless)", cal: 165, prot: 31, carbs: 0, fat: 3.6, vit: "Vitamin B3 (Niacin), Vitamin B6, Vitamin B12, Iron, Zinc" },
-            { name: "Chicken Thigh", cal: 209, prot: 26, carbs: 0, fat: 10.9, vit: "Vitamin B12, Zinc, Iron, Phosphorus" },
-            { name: "Mutton / Goat Meat", cal: 294, prot: 25, carbs: 0, fat: 21, vit: "Vitamin B12, Zinc, Iron, Riboflavin" },
-            { name: "Rohu / Katla Fish", cal: 97, prot: 17, carbs: 0, fat: 3.1, vit: "Vitamin D, Vitamin B12, Omega-3 Fatty Acids, Calcium" },
-            { name: "Salmon Fish", cal: 208, prot: 20, carbs: 0, fat: 13, vit: "Vitamin D, Vitamin B12, Vitamin B6, Omega-3, Selenium" },
-            { name: "Prawns / Shrimp", cal: 99, prot: 24, carbs: 0.2, fat: 0.3, vit: "Vitamin B12, Niacin, Iodine, Selenium, Zinc" },
-            { name: "Whey Protein Powder", cal: 380, prot: 80, carbs: 6, fat: 4, vit: "Calcium, B-Vitamins, Branched-Chain Amino Acids (BCAA)" }
-        ]
-    };
-
-    let currentFoodCategory = 'veg';
-
-    function filterFoodCategory(cat) {
-        currentFoodCategory = cat;
-        let btnVeg = document.getElementById('foodCatVeg');
-        let btnNonVeg = document.getElementById('foodCatNonVeg');
-        if (cat === 'veg') {
-            btnVeg.style.outline = '2px solid #fff';
-            btnNonVeg.style.outline = 'none';
-        } else {
-            btnNonVeg.style.outline = '2px solid #fff';
-            btnVeg.style.outline = 'none';
-        }
-        populateFoodSelect();
-    }
-
-    function populateFoodSelect() {
-        let select = document.getElementById('foodSelect');
-        select.innerHTML = "";
-        let items = foodDb[currentFoodCategory];
-        items.forEach((item, index) => {
-            let opt = document.createElement('option');
-            opt.value = index;
-            opt.innerText = item.name;
-            select.appendChild(opt);
-        });
-        calculateFoodNutrition();
-    }
-
-    function calculateFoodNutrition() {
-        let select = document.getElementById('foodSelect');
-        let weightInput = document.getElementById('foodWeight');
-        let resDiv = document.getElementById('foodNutritionResult');
-
-        if (!select || select.value === "") return;
-
-        let index = parseInt(select.value);
-        let weight = parseFloat(weightInput.value) || 0;
-        let item = foodDb[currentFoodCategory][index];
-
-        if (!item) return;
-
-        let factor = weight / 100;
-        let totalCal = (item.cal * factor).toFixed(1);
-        let totalProt = (item.prot * factor).toFixed(1);
-        let totalCarbs = (item.carbs * factor).toFixed(1);
-        let totalFat = (item.fat * factor).toFixed(1);
-
-        resDiv.innerHTML = `
-            <div style="font-weight:bold; color:var(--accent); font-size:0.95rem; margin-bottom:6px;">
-                📊 Nutrition Breakdown (${weight}g ${item.name})
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;">
-                <div>🔥 <b>Calories:</b> ${totalCal} kcal</div>
-                <div>💪 <b>Protein:</b> ${totalProt} g</div>
-                <div>🌾 <b>Carbs:</b> ${totalCarbs} g</div>
-                <div>🥑 <b>Fats:</b> ${totalFat} g</div>
-            </div>
-            <div style="border-top:1px dashed #444; padding-top:6px; color:#ddd; font-size:0.8rem;">
-                💊 <b>Vitamins & Minerals:</b><br>${item.vit}
-            </div>
-        `;
-    }
-
-    let targetWater = 10, currentWater = 0, timer, sec=0, currentDiet = 'nonveg';
-
-    function viewImage(url) {
-        document.getElementById('big-img').src = url;
-        document.getElementById('viewer').style.display = 'flex';
-    }
-    function closeImage() { document.getElementById('viewer').style.display = 'none'; }
-    function toggle(id) { let x = document.getElementById(id); x.style.display = (x.style.display==="block")?"none":"block"; }
-
-    function openMoreFeaturesModal() {
-        document.getElementById('moreFeaturesModal').style.display = 'flex';
-        filterFoodCategory('veg');
-    }
-
-    function closeMoreFeaturesModal() {
-        document.getElementById('moreFeaturesModal').style.display = 'none';
-    }
-
-    function setDietType(type) {
-        currentDiet = type;
-        let btnVeg = document.getElementById('btn-veg');
-        let btnNonVeg = document.getElementById('btn-nonveg');
-        if(type === 'veg') {
-            btnVeg.style.outline = '3px solid #fff';
-            btnNonVeg.style.outline = 'none';
-        } else {
-            btnNonVeg.style.outline = '3px solid #fff';
-            btnVeg.style.outline = 'none';
-        }
-        updateAll();
-    }
-
-    function calcHealth() {
-        let w = parseFloat(document.getElementById('w').value), h = parseFloat(document.getElementById('h').value) / 100;
-        if(!w || !h) return;
-        let bmi = (w / (h*h)).toFixed(1);
-        let status = bmi < 18.5 ? "Underweight" : bmi < 25 ? "Normal" : "Overweight";
-        document.getElementById('res').innerHTML = `BMI: ${bmi} - ${status}`;
-        targetWater = Math.round(w / 7);
-        document.getElementById('waterTarget').innerText = `Target: ${targetWater} Glass`;
-        document.getElementById('waterVal').innerText = `0 / ${targetWater}`;
-        
-        if(!document.getElementById('calorieUserWeight').value) {
-            document.getElementById('calorieUserWeight').value = w;
-        }
-    }
-
-    function updateAll() {
-        const goal = document.getElementById('goal').value;
-        const workArea = document.getElementById('workoutArea');
-        const dietArea = document.getElementById('dietArea');
-        const supplementArea = document.getElementById('supplementArea');
-        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        
-        let reps = (goal==='bulking') ? "4 Sets x 8-10 Reps" : "3 Sets x 15-20 Reps";
-        let sch = (goal==='bulking') ? 
-            [{t:"Chest & Tricep",m:["chest","tricep"]},{t:"Back & Biceps",m:["back","bicep"]},{t:"Legs & Shoulder",m:["legs","shoulder"]},{t:"Chest & Tricep",m:["chest","tricep"]},{t:"Back & Biceps",m:["back","bicep"]},{t:"Legs & Shoulder",m:["legs","shoulder"]}] :
-            [{t:"Only Chest",m:["chest"]},{t:"Only Back",m:["back"]},{t:"Only Bicep",m:["bicep"]},{t:"Only Tricep",m:["tricep"]},{t:"Only Shoulder",m:["shoulder"]},{t:"Only Legs",m:["legs"]}];
-
-        workArea.innerHTML = "";
-        days.forEach((day, i) => {
-            let inner = "";
-            sch[i].m.forEach(muscle => {
-                inner += `<span class="muscle-label">${muscle}</span>`;
-                db[muscle].forEach(ex => { inner += `<div class="exercise-item"><img src="${ex.p}" class="ex-img" onclick="viewImage('${ex.p}')"><div><b>${ex.n}</b><br><small>${reps}</small></div></div>`; });
-            });
-            workArea.innerHTML += `<div class="day-wrapper"><div class="day-header" onclick="toggle('d${i}')">${day}: ${sch[i].t} <span>▼</span></div><div id="d${i}" class="day-content">${inner}</div></div>`;
-        });
-
-        const dietData = {
-            bulking: {
-                veg: `
-                <div class="meal">
-                    <b>🍳 Breakfast: Paneer Bhurji (150g), Oats (100g), 3 Bananas</b>
-                    <p>High protein & dense carbs start.</p>
-                    <div class="meal-macro">🔥 890 kcal | 💪 48g Protein | 🥑 28g Fat</div>
-                </div>
-                <div class="meal">
-                    <b>🍛 Lunch: Tofu/Paneer (150g), 2 Cups Rice, Dal, Salad</b>
-                    <p>Clean bulk meal with essential amino acids.</p>
-                    <div class="meal-macro">🔥 780 kcal | 💪 42g Protein | 🥑 22g Fat</div>
-                </div>
-                <div class="meal">
-                    <b>🥛 Dinner: Soya Chunks (80g), 4 Roti, Ashwagandha Milk</b>
-                    <p>Muscle recovery and growth before sleep.</p>
-                    <div class="meal-macro">🔥 720 kcal | 💪 55g Protein | 🥑 14g Fat</div>
-                </div>`,
-                nonveg: `
-                <div class="meal">
-                    <b>🍳 Breakfast: 10 Egg Whites, 100g Oats, 3 Bananas</b>
-                    <p>Lean protein & energy rich breakfast.</p>
-                    <div class="meal-macro">🔥 750 kcal | 💪 52g Protein | 🥑 8g Fat</div>
-                </div>
-                <div class="meal">
-                    <b>🍛 Lunch: Chicken Breast (200g), 2 Cups Rice, Dal, Salad</b>
-                    <p>Max muscle synthesis lunch.</p>
-                    <div class="meal-macro">🔥 820 kcal | 💪 68g Protein | 🥑 12g Fat</div>
-                </div>
-                <div class="meal">
-                    <b>🍗 Dinner: Fish/Chicken (200g), 4 Roti, Milk</b>
-                    <p>Fast digesting protein and healthy fats.</p>
-                    <div class="meal-macro">🔥 790 kcal | 💪 62g Protein | 🥑 18g Fat</div>
-                </div>`
-            },
-            weightloss: {
-                veg: `
-                <div class="meal">
-                    <b>☕ Morning: Green Tea & Roasted Makhana (50g)</b>
-                    <p>Metabolism booster & light snack.</p>
-                    <div class="meal-macro">🔥 180 kcal | 💪 5g Protein | 🥑 1g Fat</div>
-                </div>
-                <div class="meal">
-                    <b>🥗 Lunch: 1 Roti, Mix Veg, Curd (200g)</b>
-                    <p>Balanced low calorie fiber rich lunch.</p>
-                    <div class="meal-macro">🔥 380 kcal | 💪 18g Protein | 🥑 10g Fat</div>
-                </div>`,
-                nonveg: `
-                <div class="meal">
-                    <b>☕ Morning: Warm Lemon Water & 2 Boiled Eggs</b>
-                    <p>Detox & satiating breakfast.</p>
-                    <div class="meal-macro">🔥 155 kcal | 💪 13g Protein | 🥑 10g Fat</div>
-                </div>
-                <div class="meal">
-                    <b>🥗 Lunch: Grilled Chicken Salad (200g) / 4 Eggs</b>
-                    <p>Pure protein fat loss lunch.</p>
-                    <div class="meal-macro">🔥 350 kcal | 💪 55g Protein | 🥑 8g Fat</div>
-                </div>`
-            },
-            cutting: {
-                veg: `
-                <div class="meal">
-                    <b>🍳 Breakfast: Sprouts (150g) & Black Coffee</b>
-                    <p>High fiber energy booster.</p>
-                    <div class="meal-macro">🔥 210 kcal | 💪 18g Protein | 🥑 2g Fat</div>
-                </div>`,
-                nonveg: `
-                <div class="meal">
-                    <b>🍳 Breakfast: 8 Egg Whites & Green Tea</b>
-                    <p>Zero fat, pure protein start.</p>
-                    <div class="meal-macro">🔥 140 kcal | 💪 30g Protein | 🥑 0.5g Fat</div>
-                </div>`
-            }
-        };
-        dietArea.innerHTML = `<div class="diet-box">${dietData[goal][currentDiet]}</div>`;
-
-        const suppData = {
-            bulking: `<div style="background: #252525; padding: 12px; border-radius: 8px; border-left: 4px solid var(--accent);">
-                <b style="color: var(--accent); font-size: 0.95rem; display: block; margin-bottom: 5px;">💪 Bulking (Muscle Gain):</b>
-                <ul style="margin: 0; padding-left: 18px; font-size: 0.85rem; color: #ccc;">
-                    <li><b>Whey Protein / Weight Gainer</b></li>
-                    <li><b>Creatine Monohydrate</b> (3-5g daily)</li>
-                    <li><b>Multivitamin & Fish Oil</b></li>
-                </ul>
-            </div>`,
-            weightloss: `<div style="background: #252525; padding: 12px; border-radius: 8px; border-left: 4px solid var(--warning);">
-                <b style="color: var(--warning); font-size: 0.95rem; display: block; margin-bottom: 5px;">🔥 Weight Loss (Fat Burn):</b>
-                <ul style="margin: 0; padding-left: 18px; font-size: 0.85rem; color: #ccc;">
-                    <li><b>L-Carnitine</b></li>
-                    <li><b>Green Tea Extract</b></li>
-                    <li><b>Whey Isolate Protein</b></li>
-                </ul>
-            </div>`,
-            cutting: `<div style="background: #252525; padding: 12px; border-radius: 8px; border-left: 4px solid var(--blue);">
-                <b style="color: var(--blue); font-size: 0.95rem; display: block; margin-bottom: 5px;">✂️ Cutting Body:</b>
-                <ul style="margin: 0; padding-left: 18px; font-size: 0.85rem; color: #ccc;">
-                    <li><b>Whey Isolate</b></li>
-                    <li><b>BCAA / EAA</b></li>
-                    <li><b>Pre-Workout / Caffeine</b></li>
-                </ul>
-            </div>`
-        };
-        supplementArea.innerHTML = suppData[goal];
-    }
-
-    function startTimer() { if(!timer) timer = setInterval(() => { sec++; let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; document.getElementById('stopwatch').innerText = `${h<10?'0':''}${h}:${m<10?'0':''}${m}:${s<10?'0':''}${s}`; }, 1000); }
-    function pauseTimer() { clearInterval(timer); timer = null; }
-    function resetTimer() { pauseTimer(); sec=0; document.getElementById('stopwatch').innerText="00:00:00"; }
-    function filterWorkout(m) { let h = `<div style="background:#111; padding:10px; border-radius:8px; margin-top:10px; border:1px solid var(--primary);">`; db[m].forEach(ex => { h += `<div>🔥 ${ex.n}</div>`; }); h += `</div>`; document.getElementById('quickView').innerHTML = h; }
-    function calcORM() { let w = parseFloat(document.getElementById('orm-w').value), r = parseFloat(document.getElementById('orm-r').value); if(w && r) document.getElementById('orm-res').innerText = `1RM: ${Math.round(w*(1+r/30))} kg`; }
-    function simBiometric() { let b = document.getElementById('biometric-btn'); b.innerText = "Scanning..."; setTimeout(() => { b.style.display="none"; document.getElementById('chat-section').style.display="block"; }, 1000); }
-    function sendMsg() { let m = document.getElementById('msg').value; if(m) { document.getElementById('chatbox').innerHTML += `<div><b>You:</b> ${m}</div>`; document.getElementById('msg').value=""; } }
-    function drink() { if(currentWater < targetWater) { currentWater++; document.getElementById('waterVal').innerText = `${currentWater} / ${targetWater}`; } }
-
-    function calculateCalories() {
-        const weight = parseFloat(document.getElementById('w').value);
-        const height = parseFloat(document.getElementById('h').value);
-        const age = parseInt(document.getElementById('age').value);
-        const gender = document.getElementById('sex').value;
-        const activity = parseFloat(document.getElementById('act').value);
-        if (!weight || !height || !age) { alert("Pehle BMI check karein ya Weight/Height/Age bhariye!"); return; }
-        let bmr = (gender === "male") ? (10 * weight) + (6.25 * height) - (5 * age) + 5 : (10 * weight) + (6.25 * height) - (5 * age) - 161;
-        document.getElementById('bmrRes').innerHTML = `<div style="background:rgba(255,255,255,0.1); padding:10px; border-radius:5px; border-left:4px solid #2ecc71; margin-top:10px;"><p>BMR: <b>${Math.round(bmr)} kcal</b></p><p style="color:#2ecc71;">Daily Target: <b>${Math.round(bmr * activity)} kcal</b></p></div>`;
-    }
-
-    function calculateProtein() {
-        const weight = parseFloat(document.getElementById('w').value);
-        const multiplier = parseFloat(document.getElementById('fitnessGoal').value);
-        if (!weight) { alert("Pehle Weight (kg) bhariye!"); return; }
-        document.getElementById('protRes').innerHTML = `<div style="background:rgba(46, 204, 113, 0.1); padding:10px; border-radius:5px; border-left:4px solid #2ecc71;"><p>Target: <b style="font-size:1.2rem; color:#2ecc71;">${(weight * multiplier).toFixed(1)}g</b>/day</p></div>`;
-    }
-
-    let gymAlarms = JSON.parse(localStorage.getItem('smartGymAlarms')) || [];
-
-    function toggleOverflowMenu(e) {
-        e.stopPropagation();
-        let m = document.getElementById('overflowMenu');
-        m.style.display = (m.style.display === 'block') ? 'none' : 'block';
-    }
-
-    document.addEventListener('click', function() {
-        document.getElementById('overflowMenu').style.display = 'none';
-    });
-
-    function openAlarmModal() {
-        document.getElementById('alarmModal').style.display = 'flex';
-        showAlarmsList();
-    }
-
-    function closeAlarmModal() {
-        document.getElementById('alarmModal').style.display = 'none';
-    }
-
-    function addCustomAlarm() {
-        let tVal = document.getElementById('alarmTime').value;
-        let txtVal = document.getElementById('alarmText').value.trim();
-        
-        if(!tVal || !txtVal) {
-            alert("Bhai, pehle Time aur Name dono toh bharo!");
-            return;
-        }
-        
-        gymAlarms.push({ time: tVal, text: txtVal, lastFiredDate: "" });
-        localStorage.setItem('smartGymAlarms', JSON.stringify(gymAlarms));
-        document.getElementById('alarmText').value = "";
-        showAlarmsList();
-    }
-
-    function removeAlarm(index) {
-        gymAlarms.splice(index, 1);
-        localStorage.setItem('smartGymAlarms', JSON.stringify(gymAlarms));
-        showAlarmsList();
-    }
-
-    function showAlarmsList() {
-        let box = document.getElementById('alarmListContainer');
-        if(gymAlarms.length === 0) {
-            box.innerHTML = `<div style="color:#555; text-align:center; padding-top:20px;">Koi reminder active nahi he.</div>`;
-            return;
-        }
-        let listHtml = "";
-        gymAlarms.forEach((al, i) => {
-            listHtml += `<div style="display:flex; justify-content:space-between; align-items:center; background:#252525; padding:8px; margin-bottom:6px; border-radius:5px; border-left:3px solid var(--accent);">
-                <div><b style="color:var(--accent); font-family:monospace;">${al.time}</b> - <span>${al.text}</span></div>
-                <span style="color:var(--primary); cursor:pointer; font-weight:bold; padding:2px 6px;" onclick="removeAlarm(${i})">✕</span>
-            </div>`;
-        });
-        box.innerHTML = listHtml;
-    }
-
-    setInterval(() => {
-        let d = new Date();
-        let hours = String(d.getHours()).padStart(2, '0');
-        let minutes = String(d.getMinutes()).padStart(2, '0');
-        let rightNow = `${hours}:${minutes}`;
-        let today = d.toDateString();
-        let localUpdated = false;
-
-        gymAlarms.forEach(al => {
-            if(al.time === rightNow && al.lastFiredDate !== today) {
-                al.lastFiredDate = today;
-                localUpdated = true;
-                
-                if ('speechSynthesis' in window) {
-                    let alertSpeech = `Bhai, ${al.text} lene ka waqt ho gaya hai. Dobara suniye, ${al.text} lene ka waqt ho gaya hai.`;
-                    let speakEngine = new SpeechSynthesisUtterance(alertSpeech);
-                    speakEngine.lang = 'hi-IN';
-                    speakEngine.rate = 0.95;
-                    window.speechSynthesis.speak(speakEngine);
-                }
-            }
-        });
-
-        if(localUpdated) {
-            localStorage.setItem('smartGymAlarms', JSON.stringify(gymAlarms));
-        }
-    }, 1000);
-
-    function initStreakAndAttendance() {
-        let streakData = JSON.parse(localStorage.getItem('smartGymStreak')) || { streak: 0, lastCheckIn: null };
-        let today = new Date().toISOString().split('T')[0];
-        document.getElementById('streakDisplay').innerText = streakData.streak;
-
-        if (streakData.lastCheckIn === today) {
-            let btn = document.getElementById('checkInBtn');
-            btn.disabled = true;
-            btn.style.background = '#444';
-            btn.innerText = '✅ Attendance Marked Today';
-            document.getElementById('checkInMsg').innerText = 'Aaj ki gym attendance lag chuki hai!';
-        }
-    }
-
-    function markAttendance() {
-        let streakData = JSON.parse(localStorage.getItem('smartGymStreak')) || { streak: 0, lastCheckIn: null };
-        let todayObj = new Date();
-        let todayStr = todayObj.toISOString().split('T')[0];
-
-        if (streakData.lastCheckIn === todayStr) return;
-
-        let yesterdayObj = new Date();
-        yesterdayObj.setDate(todayObj.getDate() - 1);
-        let yesterdayStr = yesterdayObj.toISOString().split('T')[0];
-
-        if (streakData.lastCheckIn === yesterdayStr) {
-            streakData.streak += 1;
-        } else {
-            streakData.streak = 1;
-        }
-
-        streakData.lastCheckIn = todayStr;
-        localStorage.setItem('smartGymStreak', JSON.stringify(streakData));
-        initStreakAndAttendance();
-    }
-
-    let weightLogs = JSON.parse(localStorage.getItem('smartGymWeightLogs')) || [];
-
-    function addWeightLog() {
-        let val = parseFloat(document.getElementById('weightInput').value);
-        if (!val) { alert("Kripya sahi weight (kg) bhariye!"); return; }
-        let dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
-        weightLogs.push({ date: dateStr, weight: val });
-        if(weightLogs.length > 8) weightLogs.shift();
-        localStorage.setItem('smartGymWeightLogs', JSON.stringify(weightLogs));
-        document.getElementById('weightInput').value = "";
-        renderWeightChart();
-    }
-
-    function renderWeightChart() {
-        let historyDiv = document.getElementById('weightHistory');
-        historyDiv.innerHTML = weightLogs.map(l => `<div>📍 <b>${l.date}:</b> ${l.weight} kg</div>`).reverse().join('');
-
-        let canvas = document.getElementById('weightChart');
-        let ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        if (weightLogs.length === 0) {
-            ctx.fillStyle = '#777';
-            ctx.font = '14px sans-serif';
-            ctx.fillText('Koi weight record nahi he.', 70, 95);
-            return;
-        }
-
-        let weights = weightLogs.map(l => l.weight);
-        let minW = Math.min(...weights) - 2;
-        let maxW = Math.max(...weights) + 2;
-        let pad = 35;
-        let w = canvas.width - pad * 2;
-        let h = canvas.height - pad * 2;
-
-        ctx.beginPath();
-        ctx.strokeStyle = '#ff4757';
-        ctx.lineWidth = 3;
-
-        weightLogs.forEach((item, index) => {
-            let x = pad + (weightLogs.length > 1 ? (index / (weightLogs.length - 1)) * w : w / 2);
-            let y = canvas.height - pad - ((item.weight - minW) / (maxW - minW || 1)) * h;
-
-            if (index === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        });
-        ctx.stroke();
-
-        weightLogs.forEach((item, index) => {
-            let x = pad + (weightLogs.length > 1 ? (index / (weightLogs.length - 1)) * w : w / 2);
-            let y = canvas.height - pad - ((item.weight - minW) / (maxW - minW || 1)) * h;
-
-            ctx.beginPath();
-            ctx.arc(x, y, 5, 0, Math.PI * 2);
-            ctx.fillStyle = '#2ecc71';
-            ctx.fill();
-
-            ctx.fillStyle = '#fff';
-            ctx.font = '11px sans-serif';
-            ctx.fillText(`${item.weight}kg`, x - 12, y - 10);
-            ctx.fillText(item.date, x - 15, canvas.height - 10);
-        });
-    }
-
-    const challengeTasks = [
-        "20 Push-ups + 30 sec Plank", "30 Squats + 20 Jumping Jacks", "15 Burpees + 30 sec Wall Sit",
-        "25 Mountain Climbers + 20 Lunges", "Rest & Stretching Day 🧘", "30 Crunches + 1 min Plank",
-        "25 Push-ups + 30 Squats", "35 Jumping Jacks + 20 High Knees", "15 Leg Raises + 30 sec Side Plank",
-        "Rest Day / Light Walk 🚶", "30 Push-ups + 40 Squats", "20 Burpees + 1 min Plank",
-        "35 Crunches + 25 Lunges", "40 Mountain Climbers + 30 sec Wall Sit", "Rest & Recovery Day 🧘",
-        "35 Push-ups + 45 Squats", "25 Burpees + 1.5 min Plank", "40 Crunches + 30 High Knees",
-        "50 Jumping Jacks + 30 Lunges", "Rest Day 😴", "40 Push-ups + 50 Squats",
-        "30 Burpees + 2 min Plank", "45 Crunches + 40 Mountain Climbers", "1 Hour Full Power Gym / Cardio",
-        "Rest Day 🧘", "45 Push-ups + 60 Squats", "35 Burpees + 2 min Plank",
-        "50 Crunches + 50 High Knees", "Max Push-ups Challenge + Full Body Stretch", "🎉 30 Days Completed!"
-    ];
-
-    let challengeCompleted = JSON.parse(localStorage.getItem('smartGymChallenge')) || [];
-    let selectedDayIndex = null;
-
-    function renderChallengeGrid() {
-        let grid = document.getElementById('challengeGrid');
-        grid.innerHTML = "";
-        challengeTasks.forEach((_, index) => {
-            let isDone = challengeCompleted.includes(index);
-            let dayNum = index + 1;
-            grid.innerHTML += `<div onclick="selectChallengeDay(${index})" style="background:${isDone ? 'var(--accent)' : '#252525'}; color:${isDone ? '#000' : '#fff'}; border:1px solid #444; border-radius:6px; padding:8px 2px; text-align:center; font-size:0.75rem; font-weight:bold; cursor:pointer;">D${dayNum} ${isDone ? '✓' : ''}</div>`;
-        });
-
-        let doneCount = challengeCompleted.length;
-        document.getElementById('challengeProgressText').innerText = `${doneCount}/30 Days`;
-        document.getElementById('challengeProgressBar').style.width = `${(doneCount/30)*100}%`;
-    }
-
-    function selectChallengeDay(index) {
-        selectedDayIndex = index;
-        document.getElementById('challengeTaskBox').style.display = 'block';
-        document.getElementById('taskTitle').innerText = `Day ${index + 1} Challenge`;
-        document.getElementById('taskDesc').innerText = challengeTasks[index];
-        
-        let btn = document.getElementById('completeTaskBtn');
-        if(challengeCompleted.includes(index)) {
-            btn.innerText = "Completed! Click to Undo ↩️";
-            btn.style.background = "#e67e22";
-        } else {
-            btn.innerText = "Mark as Done ✅";
-            btn.style.background = "var(--accent)";
-        }
-    }
-
-    function toggleChallengeDay() {
-        if(selectedDayIndex === null) return;
-        let pos = challengeCompleted.indexOf(selectedDayIndex);
-        if(pos > -1) {
-            challengeCompleted.splice(pos, 1);
-        } else {
-            challengeCompleted.push(selectedDayIndex);
-        }
-        localStorage.setItem('smartGymChallenge', JSON.stringify(challengeCompleted));
-        renderChallengeGrid();
-        selectChallengeDay(selectedDayIndex);
-    }
-
-    // INITIALIZATION
-    updateStepUI();
-    populateCalorieExercises();
-    filterFoodCategory('veg');
-    setDietType('nonveg');
-    initStreakAndAttendance();
-    renderWeightChart();
-    renderChallengeGrid();
-</script>
-</body>
-</html>
+            { name: "Soya Chunks", cal: 345, prot: 52, carbs: 33, fat: 0.5
