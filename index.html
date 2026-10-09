@@ -51,7 +51,7 @@
         #stopwatch { font-family: monospace; font-size: 2.2rem; color: var(--accent); text-align: center; margin: 10px 0; }
         .muscle-map-btn { padding: 12px 8px; background: #333; border-radius: 6px; cursor: pointer; border: 1px solid #444; font-size: 0.8rem; text-align: center; font-weight: bold; transition: 0.2s; }
         .muscle-map-btn:hover { background: var(--primary); }
-        .chat-container { height: 180px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; font-size: 0.8rem; border: 1px solid #333; }
+        .chat-container { height: 200px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; font-size: 0.85rem; border: 1px solid #333; }
         #biometric-btn { background: #6c5ce7; border: none; padding: 15px; border-radius: 8px; color: #fff; cursor: pointer; width: 100%; font-weight: bold; }
 
         .image-viewer { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); align-items: center; justify-content: center; }
@@ -75,7 +75,12 @@
         <h3 id="authTitle" style="color: var(--primary); border-bottom: 1px solid #333; padding-bottom: 10px;">📱 Mobile Login</h3>
         <div id="authError" style="color: var(--primary); font-size: 0.85rem; margin-bottom: 10px; display: none; background: rgba(255,71,87,0.1); padding: 8px; border-radius: 5px;"></div>
         
-        <label style="font-size: 0.8rem; color: #aaa; text-align: left; display: block; margin-bottom: 2px;">Mobile Number:</label>
+        <div id="authNameBox" style="display: none; text-align: left;">
+            <label style="font-size: 0.8rem; color: #aaa; display: block; margin-bottom: 2px;">Aapka Naam (Name):</label>
+            <input type="text" id="userName" placeholder="Enter Your Full Name">
+        </div>
+
+        <label style="font-size: 0.8rem; color: #aaa; text-align: left; display: block; margin-top: 4px; margin-bottom: 2px;">Mobile Number:</label>
         <input type="tel" id="userMobile" placeholder="10 Digit Mobile Number" maxlength="10">
         
         <label style="font-size: 0.8rem; color: #aaa; text-align: left; display: block; margin-top: 8px; margin-bottom: 2px;">Password:</label>
@@ -92,7 +97,7 @@
 
 <!-- USER LOGGED-IN BAR -->
 <div id="userInfoHeader" style="display: none; align-items: center; justify-content: space-between; background: #181818; padding: 10px 15px; border-bottom: 1px solid #333; font-size: 0.85rem;">
-    <div>📱 Logged in: <b id="loggedInMobile" style="color: var(--accent);">--</b></div>
+    <div>👤 Logged in: <b id="loggedInName" style="color: var(--accent);">--</b> (<span id="loggedInMobile" style="color: #aaa;">--</span>)</div>
     <button onclick="handleLogout()" style="background: var(--primary); border: none; color: white; padding: 6px 12px; border-radius: 5px; font-weight: bold; cursor: pointer;">Logout 🚪</button>
 </div>
 
@@ -353,15 +358,15 @@
         </div>
     </div>
 
-    <!-- COMMUNITY SECTION -->
+    <!-- COMMUNITY SECTION WITH LIVE FIREBASE CHAT -->
     <div class="card" style="border: 1px solid var(--blue);">
         <h3>🔐 SmartGym Community</h3>
-        <button id="biometric-btn" onclick="simBiometric()">🖐️️ Scan Fingerprint to Enter</button>
+        <button id="biometric-btn" onclick="simBiometric()">💬 Enter to Community Message</button>
         <div id="chat-section" style="display:none; margin-top:10px;">
             <div class="chat-container" id="chatbox"></div>
             <div style="display:flex; gap:5px; margin-top:10px;">
-                <input type="text" id="msg" placeholder="Ask here...">
-                <button onclick="sendMsg()" style="background:var(--blue); border:none; padding:10px; border-radius:5px; color:#fff;">Send</button>
+                <input type="text" id="msg" placeholder="Write message..." onkeypress="if(event.key==='Enter') sendMsg()">
+                <button onclick="sendMsg()" style="background:var(--blue); border:none; padding:10px 15px; border-radius:5px; color:#fff; font-weight:bold; cursor:pointer;">Send 🚀</button>
             </div>
         </div>
     </div>
@@ -386,11 +391,11 @@
     </div>
 </div>
 
-<!-- FIREBASE SDK & AUTHENTICATION -->
+<!-- FIREBASE SDK & AUTHENTICATION & LIVE CHAT -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+    import { getDatabase, ref, set, push, onValue, get, child } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDXDzC6LQfJH5dizlgh8Vtq1s5EjHhHX_4",
@@ -408,6 +413,7 @@
 
     let isSignUpMode = false;
     let activeSessionUnsubscribe = null;
+    let currentUserName = "User";
 
     window.toggleAuthMode = function() {
         isSignUpMode = !isSignUpMode;
@@ -415,14 +421,22 @@
         document.getElementById('authPrimaryBtn').innerText = isSignUpMode ? 'Register' : 'Login';
         document.getElementById('authToggleText').innerText = isSignUpMode ? 'Pehle se account hai?' : 'Account nahi hai?';
         document.getElementById('authToggleBtn').innerText = isSignUpMode ? ' Login Karein' : ' Sign Up Karein';
+        document.getElementById('authNameBox').style.display = isSignUpMode ? 'block' : 'none';
         document.getElementById('authError').style.display = 'none';
     };
 
     window.handleAuth = async function() {
         const mobile = document.getElementById('userMobile').value.trim();
         const password = document.getElementById('userPassword').value.trim();
+        const nameVal = document.getElementById('userName').value.trim();
         const errDiv = document.getElementById('authError');
         errDiv.style.display = 'none';
+
+        if (isSignUpMode && !nameVal) {
+            errDiv.innerText = "Kripya apna naam (Name) bhariye!";
+            errDiv.style.display = 'block';
+            return;
+        }
 
         if (!mobile || mobile.length < 10) {
             errDiv.innerText = "Kripya sahi 10-digit mobile number daalein!";
@@ -443,7 +457,8 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, syntheticEmail, password);
                 const uid = userCredential.user.uid;
                 localStorage.setItem('smartGymSessionId', newSessionId);
-                await set(ref(db, `users/${uid}`), { mobile: mobile, sessionId: newSessionId, createdAt: Date.now() });
+                await set(ref(db, `users/${uid}`), { name: nameVal, mobile: mobile, sessionId: newSessionId, createdAt: Date.now() });
+                currentUserName = nameVal;
             } else {
                 const userCredential = await signInWithEmailAndPassword(auth, syntheticEmail, password);
                 const uid = userCredential.user.uid;
@@ -463,9 +478,10 @@
         }
     };
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
         const authModal = document.getElementById('authModal');
         const userInfoHeader = document.getElementById('userInfoHeader');
+        const loggedInName = document.getElementById('loggedInName');
         const loggedInMobile = document.getElementById('loggedInMobile');
 
         if (activeSessionUnsubscribe) {
@@ -478,6 +494,20 @@
             userInfoHeader.style.display = 'flex';
             const mobileNum = user.email ? user.email.split('@')[0] : 'User';
             loggedInMobile.innerText = mobileNum;
+
+            // Get User Name from Database
+            try {
+                const snap = await get(child(ref(db), `users/${user.uid}`));
+                if (snap.exists() && snap.val().name) {
+                    currentUserName = snap.val().name;
+                } else {
+                    currentUserName = "Member " + mobileNum.slice(-4);
+                }
+            } catch (e) {
+                currentUserName = "Member " + mobileNum.slice(-4);
+            }
+
+            loggedInName.innerText = currentUserName;
 
             const localSessionId = localStorage.getItem('smartGymSessionId');
             const sessionRef = ref(db, `users/${user.uid}/sessionId`);
@@ -498,6 +528,67 @@
     window.handleLogout = function() {
         signOut(auth).then(() => { localStorage.removeItem('smartGymSessionId'); });
     };
+
+    // REALTIME COMMUNITY CHAT LOGIC
+    window.sendMsg = function() {
+        const input = document.getElementById('msg');
+        const text = input.value.trim();
+        const user = auth.currentUser;
+
+        if (!user) {
+            alert("Message bhejne ke liye pehle Login karein!");
+            return;
+        }
+
+        if (text !== "") {
+            const mobileNum = user.email ? user.email.split('@')[0] : 'User';
+            push(ref(db, 'messages'), {
+                uid: user.uid,
+                name: currentUserName || "User",
+                mobile: mobileNum,
+                text: text,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                timestamp: Date.now()
+            }).then(() => {
+                input.value = "";
+            }).catch((e) => {
+                alert("Message send nahi ho paya: " + e.message);
+            });
+        }
+    };
+
+    // Listen to community chat messages
+    const chatbox = document.getElementById('chatbox');
+    onValue(ref(db, 'messages'), (snapshot) => {
+        if (!chatbox) return;
+        chatbox.innerHTML = "";
+        if (!snapshot.exists()) {
+            chatbox.innerHTML = `<div style="color:#777; text-align:center; padding-top:60px;">Sare members yahan baatchat kar sakte hain. Pehla message bhejin! 💬</div>`;
+            return;
+        }
+
+        const data = snapshot.val();
+        const user = auth.currentUser;
+
+        Object.keys(data).forEach((key) => {
+            const m = data[key];
+            const isMe = user && m.uid === user.uid;
+
+            const msgDiv = document.createElement('div');
+            msgDiv.style.cssText = `margin-bottom:8px; padding:8px 12px; border-radius:8px; max-width:85%; word-break:break-word; ${isMe ? 'margin-left:auto; background:#0084ff; color:#fff;' : 'margin-right:auto; background:#252525; color:#eee; border-left:3px solid var(--accent);'}`;
+
+            msgDiv.innerHTML = `
+                <div style="font-weight:bold; font-size:0.75rem; color:${isMe ? '#e3f2fd' : 'var(--accent)'}; margin-bottom:2px;">
+                    ${isMe ? 'You (' + m.name + ')' : m.name} <span style="font-weight:normal; opacity:0.7; font-size:0.65rem;">(${m.mobile ? m.mobile.substring(0,5)+'***' : ''})</span>
+                </div>
+                <div>${m.text}</div>
+                <div style="text-align:right; font-size:0.65rem; opacity:0.7; margin-top:2px;">${m.time || ''}</div>
+            `;
+            chatbox.appendChild(msgDiv);
+        });
+
+        chatbox.scrollTop = chatbox.scrollHeight;
+    });
 </script>
 
 <script>
@@ -1098,8 +1189,7 @@
     function resetTimer() { pauseTimer(); sec=0; document.getElementById('stopwatch').innerText="00:00:00"; }
     function filterWorkout(m) { let h = `<div style="background:#111; padding:10px; border-radius:8px; margin-top:10px; border:1px solid var(--primary);">`; db[m].forEach(ex => { h += `<div>🔥 ${ex.n}</div>`; }); h += `</div>`; document.getElementById('quickView').innerHTML = h; }
     function calcORM() { let w = parseFloat(document.getElementById('orm-w').value), r = parseFloat(document.getElementById('orm-r').value); if(w && r) document.getElementById('orm-res').innerText = `1RM: ${Math.round(w*(1+r/30))} kg`; }
-    function simBiometric() { let b = document.getElementById('biometric-btn'); b.innerText = "Scanning..."; setTimeout(() => { b.style.display="none"; document.getElementById('chat-section').style.display="block"; }, 1000); }
-    function sendMsg() { let m = document.getElementById('msg').value; if(m) { document.getElementById('chatbox').innerHTML += `<div><b>You:</b> ${m}</div>`; document.getElementById('msg').value=""; } }
+    function simBiometric() { let b = document.getElementById('biometric-btn'); b.innerText = "Entering..."; setTimeout(() => { b.style.display="none"; document.getElementById('chat-section').style.display="block"; }, 500); }
     function drink() { if(currentWater < targetWater) { currentWater++; document.getElementById('waterVal').innerText = `${currentWater} / ${targetWater}`; } }
 
     function calculateCalories() {
