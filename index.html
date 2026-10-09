@@ -529,7 +529,7 @@
         signOut(auth).then(() => { localStorage.removeItem('smartGymSessionId'); });
     };
 
-    // REALTIME COMMUNITY CHAT LOGIC
+    // REALTIME COMMUNITY CHAT LOGIC (ONLY NAME VISIBLE)
     window.sendMsg = function() {
         const input = document.getElementById('msg');
         const text = input.value.trim();
@@ -545,7 +545,6 @@
             push(ref(db, 'messages'), {
                 uid: user.uid,
                 name: currentUserName || "User",
-                mobile: mobileNum,
                 text: text,
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 timestamp: Date.now()
@@ -579,7 +578,7 @@
 
             msgDiv.innerHTML = `
                 <div style="font-weight:bold; font-size:0.75rem; color:${isMe ? '#e3f2fd' : 'var(--accent)'}; margin-bottom:2px;">
-                    ${isMe ? 'You (' + m.name + ')' : m.name} <span style="font-weight:normal; opacity:0.7; font-size:0.65rem;">(${m.mobile ? m.mobile.substring(0,5)+'***' : ''})</span>
+                    ${isMe ? 'You (' + m.name + ')' : m.name}
                 </div>
                 <div>${m.text}</div>
                 <div style="text-align:right; font-size:0.65rem; opacity:0.7; margin-top:2px;">${m.time || ''}</div>
