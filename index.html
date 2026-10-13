@@ -5,32 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartGym-24x | Smart Coach</title>
     <style>
-        :root { --primary: #ff4757; --dark: #0f0f0f; --card-bg: #1e1e1e; --accent: #2ecc71; --blue: #0984e3; --warning: #ffa502; --purple: #8e44ad; }
-        body { font-family: 'Poppins', sans-serif; background: var(--dark); color: #fff; margin: 0; padding-bottom: 50px; }
+        :root { 
+            --primary: #ff4757; 
+            --dark: #0f0f0f; 
+            --card-bg: #1e1e1e; 
+            --accent: #2ecc71; 
+            --blue: #0984e3; 
+            --warning: #ffa502; 
+            --purple: #8e44ad; 
+            --navy: #130f40;
+        }
+        body { font-family: 'Poppins', sans-serif; background: var(--dark); color: #fff; margin: 0; padding-bottom: 75px; }
         
+        /* HEADER UI */
         .header { 
             text-align: center; 
-            padding: 15px 10px; 
+            padding: 12px 15px; 
             background: #000; 
-            border-bottom: 3px solid var(--primary); 
+            border-bottom: 2px solid var(--primary); 
             display: flex; 
             align-items: center; 
-            justify-content: center; 
-            gap: 12px;
+            justify-content: space-between; 
         }
-        .nav-logo {
-            height: 45px;
-            width: auto;
-            border-radius: 5px;
-        }
-        .logo-text { font-size: 1.6rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+        .nav-logo { height: 40px; width: auto; border-radius: 5px; }
+        .logo-text { font-size: 1.4rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
         .logo-text span { color: var(--primary); }
         
         .container { padding: 15px; max-width: 600px; margin: auto; }
         .card { background: var(--card-bg); border-radius: 12px; padding: 18px; margin-bottom: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
         h3 { color: var(--primary); margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; }
-        input, select { width: 100%; padding: 12px; border-radius: 8px; background: #252525; color: white; border: 1px solid #444; margin: 8px 0; box-sizing: border-box; }
+        input, select { width: 100%; padding: 10px; border-radius: 8px; background: #252525; color: white; border: 1px solid #444; margin: 6px 0; box-sizing: border-box; }
         .btn-main { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        
+        /* DASHBOARD GRID CARDS (MATCHING IMAGE) */
+        .hero-banner { 
+            background: linear-gradient(135deg, #1e272e, #2c3e50); 
+            border: 1px solid #ff4757; 
+            border-radius: 15px; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            box-shadow: 0 5px 15px rgba(255,71,87,0.2); 
+        }
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .dash-card { 
+            padding: 18px 12px; 
+            border-radius: 14px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .dash-card:hover { transform: translateY(-3px); }
+        .dash-card-icon { font-size: 2.2rem; margin-bottom: 6px; }
+        .dash-card-title { font-size: 1rem; font-weight: bold; margin-bottom: 2px; }
+        .dash-card-sub { font-size: 0.7rem; opacity: 0.8; }
+
+        /* TAB NAVIGATION SYSTEM */
+        .tab-page { display: none; }
+        .tab-page.active { display: block; }
+
+        /* BOTTOM NAVBAR (MATCHING IMAGE) */
+        .bottom-nav { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            background: #000; 
+            border-top: 1px solid #333; 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 8px 0; 
+            z-index: 999; 
+        }
+        .nav-item { text-align: center; color: #888; font-size: 0.65rem; cursor: pointer; flex: 1; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-item-icon { font-size: 1.2rem; display: block; margin-bottom: 2px; }
+
+        /* UTILITY CLASSES */
         .day-wrapper { margin-bottom: 8px; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
         .day-header { background: #2d3436; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; font-weight: bold; }
         .day-content { display: none; background: #1a1a1a; padding: 10px; }
@@ -62,7 +117,6 @@
         .overflow-menu-box { display: none; position: absolute; right: 15px; top: 50px; background: #252525; border: 1px solid #444; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 10000; min-width: 190px; text-align: left; }
         .overflow-menu-item { padding: 12px; cursor: pointer; font-size: 0.9rem; color: white; border-bottom: 1px solid #333; transition: 0.2s; }
         .overflow-menu-item:hover { background: #333; }
-        .overflow-menu-item:last-child { border-bottom: none; }
         .alarm-modal-body { background: var(--card-bg); border-radius: 12px; padding: 20px; width: 90%; max-width: 420px; box-shadow: 0 8px 24px rgba(0,0,0,0.7); border: 1px solid var(--primary); position: relative; box-sizing: border-box; }
         .alarm-list-box { max-height: 140px; overflow-y: auto; background: #111; padding: 8px; border-radius: 6px; font-size: 0.85rem; margin-top: 10px; border: 1px solid #333; }
     </style>
@@ -101,57 +155,26 @@
     <button onclick="handleLogout()" style="background: var(--primary); border: none; color: white; padding: 6px 12px; border-radius: 5px; font-weight: bold; cursor: pointer;">Logout 🚪</button>
 </div>
 
-<div class="header" style="justify-content: space-between; padding: 15px 15px;">
+<!-- TOP HEADER -->
+<div class="header">
     <div style="width: 35px;"></div>
-    <div style="display: flex; align-items: center; gap: 12px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
         <img src="https://i.ibb.co/PGZ19M1V/smart-gym-logo.jpg" alt="Smart Gym Logo" class="nav-logo">
-        <div class="logo-text">Smart Gym-<span>24x</span></div>
+        <div class="logo-text">SmartGym-<span>24x</span></div>
     </div>
     
     <div style="position: relative;">
         <div class="three-dots-btn" onclick="toggleOverflowMenu(event)">⋮</div>
         <div id="overflowMenu" class="overflow-menu-box">
-            <div class="overflow-menu-item" onclick="openMoreFeaturesModal()">⚡ More Features & Calculator</div>
             <div class="overflow-menu-item" onclick="openAlarmModal()">⏰ Diet & Medicine Reminder</div>
         </div>
     </div>
 </div>
 
+<!-- IMAGE VIEWER MODAL -->
 <div id="viewer" class="image-viewer">
     <span class="close-viewer" onclick="closeImage()">&times;</span>
     <img id="big-img" src="">
-</div>
-
-<!-- MORE FEATURES MODAL -->
-<div id="moreFeaturesModal" class="image-viewer">
-    <div class="alarm-modal-body" style="max-height: 85vh; overflow-y: auto;">
-        <span class="close-viewer" style="top: 10px; right: 15px; font-size: 28px;" onclick="closeMoreFeaturesModal()">&times;</span>
-        <h3 style="margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 5px; color: var(--purple);">⚡ More Features</h3>
-        
-        <div style="background: #181818; padding: 12px; border-radius: 8px; border: 1px solid var(--blue); margin-bottom: 15px;">
-            <h4 style="color: var(--blue); margin: 0 0 10px 0; font-size: 1rem;">🥗 Food Nutrition & Calorie Calculator</h4>
-            
-            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                <button type="button" id="foodCatVeg" class="btn-main" style="background: #2ecc71; padding: 8px; font-size: 0.85rem; outline: 2px solid #fff;" onclick="filterFoodCategory('veg')">🟢 Veg Foods</button>
-                <button type="button" id="foodCatNonVeg" class="btn-main" style="background: #e67e22; padding: 8px; font-size: 0.85rem;" onclick="filterFoodCategory('nonveg')">🔴 Non-Veg Foods</button>
-            </div>
-
-            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Select Food Item:</label>
-            <select id="foodSelect" onchange="calculateFoodNutrition()"></select>
-
-            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Enter Weight (Grams):</label>
-            <input type="number" id="foodWeight" value="100" placeholder="Weight in grams" oninput="calculateFoodNutrition()">
-
-            <div id="foodNutritionResult" style="margin-top: 12px; background: #252525; padding: 10px; border-radius: 6px; font-size: 0.85rem; border-left: 4px solid var(--accent);"></div>
-        </div>
-
-        <div style="background: #181818; padding: 12px; border-radius: 8px; border: 1px solid var(--accent); margin-bottom: 15px;">
-            <h4 style="color: var(--accent); margin: 0 0 10px 0; font-size: 1rem;">💊 Recommended Supplements</h4>
-            <div id="supplementArea"></div>
-        </div>
-
-        <button class="btn-main" style="background: #333;" onclick="closeMoreFeaturesModal()">Close</button>
-    </div>
 </div>
 
 <!-- ALARM POPUP MODAL -->
@@ -175,219 +198,336 @@
 
 <div class="container">
 
-    <button class="btn-main" style="background: var(--purple); margin-bottom: 15px; font-size: 1rem;" onclick="openMoreFeaturesModal()">⚡ More Features (Food Calculator & Supplements)</button>
-
-    <!-- REAL MOTION SENSOR STEP COUNTER -->
-    <div class="card" style="border: 1px solid var(--accent);">
-        <h3>🚶 Daily Step Counter (Real Motion Sensor)</h3>
-        <div style="text-align: center; margin-bottom: 12px;">
-            <span style="font-size: 2.5rem; font-weight: 900; color: var(--accent);" id="stepDisplay">0</span>
-            <div style="color: #aaa; font-size: 0.85rem; margin-top: 2px;" id="stepStats">0.00 km | 🔥 0.0 kcal</div>
-        </div>
-        <div style="display: flex; gap: 8px;">
-            <button id="stepTrackerBtn" class="btn-main" style="background: var(--accent);" onclick="toggleStepTracking()">▶️ Start Step Counter</button>
-            <button class="btn-main" style="width: 90px; background: #333;" onclick="resetSteps()">Reset</button>
-        </div>
-        <div id="stepStatusMsg" style="text-align: center; margin-top: 8px; font-size: 0.8rem; color: #888;">
-            Button dabakar start karein. Phone lekar chalne par hi steps count honge.
-        </div>
-    </div>
-
-    <!-- STREAK & GYM ATTENDANCE CARD -->
-    <div class="card" style="border: 1px solid var(--primary);">
-        <h3>🔥 Daily Streak & Gym Attendance</h3>
-        <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:15px;">
-            <div style="text-align:center;">
-                <span style="font-size: 2.2rem; font-weight: bold; color: var(--primary);" id="streakDisplay">0</span>
-                <div style="color: #aaa; font-size: 0.8rem;">Days Active Streak</div>
+    <!-- TAB 1: HOME DASHBOARD -->
+    <div id="tab-home" class="tab-page active">
+        <!-- HELLO DOST CARD WITH USER STATS -->
+        <div class="hero-banner">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <span style="font-size: 1.8rem;">💪</span>
+                <div>
+                    <h3 style="margin:0; border:none; padding:0; color:#fff; font-size:1.2rem;">Hello, Dost!</h3>
+                    <small style="color: var(--accent);">Fit Raho, Healthy Raho!</small>
+                </div>
+            </div>
+            <!-- USER STATS INPUTS THAT SYNC EVERYWHERE -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <input type="number" id="globalWeight" placeholder="Weight (kg)" oninput="syncInputs('w', this.value)">
+                <input type="number" id="globalHeight" placeholder="Height (cm)" oninput="syncInputs('h', this.value)">
+                <input type="number" id="globalAge" placeholder="Age (Years)" oninput="syncInputs('age', this.value)">
+                <select id="globalGender" onchange="syncInputs('sex', this.value)">
+                    <option value="male">Male ♂</option>
+                    <option value="female">Female ♀</option>
+                </select>
             </div>
         </div>
-        <button id="checkInBtn" class="btn-main" style="background: var(--accent);" onclick="markAttendance()">📍 Daily Gym Check-In</button>
-        <div id="checkInMsg" style="text-align:center; margin-top:8px; font-size:0.85rem; font-weight:bold; color:var(--accent);"></div>
-    </div>
 
-    <!-- BMI SECTION -->
-    <div class="card">
-        <h3>📊 BMI Health Checker</h3>
-        <div style="display:flex; gap:10px;">
-            <input type="number" id="w" placeholder="Weight (kg)" oninput="syncInputs('w', this.value)">
-            <input type="number" id="h" placeholder="Height (cm)" oninput="syncInputs('h', this.value)">
+        <!-- 4 MAIN GRID CARDS (AS PER IMAGE) -->
+        <div class="dash-grid">
+            <div class="dash-card" style="background: linear-gradient(135deg, #0984e3, #1e3799);" onclick="switchTab('workout')">
+                <div class="dash-card-icon">🏋️‍♂️</div>
+                <div class="dash-card-title">Workout Plan</div>
+                <div class="dash-card-sub">Training Programs</div>
+            </div>
+
+            <div class="dash-card" style="background: linear-gradient(135deg, #2ecc71, #10ac84);" onclick="switchTab('diet')">
+                <div class="dash-card-icon">🍴</div>
+                <div class="dash-card-title">Diet Plan</div>
+                <div class="dash-card-sub">Nutrition Guide</div>
+            </div>
+
+            <div class="dash-card" style="background: linear-gradient(135deg, #8e44ad, #5f27cd);" onclick="switchTab('yoga')">
+                <div class="dash-card-icon">🧘</div>
+                <div class="dash-card-title">Yoga</div>
+                <div class="dash-card-sub">Relax & Balance</div>
+            </div>
+
+            <div class="dash-card" style="background: linear-gradient(135deg, #00cec9, #01a3a4);" onclick="switchTab('tools')">
+                <div class="dash-card-icon">🛠️</div>
+                <div class="dash-card-title">Tools</div>
+                <div class="dash-card-sub">BMI, Calorie, etc.</div>
+            </div>
         </div>
-        <button class="btn-main" onclick="calcHealth()">Check Status</button>
-        <div id="res" style="text-align:center; margin-top:15px; font-weight:bold; font-size: 1.1rem;"></div>
-    </div>
 
-    <!-- WEIGHT LOGGER -->
-    <div class="card">
-        <h3>📈 Weight & Progress Logger</h3>
-        <div style="display:flex; gap:10px;">
-            <input type="number" id="weightInput" placeholder="Enter Weight (kg)" step="0.1" oninput="syncInputs('w', this.value)">
-            <button class="btn-main" style="width: 120px;" onclick="addWeightLog()">Save</button>
+        <!-- HERO BANNER: DAILY STREAK & GYM ATTENDANCE -->
+        <div class="card" style="background: linear-gradient(135deg, #ff4757, #b22222); border: none; text-align: center;">
+            <h3 style="color:#fff; border-bottom:1px solid rgba(255,255,255,0.2);">Daily Streak & Gym Attendance</h3>
+            <p style="font-size:0.85rem; margin-top:-5px;">Discipline • Consistency • Results</p>
+            <div style="font-size: 2.2rem; font-weight: bold; margin: 10px 0;" id="streakDisplay">0</div>
+            <div style="font-size: 0.8rem; margin-bottom: 12px;">Days Active Streak</div>
+            <button id="checkInBtn" class="btn-main" style="background: #000; color: #fff;" onclick="markAttendance()">📍 Daily Gym Check-In</button>
+            <div id="checkInMsg" style="margin-top:8px; font-size:0.85rem; font-weight:bold;"></div>
         </div>
-        <canvas id="weightChart" width="500" height="180" style="width:100%; height:180px; background:#111; border-radius:8px; margin-top:15px; border:1px solid #333;"></canvas>
-        <div id="weightHistory" style="margin-top:10px; max-height:90px; overflow-y:auto; font-size:0.85rem; color:#ccc;"></div>
     </div>
 
-    <!-- BMR SECTION -->
-    <div class="card">
-        <h3>🔥 BMR & Daily Calories</h3>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <input type="number" id="age" placeholder="Age (Umar)" oninput="syncInputs('age', this.value)">
-            <select id="sex">
-                <option value="male">Male</option>
-                <option value="female">Female</option>
+
+    <!-- TAB 2: WORKOUT PLAN -->
+    <div id="tab-workout" class="tab-page">
+        <!-- 1. SELECT WORKOUT GOAL -->
+        <div class="card">
+            <h3>🎯 1. Select Workout Goal</h3>
+            <select id="goal" onchange="updateAll()">
+                <option value="bulking">Bulking (Muscle Gain)</option>
+                <option value="weightloss">Weight Loss (Fat Burn)</option>
+                <option value="cutting">Cutting Body (Max Cardio)</option>
             </select>
         </div>
-        <select id="act" style="margin-top:10px;">
-            <option value="1.2">No Exercise (Sust)</option>
-            <option value="1.375">Light (1-2 din workout)</option>
-            <option value="1.55">Moderate (3-5 din workout)</option>
-            <option value="1.725">Hard (Daily Heavy Training)</option>
-        </select>
-        <button class="btn-main" style="background:#0984e3; margin-top:10px;" onclick="calculateCalories()">Get Results</button>
-        <div id="bmrRes" style="margin-top:15px; text-align:center;"></div>
-    </div>
 
-    <!-- GOAL SECTION -->
-    <div class="card">
-        <h3>🎯 Select Workout Goal</h3>
-        <select id="goal" onchange="updateAll()">
-            <option value="bulking">Bulking (Muscle Gain)</option>
-            <option value="weightloss">Weight Loss (Fat Burn)</option>
-            <option value="cutting">Cutting Body (Max Cardio)</option>
-        </select>
-    </div>
-
-    <!-- WORKOUT SCHEDULE AREA -->
-    <div class="card">
-        <h3>📅 Weekly Workout Schedule</h3>
-        <div id="workoutArea"></div>
-    </div>
-
-    <!-- DIET PLAN AREA -->
-    <div class="card">
-        <h3>📅 Extra Power Diet Plan</h3>
-        <div style="margin-bottom: 15px;">
-            <b style="font-size: 0.85rem; color: #aaa; display:block; margin-bottom: 6px;">Diet Preference Select Karein:</b>
-            <div style="display: flex; gap: 10px;">
-                <button id="btn-veg" class="btn-main" style="background:#2ecc71;" onclick="setDietType('veg')">🟢 Pure Veg</button>
-                <button id="btn-nonveg" class="btn-main" style="background:#e67e22;" onclick="setDietType('nonveg')">🔴 Non-Veg</button>
-            </div>
-        </div>
-        <div id="dietArea"></div>
-    </div>
-
-    <!-- 30 DAY FITNESS CHALLENGE -->
-    <div class="card">
-        <h3>🏆 30-Day Fitness Challenge</h3>
-        <div style="margin-bottom: 8px; font-size: 0.85rem; display:flex; justify-content:space-between;">
-            <span>Overall Progress:</span>
-            <b id="challengeProgressText" style="color:var(--accent);">0/30 Days</b>
-        </div>
-        <div style="background:#333; height:8px; border-radius:4px; overflow:hidden; margin-bottom:15px;">
-            <div id="challengeProgressBar" style="width:0%; background:var(--accent); height:100%; transition:0.3s;"></div>
-        </div>
-        <div id="challengeGrid" style="display:grid; grid-template-columns: repeat(6, 1fr); gap:6px;"></div>
-        <div id="challengeTaskBox" style="margin-top:15px; background:#111; padding:12px; border-radius:8px; border:1px solid var(--primary); display:none;">
-            <h4 id="taskTitle" style="margin:0 0 5px 0; color:var(--primary); font-size:0.95rem;"></h4>
-            <p id="taskDesc" style="margin:0 0 10px 0; font-size:0.85rem; color:#eee;"></p>
-            <button id="completeTaskBtn" class="btn-main" style="padding:8px; background:var(--accent);" onclick="toggleChallengeDay()">Mark as Done ✅</button>
-        </div>
-    </div>
-
-    <!-- PROTEIN CALCULATOR -->
-    <div class="card">
-        <h3>🍗 Protein Requirement</h3>
-        <select id="fitnessGoal" style="margin-bottom:10px;">
-            <option value="1.2">Sedentary (Normal Activity)</option>
-            <option value="1.6">Muscle Building (Beginner)</option>
-            <option value="2.0">Heavy Bodybuilding (Pro)</option>
-            <option value="1.4">Weight Loss (Maintain Muscle)</option>
-        </select>
-        <button class="btn-main" style="background:#2ecc71;" onclick="calculateProtein()">Calculate Protein</button>
-        <div id="protRes" style="margin-top:15px; text-align:center;"></div>
-    </div>
-
-    <!-- CALORIE BURN CALCULATOR -->
-    <div class="card">
-        <h3>🔥 Calorie Burn Calculator</h3>
-        <div id="stopwatch">00:00:00</div>
-        <div class="grid-3">
-            <button class="btn-main" style="background:var(--accent); padding: 8px;" onclick="startTimer()">Start</button>
-            <button class="btn-main" style="background:var(--warning); padding: 8px;" onclick="pauseTimer()">Pause</button>
-            <button class="btn-main" style="background:var(--primary); padding: 8px;" onclick="resetTimer()">Reset</button>
+        <!-- 2. WEEKLY WORKOUT SCHEDULE -->
+        <div class="card">
+            <h3>📅 2. Weekly Workout Schedule</h3>
+            <div id="workoutArea"></div>
         </div>
 
-        <div style="margin-top: 15px; background: #181818; padding: 12px; border-radius: 8px; border: 1px solid var(--primary);">
-            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Exercise Select Karein:</label>
-            <select id="calorieExSelect"></select>
-
-            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Aapka Weight (kg):</label>
-            <input type="number" id="calorieUserWeight" placeholder="Enter Weight in kg" oninput="syncInputs('w', this.value)">
-
-            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Workout Time (Minutes):</label>
-            <input type="number" id="calorieCustomTime" placeholder="Duration in minutes (Optional)">
-
-            <button class="btn-main" style="margin-top: 10px; background: var(--accent);" onclick="calculateExerciseCalories()">Calculate Burned Calories 🔥</button>
-
-            <div id="calorieResult" style="margin-top: 10px; font-weight: bold; font-size: 0.95rem; text-align: center;"></div>
-        </div>
-
-        <div style="margin-top: 20px;">
-            <b style="font-size: 0.9rem; color: var(--blue);">⚡ Extra Exercise:</b>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;">
-                <div class="muscle-map-btn" style="background: #2d3436; border-color: var(--primary);" onclick="filterWorkout('preworkout')">Pre-Workout / Cardio</div>
+        <!-- 3. EXTRA EXERCISE -->
+        <div class="card">
+            <h3>⚡ 3. Extra Exercise</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                <div class="muscle-map-btn" style="background: #2d3436; border-color: var(--primary);" onclick="filterWorkout('preworkout')">Cardio</div>
                 <div class="muscle-map-btn" style="background: #2d3436; border-color: var(--accent);" onclick="filterWorkout('abs')">Abs & Core</div>
                 <div class="muscle-map-btn" style="background: #2d3436; border-color: var(--blue);" onclick="filterWorkout('forearm')">Forearms</div>
             </div>
             <div id="quickView"></div>
         </div>
-    </div>
 
-    <!-- POWER CALCULATOR -->
-    <div class="card">
-        <h3>🚀 Power Calculator</h3>
-        <div class="tool-card">
-            <b>1-Rep Max:</b>
-            <div style="display: flex; gap: 5px;">
-                <input type="number" id="orm-w" placeholder="Wt">
-                <input type="number" id="orm-r" placeholder="Reps">
+        <!-- 4. EXTRA POWER DIET PLAN -->
+        <div class="card">
+            <h3>🥗 4. Extra Power Diet Plan</h3>
+            <div style="margin-bottom: 15px;">
+                <b style="font-size: 0.85rem; color: #aaa; display:block; margin-bottom: 6px;">Diet Preference Select Karein:</b>
+                <div style="display: flex; gap: 10px;">
+                    <button id="btn-veg" class="btn-main" style="background:#2ecc71;" onclick="setDietType('veg')">🟢 Pure Veg</button>
+                    <button id="btn-nonveg" class="btn-main" style="background:#e67e22;" onclick="setDietType('nonveg')">🔴 Non-Veg</button>
+                </div>
             </div>
-            <button class="btn-main" style="padding: 8px;" onclick="calcORM()">Calculate</button>
-            <div id="orm-res" style="margin-top:5px; color:var(--accent); font-weight:bold;"></div>
+            <div id="dietArea"></div>
         </div>
-    </div>
 
-    <!-- COMMUNITY SECTION WITH LIVE FIREBASE CHAT -->
-    <div class="card" style="border: 1px solid var(--blue);">
-        <h3>🔐 SmartGym Community</h3>
-        <button id="biometric-btn" onclick="simBiometric()">💬 Enter to Community Message</button>
-        <div id="chat-section" style="display:none; margin-top:10px;">
-            <div class="chat-container" id="chatbox"></div>
-            <div style="display:flex; gap:5px; margin-top:10px;">
-                <input type="text" id="msg" placeholder="Write message..." onkeypress="if(event.key==='Enter') sendMsg()">
-                <button onclick="sendMsg()" style="background:var(--blue); border:none; padding:10px 15px; border-radius:5px; color:#fff; font-weight:bold; cursor:pointer;">Send 🚀</button>
+        <!-- 5. 30-DAY FITNESS CHALLENGE -->
+        <div class="card">
+            <h3>🏆 5. 30-Day Fitness Challenge</h3>
+            <div style="margin-bottom: 8px; font-size: 0.85rem; display:flex; justify-content:space-between;">
+                <span>Overall Progress:</span>
+                <b id="challengeProgressText" style="color:var(--accent);">0/30 Days</b>
+            </div>
+            <div style="background:#333; height:8px; border-radius:4px; overflow:hidden; margin-bottom:15px;">
+                <div id="challengeProgressBar" style="width:0%; background:var(--accent); height:100%; transition:0.3s;"></div>
+            </div>
+            <div id="challengeGrid" style="display:grid; grid-template-columns: repeat(6, 1fr); gap:6px;"></div>
+            <div id="challengeTaskBox" style="margin-top:15px; background:#111; padding:12px; border-radius:8px; border:1px solid var(--primary); display:none;">
+                <h4 id="taskTitle" style="margin:0 0 5px 0; color:var(--primary); font-size:0.95rem;"></h4>
+                <p id="taskDesc" style="margin:0 0 10px 0; font-size:0.85rem; color:#eee;"></p>
+                <button id="completeTaskBtn" class="btn-main" style="padding:8px; background:var(--accent);" onclick="toggleChallengeDay()">Mark as Done ✅</button>
             </div>
         </div>
     </div>
 
-    <!-- WATER TRACKER -->
-    <div class="card">
-        <h3>💧 Water Tracker</h3>
-        <div id="waterTarget" style="text-align:center; color:var(--blue); font-size:0.8rem;">BMI check karein</div>
-        <div id="waterVal" style="text-align:center; font-size:1.8rem; color:var(--blue); font-weight:bold; margin:10px 0;">0 / --</div>
-        <button class="btn-main" style="background:var(--blue);" onclick="drink()">Drink 1 Glass 🥤</button>
+
+    <!-- TAB 3: DIET PLAN -->
+    <div id="tab-diet" class="tab-page">
+        <!-- 1 & 2. FOOD NUTRITION & NUTRITION BREAKDOWN -->
+        <div class="card">
+            <h3>🥗 1 & 2. Food Nutrition & Calorie Calculator</h3>
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <button type="button" id="foodCatVeg" class="btn-main" style="background: #2ecc71; padding: 8px; font-size: 0.85rem; outline: 2px solid #fff;" onclick="filterFoodCategory('veg')">🟢 Veg Foods</button>
+                <button type="button" id="foodCatNonVeg" class="btn-main" style="background: #e67e22; padding: 8px; font-size: 0.85rem;" onclick="filterFoodCategory('nonveg')">🔴 Non-Veg Foods</button>
+            </div>
+
+            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Select Food Item:</label>
+            <select id="foodSelect" onchange="calculateFoodNutrition()"></select>
+
+            <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Enter Weight (Grams):</label>
+            <input type="number" id="foodWeight" value="100" placeholder="Weight in grams" oninput="calculateFoodNutrition()">
+
+            <div id="foodNutritionResult" style="margin-top: 12px; background: #252525; padding: 12px; border-radius: 8px; font-size: 0.85rem; border-left: 4px solid var(--accent);"></div>
+        </div>
+
+        <!-- 3. RECOMMENDED SUPPLEMENTS -->
+        <div class="card">
+            <h3>💊 3. Recommended Supplements</h3>
+            <div id="supplementArea"></div>
+        </div>
     </div>
 
-    <!-- YOGA SECTION -->
-    <div class="card">
-        <h3>🌿 Ayurveda & Yoga Power</h3>
-        <div class="yoga-grid">
-            <div class="yoga-card"><img src="https://i.ibb.co/67zw8PFN/surya-namaskar.jpg" onclick="viewImage(this.src)">Surya Namaskar</div>
-            <div class="yoga-card"><img src="https://i.ibb.co/zWV3M6c6/bhujangasana.jpg" onclick="viewImage(this.src)">Bhujangasana</div>
-            <div class="yoga-card"><img src="https://i.ibb.co/PGzb0BRh/vrikshasana.jpg" onclick="viewImage(this.src)">Vrikshasana</div>
-            <div class="yoga-card"><img src="https://i.ibb.co/cc9kGB1q/padmasana.jpg" onclick="viewImage(this.src)">Padmasana</div>
+
+    <!-- TAB 4: YOGA -->
+    <div id="tab-yoga" class="tab-page">
+        <div class="card">
+            <h3>🌿 1. Ayurveda & Yoga Power</h3>
+            <div class="yoga-grid">
+                <div class="yoga-card"><img src="https://i.ibb.co/67zw8PFN/surya-namaskar.jpg" onclick="viewImage(this.src)">Surya Namaskar</div>
+                <div class="yoga-card"><img src="https://i.ibb.co/zWV3M6c6/bhujangasana.jpg" onclick="viewImage(this.src)">Bhujangasana</div>
+                <div class="yoga-card"><img src="https://i.ibb.co/PGzb0BRh/vrikshasana.jpg" onclick="viewImage(this.src)">Vrikshasana</div>
+                <div class="yoga-card"><img src="https://i.ibb.co/cc9kGB1q/padmasana.jpg" onclick="viewImage(this.src)">Padmasana</div>
+            </div>
         </div>
+    </div>
+
+
+    <!-- TAB 5: TOOLS -->
+    <div id="tab-tools" class="tab-page">
+        <!-- 1. STEP COUNTER -->
+        <div class="card" style="border: 1px solid var(--accent);">
+            <h3>🚶 1. Daily Step Counter (Real Motion Sensor)</h3>
+            <div style="text-align: center; margin-bottom: 12px;">
+                <span style="font-size: 2.5rem; font-weight: 900; color: var(--accent);" id="stepDisplay">0</span>
+                <div style="color: #aaa; font-size: 0.85rem; margin-top: 2px;" id="stepStats">0.00 km | 🔥 0.0 kcal</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button id="stepTrackerBtn" class="btn-main" style="background: var(--accent);" onclick="toggleStepTracking()">▶️ Start Step Counter</button>
+                <button class="btn-main" style="width: 90px; background: #333;" onclick="resetSteps()">Reset</button>
+            </div>
+            <div id="stepStatusMsg" style="text-align: center; margin-top: 8px; font-size: 0.8rem; color: #888;">
+                Button dabakar start karein. Phone lekar chalne par hi steps count honge.
+            </div>
+        </div>
+
+        <!-- 2. BMI CHECKER -->
+        <div class="card">
+            <h3>📊 2. BMI Health Checker</h3>
+            <div style="display:flex; gap:10px;">
+                <input type="number" id="w" placeholder="Weight (kg)" oninput="syncInputs('w', this.value)">
+                <input type="number" id="h" placeholder="Height (cm)" oninput="syncInputs('h', this.value)">
+            </div>
+            <button class="btn-main" onclick="calcHealth()">Check Status</button>
+            <div id="res" style="text-align:center; margin-top:15px; font-weight:bold; font-size: 1.1rem;"></div>
+        </div>
+
+        <!-- 3. WEIGHT & PROGRESS LOGGER -->
+        <div class="card">
+            <h3>📈 3. Weight & Progress Logger</h3>
+            <div style="display:flex; gap:10px;">
+                <input type="number" id="weightInput" placeholder="Enter Weight (kg)" step="0.1" oninput="syncInputs('w', this.value)">
+                <button class="btn-main" style="width: 120px;" onclick="addWeightLog()">Save</button>
+            </div>
+            <canvas id="weightChart" width="500" height="180" style="width:100%; height:180px; background:#111; border-radius:8px; margin-top:15px; border:1px solid #333;"></canvas>
+            <div id="weightHistory" style="margin-top:10px; max-height:90px; overflow-y:auto; font-size:0.85rem; color:#ccc;"></div>
+        </div>
+
+        <!-- 4. BMR & DAILY CALORIES -->
+        <div class="card">
+            <h3>🔥 4. BMR & Daily Calories</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <input type="number" id="age" placeholder="Age (Umar)" oninput="syncInputs('age', this.value)">
+                <select id="sex" onchange="syncInputs('sex', this.value)">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            <select id="act" style="margin-top:10px;">
+                <option value="1.2">No Exercise (Sust)</option>
+                <option value="1.375">Light (1-2 din workout)</option>
+                <option value="1.55">Moderate (3-5 din workout)</option>
+                <option value="1.725">Hard (Daily Heavy Training)</option>
+            </select>
+            <button class="btn-main" style="background:#0984e3; margin-top:10px;" onclick="calculateCalories()">Get Results</button>
+            <div id="bmrRes" style="margin-top:15px; text-align:center;"></div>
+        </div>
+
+        <!-- 5. PROTEIN REQUIREMENT -->
+        <div class="card">
+            <h3>🍗 5. Protein Requirement</h3>
+            <select id="fitnessGoal" style="margin-bottom:10px;">
+                <option value="1.2">Sedentary (Normal Activity)</option>
+                <option value="1.6">Muscle Building (Beginner)</option>
+                <option value="2.0">Heavy Bodybuilding (Pro)</option>
+                <option value="1.4">Weight Loss (Maintain Muscle)</option>
+            </select>
+            <button class="btn-main" style="background:#2ecc71;" onclick="calculateProtein()">Calculate Protein</button>
+            <div id="protRes" style="margin-top:15px; text-align:center;"></div>
+        </div>
+
+        <!-- 6. CALORIE BURN CALCULATOR -->
+        <div class="card">
+            <h3>🔥 6. Calorie Burn Calculator</h3>
+            <div id="stopwatch">00:00:00</div>
+            <div class="grid-3">
+                <button class="btn-main" style="background:var(--accent); padding: 8px;" onclick="startTimer()">Start</button>
+                <button class="btn-main" style="background:var(--warning); padding: 8px;" onclick="pauseTimer()">Pause</button>
+                <button class="btn-main" style="background:var(--primary); padding: 8px;" onclick="resetTimer()">Reset</button>
+            </div>
+
+            <div style="margin-top: 15px; background: #181818; padding: 12px; border-radius: 8px; border: 1px solid var(--primary);">
+                <label style="font-size: 0.8rem; color: #aaa; display:block; margin-bottom: 2px;">Exercise Select Karein:</label>
+                <select id="calorieExSelect"></select>
+
+                <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Aapka Weight (kg):</label>
+                <input type="number" id="calorieUserWeight" placeholder="Enter Weight in kg" oninput="syncInputs('w', this.value)">
+
+                <label style="font-size: 0.8rem; color: #aaa; display:block; margin-top: 8px; margin-bottom: 2px;">Workout Time (Minutes):</label>
+                <input type="number" id="calorieCustomTime" placeholder="Duration in minutes (Optional)">
+
+                <button class="btn-main" style="margin-top: 10px; background: var(--accent);" onclick="calculateExerciseCalories()">Calculate Burned Calories 🔥</button>
+
+                <div id="calorieResult" style="margin-top: 10px; font-weight: bold; font-size: 0.95rem; text-align: center;"></div>
+            </div>
+        </div>
+
+        <!-- 7. POWER CALCULATOR -->
+        <div class="card">
+            <h3>🚀 7. Power Calculator</h3>
+            <div class="tool-card">
+                <b>1-Rep Max:</b>
+                <div style="display: flex; gap: 5px;">
+                    <input type="number" id="orm-w" placeholder="Wt">
+                    <input type="number" id="orm-r" placeholder="Reps">
+                </div>
+                <button class="btn-main" style="padding: 8px;" onclick="calcORM()">Calculate</button>
+                <div id="orm-res" style="margin-top:5px; color:var(--accent); font-weight:bold;"></div>
+            </div>
+        </div>
+
+        <!-- 8. WATER TRACKER -->
+        <div class="card">
+            <h3>💧 8. Water Tracker</h3>
+            <div id="waterTarget" style="text-align:center; color:var(--blue); font-size:0.8rem;">BMI check karein</div>
+            <div id="waterVal" style="text-align:center; font-size:1.8rem; color:var(--blue); font-weight:bold; margin:10px 0;">0 / --</div>
+            <button class="btn-main" style="background:var(--blue);" onclick="drink()">Drink 1 Glass 🥤</button>
+        </div>
+    </div>
+
+
+    <!-- TAB 6: SMARTGYM COMMUNITY -->
+    <div id="tab-community" class="tab-page">
+        <div class="card" style="border: 1px solid var(--blue);">
+            <h3>🔐 SmartGym Community</h3>
+            <button id="biometric-btn" onclick="simBiometric()">💬 Enter to Community Message</button>
+            <div id="chat-section" style="display:none; margin-top:10px;">
+                <div class="chat-container" id="chatbox"></div>
+                <div style="display:flex; gap:5px; margin-top:10px;">
+                    <input type="text" id="msg" placeholder="Write message..." onkeypress="if(event.key==='Enter') sendMsg()">
+                    <button onclick="sendMsg()" style="background:var(--blue); border:none; padding:10px 15px; border-radius:5px; color:#fff; font-weight:bold; cursor:pointer;">Send 🚀</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- BOTTOM NAVIGATION BAR (AS PER IMAGE) -->
+<div class="bottom-nav">
+    <div class="nav-item active" id="nav-home" onclick="switchTab('home')">
+        <span class="nav-item-icon">🏠</span>
+        <span>Home</span>
+    </div>
+    <div class="nav-item" id="nav-workout" onclick="switchTab('workout')">
+        <span class="nav-item-icon">🏋️</span>
+        <span>Workout</span>
+    </div>
+    <div class="nav-item" id="nav-diet" onclick="switchTab('diet')">
+        <span class="nav-item-icon">🍴</span>
+        <span>Diet</span>
+    </div>
+    <div class="nav-item" id="nav-yoga" onclick="switchTab('yoga')">
+        <span class="nav-item-icon">🧘</span>
+        <span>Yoga</span>
+    </div>
+    <div class="nav-item" id="nav-tools" onclick="switchTab('tools')">
+        <span class="nav-item-icon">🛠️</span>
+        <span>Tools</span>
+    </div>
+    <div class="nav-item" id="nav-community" onclick="switchTab('community')">
+        <span class="nav-item-icon">💬</span>
+        <span>Chat</span>
     </div>
 </div>
 
@@ -495,7 +635,6 @@
             const mobileNum = user.email ? user.email.split('@')[0] : 'User';
             loggedInMobile.innerText = mobileNum;
 
-            // Get User Name from Database
             try {
                 const snap = await get(child(ref(db), `users/${user.uid}`));
                 if (snap.exists() && snap.val().name) {
@@ -529,7 +668,6 @@
         signOut(auth).then(() => { localStorage.removeItem('smartGymSessionId'); });
     };
 
-    // REALTIME COMMUNITY CHAT LOGIC (ONLY NAME VISIBLE)
     window.sendMsg = function() {
         const input = document.getElementById('msg');
         const text = input.value.trim();
@@ -556,7 +694,6 @@
         }
     };
 
-    // Listen to community chat messages
     const chatbox = document.getElementById('chatbox');
     onValue(ref(db, 'messages'), (snapshot) => {
         if (!chatbox) return;
@@ -591,13 +728,25 @@
 </script>
 
 <script>
+    // TAB SWITCHING FUNCTION
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-page').forEach(page => page.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        
+        let targetPage = document.getElementById(`tab-${tabName}`);
+        let targetNav = document.getElementById(`nav-${tabName}`);
+        
+        if (targetPage) targetPage.classList.add('active');
+        if (targetNav) targetNav.classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
     // ACCELEROMETER REAL STEP COUNTER SCRIPT
     let stepCount = parseInt(localStorage.getItem('smartGymSteps')) || 0;
     let isTrackingSteps = false;
     let lastStepTime = 0;
     let lastAccelMagnitude = 0;
 
-    // Daily Step Reset check
     let todayStr = new Date().toISOString().split('T')[0];
     let stepLastDate = localStorage.getItem('smartGymStepDate');
     if (stepLastDate !== todayStr) {
@@ -615,7 +764,6 @@
 
     function toggleStepTracking() {
         if (!isTrackingSteps) {
-            // Request motion permission for iOS 13+ devices
             if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
                 DeviceMotionEvent.requestPermission()
                     .then(permissionState => {
@@ -662,13 +810,11 @@
         let y = acc.y || 0;
         let z = acc.z || 0;
 
-        // Vector magnitude calculation for movement detection
         let magnitude = Math.sqrt(x * x + y * y + z * z);
         let delta = Math.abs(magnitude - lastAccelMagnitude);
         lastAccelMagnitude = magnitude;
 
         let now = Date.now();
-        // Detect footstep jerk/acceleration threshold with 320ms minimum interval delay
         if ((magnitude > 12.3 || delta > 3.8) && (now - lastStepTime > 320)) {
             stepCount++;
             lastStepTime = now;
@@ -683,22 +829,29 @@
         updateStepUI();
     }
 
-    // AUTO SYNC INPUTS FUNCTION
+    // AUTO SYNC INPUTS EVERYWHERE
     function syncInputs(type, val) {
         if (!val) return;
         if (type === 'w') {
-            let w1 = document.getElementById('w');
-            let w2 = document.getElementById('weightInput');
-            let w3 = document.getElementById('calorieUserWeight');
-            if (w1 && w1.value !== val) w1.value = val;
-            if (w2 && w2.value !== val) w2.value = val;
-            if (w3 && w3.value !== val) w3.value = val;
+            ['globalWeight', 'w', 'weightInput', 'calorieUserWeight'].forEach(id => {
+                let el = document.getElementById(id);
+                if (el && el.value !== val) el.value = val;
+            });
         } else if (type === 'h') {
-            let h1 = document.getElementById('h');
-            if (h1 && h1.value !== val) h1.value = val;
+            ['globalHeight', 'h'].forEach(id => {
+                let el = document.getElementById(id);
+                if (el && el.value !== val) el.value = val;
+            });
         } else if (type === 'age') {
-            let age1 = document.getElementById('age');
-            if (age1 && age1.value !== val) age1.value = val;
+            ['globalAge', 'age'].forEach(id => {
+                let el = document.getElementById(id);
+                if (el && el.value !== val) el.value = val;
+            });
+        } else if (type === 'sex') {
+            ['globalGender', 'sex'].forEach(id => {
+                let el = document.getElementById(id);
+                if (el && el.value !== val) el.value = val;
+            });
         }
     }
 
@@ -889,7 +1042,6 @@
 
         let met = parseFloat(exSelect.value) || 5.0;
         let selectedExName = exSelect.options[exSelect.selectedIndex].text;
-
         let durationHours = durationMinutes / 60;
         let caloriesBurned = met * weightInput * durationHours;
 
@@ -963,6 +1115,7 @@
 
     function populateFoodSelect() {
         let select = document.getElementById('foodSelect');
+        if(!select) return;
         select.innerHTML = "";
         let items = foodDb[currentFoodCategory];
         items.forEach((item, index) => {
@@ -979,7 +1132,7 @@
         let weightInput = document.getElementById('foodWeight');
         let resDiv = document.getElementById('foodNutritionResult');
 
-        if (!select || select.value === "") return;
+        if (!select || !resDiv || select.value === "") return;
 
         let index = parseInt(select.value);
         let weight = parseFloat(weightInput.value) || 0;
@@ -1017,15 +1170,6 @@
     }
     function closeImage() { document.getElementById('viewer').style.display = 'none'; }
     function toggle(id) { let x = document.getElementById(id); x.style.display = (x.style.display==="block")?"none":"block"; }
-
-    function openMoreFeaturesModal() {
-        document.getElementById('moreFeaturesModal').style.display = 'flex';
-        filterFoodCategory('veg');
-    }
-
-    function closeMoreFeaturesModal() {
-        document.getElementById('moreFeaturesModal').style.display = 'none';
-    }
 
     function setDietType(type) {
         currentDiet = type;
@@ -1124,6 +1268,11 @@
                     <b>🥗 Lunch: 1 Roti, Mix Veg, Curd (200g)</b>
                     <p>Balanced low calorie fiber rich lunch.</p>
                     <div class="meal-macro">🔥 380 kcal | 💪 18g Protein | 🥑 10g Fat</div>
+                </div>
+                <div class="meal">
+                    <b>🌙 Dinner: Vegetable Soup, Moong Dal Khichdi (Small Bowl)</b>
+                    <p>Light and easy to digest night meal.</p>
+                    <div class="meal-macro">🔥 250 kcal | 💪 12g Protein | 🥑 4g Fat</div>
                 </div>`,
                 nonveg: `
                 <div class="meal">
@@ -1135,6 +1284,11 @@
                     <b>🥗 Lunch: Grilled Chicken Salad (200g) / 4 Eggs</b>
                     <p>Pure protein fat loss lunch.</p>
                     <div class="meal-macro">🔥 350 kcal | 💪 55g Protein | 🥑 8g Fat</div>
+                </div>
+                <div class="meal">
+                    <b>🌙 Dinner: Boiled Fish (150g) or Egg Whites + Green Veggies</b>
+                    <p>Low carb high protein dinner for fat burn.</p>
+                    <div class="meal-macro">🔥 280 kcal | 💪 40g Protein | 🥑 5g Fat</div>
                 </div>`
             },
             cutting: {
@@ -1143,12 +1297,32 @@
                     <b>🍳 Breakfast: Sprouts (150g) & Black Coffee</b>
                     <p>High fiber energy booster.</p>
                     <div class="meal-macro">🔥 210 kcal | 💪 18g Protein | 🥑 2g Fat</div>
+                </div>
+                <div class="meal">
+                    <b>🥗 Lunch: Paneer Salad (100g) & Green Tea</b>
+                    <p>High protein low carb cutting lunch.</p>
+                    <div class="meal-macro">🔥 310 kcal | 💪 22g Protein | 🥑 12g Fat</div>
+                </div>
+                <div class="meal">
+                    <b>🌙 Dinner: Tofu & Steamed Broccoli (150g)</b>
+                    <p>Clean cutting night meal.</p>
+                    <div class="meal-macro">🔥 220 kcal | 💪 18g Protein | 🥑 8g Fat</div>
                 </div>`,
                 nonveg: `
                 <div class="meal">
                     <b>🍳 Breakfast: 8 Egg Whites & Green Tea</b>
                     <p>Zero fat, pure protein start.</p>
                     <div class="meal-macro">🔥 140 kcal | 💪 30g Protein | 🥑 0.5g Fat</div>
+                </div>
+                <div class="meal">
+                    <b>🥗 Lunch: Grilled Chicken Breast (150g) & Salad</b>
+                    <p>Lean muscle preservation meal.</p>
+                    <div class="meal-macro">🔥 290 kcal | 💪 45g Protein | 🥑 4g Fat</div>
+                </div>
+                <div class="meal">
+                    <b>🌙 Dinner: Salmon/White Fish (150g) with Steamed Veggies</b>
+                    <p>Omega-3 rich cutting dinner.</p>
+                    <div class="meal-macro">🔥 260 kcal | 💪 38g Protein | 🥑 6g Fat</div>
                 </div>`
             }
         };
@@ -1180,7 +1354,7 @@
                 </ul>
             </div>`
         };
-        supplementArea.innerHTML = suppData[goal];
+        if(supplementArea) supplementArea.innerHTML = suppData[goal];
     }
 
     function startTimer() { if(!timer) timer = setInterval(() => { sec++; let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60; document.getElementById('stopwatch').innerText = `${h<10?'0':''}${h}:${m<10?'0':''}${m}:${s<10?'0':''}${s}`; }, 1000); }
